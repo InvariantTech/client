@@ -1,5 +1,3 @@
-# Copied from https://github.com/batfish/pybatfish/blob/e23829854c70446b4e68a3f8ef2a25410daad167/pybatfish/util.py#L174
-
 #   Copyright 2018 The Batfish Open Source Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# Modified 2024 Invariant Technology, Inc
+# The following modifications were made from the original file:
+# 1. Retrieved from https://github.com/batfish/pybatfish/blob/e23829854c70446b4e68a3f8ef2a25410daad167/pybatfish/util.py
+# 2. All code except function zip_dir, its imports, and constant _MIN_ZIP_TIMESTAMP was excluded
 
 import os
 import tempfile
 from typing import IO
 import zipfile
 
-
+# Minimum timestamp supported by ZIP format
+# See issue https://bugs.python.org/issue34097
 _MIN_ZIP_TIMESTAMP = 315561600.0
 
 
