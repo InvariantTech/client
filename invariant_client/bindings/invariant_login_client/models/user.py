@@ -10,8 +10,8 @@ from attrs import field as _attrs_field
 from typing import Dict
 
 if TYPE_CHECKING:
-    from ..models.login import Login
     from ..models.organization import Organization
+    from ..models.login import Login
 
 
 T = TypeVar("T", bound="User")
@@ -64,8 +64,8 @@ class User:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.login import Login
         from ..models.organization import Organization
+        from ..models.login import Login
 
         d = src_dict.copy()
         uuid = d.pop("uuid")

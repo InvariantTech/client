@@ -7,14 +7,14 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
+from typing import cast
+from ...models.validation_error_response import ValidationErrorResponse
 from ...models.challenge_response import ChallengeResponse
 from ...models.create_integration_request_github_app_installation import (
     CreateIntegrationRequestGithubAppInstallation,
 )
-from typing import Dict
 from ...models.base_error_response import BaseErrorResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import cast
+from typing import Dict
 
 
 def _get_kwargs(

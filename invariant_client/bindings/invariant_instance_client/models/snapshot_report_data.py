@@ -8,11 +8,11 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
 from typing import cast, Union
-from typing import Dict
-from ..types import UNSET, Unset
 from typing import cast
+from ..types import UNSET, Unset
+from typing import Dict
+from typing import Union
 
 if TYPE_CHECKING:
     from ..models.comparison_reportdata import ComparisonReportdata
@@ -32,7 +32,7 @@ class SnapshotReportData:
         edges (Union[None, Unset, str]):
         routers (Union[None, Unset, str]):
         nodes (Union[None, Unset, str]):
-        external_ports (Union[None, Unset, str]):
+        exposed_ports (Union[None, Unset, str]):
         rule_findings (Union[None, Unset, str]):
         connect_to (Union[None, Unset, str]):
         multipath (Union[None, Unset, str]):
@@ -44,6 +44,7 @@ class SnapshotReportData:
         policy_violations_connect_to (Union[None, Unset, str]):
         policy_rules (Union[None, Unset, str]):
         solutions (Union[None, Unset, str]):
+        unconnected_nodes (Union[None, Unset, str]):
         compare_to (Union['ComparisonReportdata', None, Unset]):
     """
 
@@ -54,7 +55,7 @@ class SnapshotReportData:
     edges: Union[None, Unset, str] = UNSET
     routers: Union[None, Unset, str] = UNSET
     nodes: Union[None, Unset, str] = UNSET
-    external_ports: Union[None, Unset, str] = UNSET
+    exposed_ports: Union[None, Unset, str] = UNSET
     rule_findings: Union[None, Unset, str] = UNSET
     connect_to: Union[None, Unset, str] = UNSET
     multipath: Union[None, Unset, str] = UNSET
@@ -66,6 +67,7 @@ class SnapshotReportData:
     policy_violations_connect_to: Union[None, Unset, str] = UNSET
     policy_rules: Union[None, Unset, str] = UNSET
     solutions: Union[None, Unset, str] = UNSET
+    unconnected_nodes: Union[None, Unset, str] = UNSET
     compare_to: Union["ComparisonReportdata", None, Unset] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -103,12 +105,12 @@ class SnapshotReportData:
         else:
             nodes = self.nodes
 
-        external_ports: Union[None, Unset, str]
-        if isinstance(self.external_ports, Unset):
-            external_ports = UNSET
+        exposed_ports: Union[None, Unset, str]
+        if isinstance(self.exposed_ports, Unset):
+            exposed_ports = UNSET
 
         else:
-            external_ports = self.external_ports
+            exposed_ports = self.exposed_ports
 
         rule_findings: Union[None, Unset, str]
         if isinstance(self.rule_findings, Unset):
@@ -187,6 +189,13 @@ class SnapshotReportData:
         else:
             solutions = self.solutions
 
+        unconnected_nodes: Union[None, Unset, str]
+        if isinstance(self.unconnected_nodes, Unset):
+            unconnected_nodes = UNSET
+
+        else:
+            unconnected_nodes = self.unconnected_nodes
+
         compare_to: Union[Dict[str, Any], None, Unset]
         if isinstance(self.compare_to, Unset):
             compare_to = UNSET
@@ -216,8 +225,8 @@ class SnapshotReportData:
             field_dict["routers"] = routers
         if nodes is not UNSET:
             field_dict["nodes"] = nodes
-        if external_ports is not UNSET:
-            field_dict["external_ports"] = external_ports
+        if exposed_ports is not UNSET:
+            field_dict["exposed_ports"] = exposed_ports
         if rule_findings is not UNSET:
             field_dict["rule_findings"] = rule_findings
         if connect_to is not UNSET:
@@ -240,6 +249,8 @@ class SnapshotReportData:
             field_dict["policy_rules"] = policy_rules
         if solutions is not UNSET:
             field_dict["solutions"] = solutions
+        if unconnected_nodes is not UNSET:
+            field_dict["unconnected_nodes"] = unconnected_nodes
         if compare_to is not UNSET:
             field_dict["compare_to"] = compare_to
 
@@ -292,14 +303,14 @@ class SnapshotReportData:
 
         nodes = _parse_nodes(d.pop("nodes", UNSET))
 
-        def _parse_external_ports(data: object) -> Union[None, Unset, str]:
+        def _parse_exposed_ports(data: object) -> Union[None, Unset, str]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             return cast(Union[None, Unset, str], data)
 
-        external_ports = _parse_external_ports(d.pop("external_ports", UNSET))
+        exposed_ports = _parse_exposed_ports(d.pop("exposed_ports", UNSET))
 
         def _parse_rule_findings(data: object) -> Union[None, Unset, str]:
             if data is None:
@@ -408,6 +419,15 @@ class SnapshotReportData:
 
         solutions = _parse_solutions(d.pop("solutions", UNSET))
 
+        def _parse_unconnected_nodes(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        unconnected_nodes = _parse_unconnected_nodes(d.pop("unconnected_nodes", UNSET))
+
         def _parse_compare_to(
             data: object,
         ) -> Union["ComparisonReportdata", None, Unset]:
@@ -442,7 +462,7 @@ class SnapshotReportData:
             edges=edges,
             routers=routers,
             nodes=nodes,
-            external_ports=external_ports,
+            exposed_ports=exposed_ports,
             rule_findings=rule_findings,
             connect_to=connect_to,
             multipath=multipath,
@@ -454,6 +474,7 @@ class SnapshotReportData:
             policy_violations_connect_to=policy_violations_connect_to,
             policy_rules=policy_rules,
             solutions=solutions,
+            unconnected_nodes=unconnected_nodes,
             compare_to=compare_to,
         )
 

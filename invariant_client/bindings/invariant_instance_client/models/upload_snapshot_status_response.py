@@ -15,19 +15,23 @@ class UploadSnapshotStatusResponse:
     """
     Attributes:
         is_running (bool):
+        terminated (bool):
     """
 
     is_running: bool
+    terminated: bool
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         is_running = self.is_running
+        terminated = self.terminated
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "is_running": is_running,
+                "terminated": terminated,
             }
         )
 
@@ -38,8 +42,11 @@ class UploadSnapshotStatusResponse:
         d = src_dict.copy()
         is_running = d.pop("is_running")
 
+        terminated = d.pop("terminated")
+
         upload_snapshot_status_response = cls(
             is_running=is_running,
+            terminated=terminated,
         )
 
         upload_snapshot_status_response.additional_properties = d

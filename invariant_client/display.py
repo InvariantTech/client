@@ -47,7 +47,9 @@ def snapshot_halted(response: GetReportSummaryResponse):
     if len(halted):
         print("\nThe following steps were not completed:")
         for prefix, step in halted:
-            print(f"    {' > '.join(prefix)}\n        {step['state']}")
+            print(f"    {' > '.join(prefix)}")
+            if step['state'] != 'FAILED':
+                print(f"\n        {step['state']}")
 
 
 def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
@@ -56,6 +58,10 @@ def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
         data = json.loads(error['detail'])
         if data['type'] == 'urn:invariant:errors:child_step_failed':
             continue
+        if data['type'] == 'urn:invariant:errors:internal_exception':
+            print(f"\nInternal error in {error['label']}:\n    {data['detail']}")
+            continue
+
         print(f"\nIn {error['label']}:\n    {data['title']}\n    {data['detail']}")
 
 

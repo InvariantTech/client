@@ -265,10 +265,7 @@ class Invariant:
         pass
 
     def status(self) -> models.UIStatusResponse:
-        try:
-            assert self.creds
-            assert self.creds.access_token
-        except AssertionError:
+        if not self.creds or not self.creds.access_token:
             raise ValueError("status requires an access token.")
         response = ui_status_organization_name_api_v_1_ui_get(self.creds.organization_name, client=self.client)
         response = response.parsed
@@ -326,10 +323,7 @@ class InvariantLogin:
                 **kwargs)
 
     def get_instances(self):
-        try:
-            assert self.creds
-            assert self.creds.refresh_token
-        except AssertionError:
+        if not self.creds or not self.creds.refresh_token:
             raise ValueError("get_instances requires a refresh token.")
         response = get_instances_api_v1_login_get_instances_post(client=self.client)
         response = response.parsed
@@ -342,11 +336,7 @@ class InvariantLogin:
         return response
 
     def to_instance_sdk(self, verify_ssl: str | bool | ssl.SSLContext = True):
-        try:
-            assert self.creds
-            assert self.creds.refresh_token
-            assert self.creds.organization_name
-        except AssertionError:
+        if not self.creds or not self.creds.refresh_token or not self.creds.organization_name:
             raise ValueError("to_instance_sdk requires a refresh token and organization name.")
         base_url = Invariant.app_base_url(self.base_url)
         client = LoginClient(

@@ -6,11 +6,12 @@ import logging
 import logging.config
 import os
 import pathlib
+from retry.api import retry_call
 import ssl
 import stat
 import sys
 import time
-import pprint
+import uuid
 
 from attrs import asdict
 from tabulate import tabulate
@@ -28,6 +29,8 @@ except RuntimeError:
 finally:
     CREDS_FILE_PATH = CREDS_FILE_PATH.joinpath('.invariant_creds')
 
+class UploadTerminationError(Exception):
+    """An exception that is raised when a snapshot upload is terminated."""
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -105,6 +108,7 @@ def parse_args():
 
     command_show.add_argument(
         'file_name',
+        nargs="?",
         help='The snapshot file to examine.'
     )
 
@@ -122,7 +126,7 @@ def parse_args():
 
     command = getattr(args, 'command')
     if not command:
-        parser.print_usage()
+        parser.print_help()
         exit(0)
 
     return args
@@ -280,34 +284,23 @@ def EntryPoint_inner(args, command, format, debug):
             exit(1)
 
         compare_to = getattr(args, 'compare_to')
-        print("Uploading snapshot...")
-        exec_uuid = sdk.upload_snapshot(
-            source=bytes,
-            compare_to=compare_to)
-        exec_uuid = exec_uuid.exec_uuid
-        end_time = datetime.datetime.now() + datetime.timedelta(weeks=1)
-        print(f"Processing... ({exec_uuid})")
-        while datetime.datetime.now() < end_time:
-            response = sdk.upload_is_running(exec_uuid)
-            if not response.is_running:
-                break
-            # TODO send some RetryAfter header to control this
-            # TODO separately, exponential back-off on error
-            time.sleep(4)
-        if not response:
-            print("Timed out.")
-            exit(1)
+        exec_uuid = retry_call(upload_snapshot, fargs=[sdk, bytes, compare_to], exceptions=UploadTerminationError,tries=3, delay=30, backoff=2)
         print("Analysis complete.")
         response = sdk.snapshot_detail(exec_uuid)
         # pprint.pprint(asdict(response), width=200)
         display.snapshot_status(response)
-        if response.status['state'] == 'COMPLETED':
+        if response.status['state'] == 'COMPLETE':
             display.snapshot_halted(response)
             print('')
             display.snapshot_summary_table(response, format)
+            print(f"\nRun 'invariant show {exec_uuid} <file>' to examine any file.")
 
             if response.summary['errors'] > 0:
-                print(f"{response.summary['errors']} found. Run 'invariant errors {exec_uuid}' to examine.")
+                print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
+                errors_uuid = response.report.reports.errors
+                errors_response = sdk.snapshot_file(errors_uuid)
+                display.snapshot_errors(errors_response, format)
+
         else:
             if response.summary['errors'] > 0:
                 errors_uuid = response.report.reports.errors
@@ -329,15 +322,53 @@ def EntryPoint_inner(args, command, format, debug):
             reports = reports['reports']
             print(tabulate(reports, headers='keys', tablefmt='psql'))
 
-
     elif command == "snapshot":
         sdk.snapshot_detail(
             report_uuid=args.snapshot_name)
 
     elif command == "show":
-        sdk.show(
-            snapshot=args.snapshot_name,
-            file=args.file_name)
+        try:
+            exec_uuid = uuid.UUID(args.snapshot_name, version=4)
+        except ValueError as e:
+            # TODO we could permit something like 'latest'
+            raise ValueError(f"Expected {args.snapshot_name} to be a UUID like f5b4e387-e336-499e-b3a0-d6186c590572.") from e
+
+        if args.file_name is not None:
+            # Access a specific file
+            try:
+                file = uuid.UUID(args.file_name, version=4)
+            except ValueError:
+                # OK if the file is the file key (e.g. errors)
+                file = args.file_name
+            if not isinstance(file, uuid.UUID):
+                # Resolve non-UUID file to UUID
+                response = sdk.snapshot_detail(exec_uuid)
+                reports = response.report.reports
+                try:
+                    file: str = getattr(reports, file)
+                    file = uuid.UUID(file, version=4)
+                except AttributeError as e:
+                    raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
+            file_response = sdk.snapshot_file(str(file))
+            display.print_frame(file_response, format)
+
+        else:
+            # Display the process summary for the snapshot
+            response = sdk.snapshot_detail(exec_uuid)
+            display.snapshot_status(response)
+            if response.status['state'] == 'COMPLETE':
+                display.snapshot_halted(response)
+                print('')
+                display.snapshot_summary_table(response, format)
+
+                if response.summary['errors'] > 0:
+                    print(f"{response.summary['errors']} found. Run 'invariant errors {exec_uuid}' to examine.")
+                print(f"\nRun 'invariant show {exec_uuid} <file>' to examine any file.")
+            else:
+                if response.summary['errors'] > 0:
+                    errors_uuid = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_uuid)
+                    display.snapshot_errors(errors_response, format)
 
     elif command == "show_solution":
         sdk.show_solution(
@@ -347,3 +378,26 @@ def EntryPoint_inner(args, command, format, debug):
     else:
         print(f"Unknown command {command}", file=sys.stderr)
 
+
+def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str) -> str:
+    print("Uploading snapshot...")
+    exec_uuid = sdk.upload_snapshot(
+        source=bytes,
+        compare_to=compare_to)
+    exec_uuid = exec_uuid.exec_uuid
+    end_time = datetime.datetime.now() + datetime.timedelta(weeks=1)
+    print(f"Processing... ({exec_uuid})")
+    while datetime.datetime.now() < end_time:
+        response = sdk.upload_is_running(exec_uuid)
+        if response.terminated:
+            raise UploadTerminationError(f"Upload was terminated")
+        if not response.is_running:
+            break
+        
+        # TODO send some RetryAfter header to control this
+        # TODO separately, exponential back-off on error
+        time.sleep(4)
+    if not response:
+        print("Timed out.")
+        exit(1)
+    return exec_uuid
