@@ -8,6 +8,7 @@ import ssl
 from typing import IO, BinaryIO, Optional, TypeAlias, TypedDict, Union
 import typing
 import urllib.parse as urllib_parse
+import pandas
 
 import pyarrow.feather as feather
 
@@ -19,11 +20,13 @@ from invariant_client.bindings.invariant_instance_client import models
 from invariant_client.bindings.invariant_instance_client import types
 from invariant_client.bindings.invariant_instance_client.api.organization.list_reports_organization_name_api_v_1_reports_get import sync_detailed as list_reports_organization_name_api_v_1_reports_get
 from invariant_client.bindings.invariant_instance_client.api.organization.refresh_organization_name_api_v1_refresh_post import sync_detailed as refresh_organization_name_api_v1_refresh_post
+from invariant_client.bindings.invariant_instance_client.models.report_text_summary_request import ReportTextSummaryRequest
 from invariant_client.bindings.invariant_login_client.client import AuthenticatedClient as LoginAuthenticatedClient, Client as LoginClient
 from invariant_client.bindings.invariant_instance_client.api.organization.upload_snapshot_organization_name_api_v_1_uploadsnapshot_post import sync_detailed as upload_snapshot_organization_name_api_v_1_uploadsnapshot_post
 from invariant_client.bindings.invariant_instance_client.api.organization.upload_snapshot_status_organization_name_api_v_1_uploadsnapshot_status_get import sync_detailed as upload_snapshot_status_organization_name_api_v_1_uploadsnapshot_status_get
 from invariant_client.bindings.invariant_instance_client.api.organization.get_report_summary_organization_name_api_v_1_reports_report_id_summary_get import sync_detailed as get_report_summary_organization_name_api_v_1_reports_report_id_summary_get
 from invariant_client.bindings.invariant_instance_client.api.organization.get_report_organization_name_api_v_1_reports_report_id_get import _get_kwargs as get_report_organization_name_api_v_1_reports_report_id_get__get_kwargs
+from invariant_client.bindings.invariant_instance_client.api.organization.get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get import sync_detailed as get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get
 
 from invariant_client.bindings.invariant_login_client.api.login.get_instances_api_v1_login_get_instances_post import sync_detailed as get_instances_api_v1_login_get_instances_post
 from invariant_client.bindings.invariant_login_client.models.base_error_response import BaseErrorResponse
@@ -233,7 +236,7 @@ class Invariant:
 
     def snapshot_file(
             self,
-            file_uuid: str):
+            file_uuid: str) -> pandas.DataFrame:
         kwargs = get_report_organization_name_api_v_1_reports_report_id_get__get_kwargs(
             organization_name=self.creds.organization_name,
             report_id=file_uuid,
@@ -249,7 +252,26 @@ class Invariant:
         #     raise AuthorizationException(f"{response.title}: {response.detail}")
         # if isinstance(response, models.BaseErrorResponse):
         #     raise RemoteError(response)
-        response = feather.read_feather(io.BytesIO(response.content))
+        response: pandas.DataFrame = feather.read_feather(io.BytesIO(response.content))
+        return response
+
+    def snapshot_file_text(
+            self,
+            file_uuid: str,
+            traces: bool,
+            json_mode: bool):
+        response = get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get(
+            self.creds.organization_name,
+            file_uuid,
+            client=self.client,
+            json_body=ReportTextSummaryRequest(traces=traces, mode='json' if json_mode else 'text'))
+        response = response.parsed
+        if not response:
+            raise RemoteError(f"Unable to connect to {self.base_url}")
+        if isinstance(response, models.ChallengeResponse):
+            raise AuthorizationException(f"{response.title}: {response.detail}")
+        if not isinstance(response, models.ReportTextSummaryResponse):
+            raise RemoteError(response)
         return response
 
     def show(

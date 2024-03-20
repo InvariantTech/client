@@ -9,6 +9,7 @@ from .create_client_login_session_response import CreateClientLoginSessionRespon
 from .email_check_request import EmailCheckRequest
 from .email_password_login import EmailPasswordLogin
 from .fulfill_client_login_request import FulfillClientLoginRequest
+from .get_version_response import GetVersionResponse
 from .login import Login
 from .login_request import LoginRequest
 from .new_password_request import NewPasswordRequest
@@ -32,6 +33,7 @@ __all__ = (
     "EmailCheckRequest",
     "EmailPasswordLogin",
     "FulfillClientLoginRequest",
+    "GetVersionResponse",
     "Login",
     "LoginRequest",
     "NewPasswordRequest",

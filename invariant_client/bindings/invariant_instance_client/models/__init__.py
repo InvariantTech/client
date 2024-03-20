@@ -7,6 +7,7 @@ from .body_upload_snapshot_organization_name_api_v1_uploadsnapshot_post import (
 from .challenge_response import ChallengeResponse
 from .challenge_response_challenge import ChallengeResponseChallenge
 from .comparison_reportdata import ComparisonReportdata
+from .comparison_reportdata_files import ComparisonReportdataFiles
 from .create_integration_request_github_app_installation import (
     CreateIntegrationRequestGithubAppInstallation,
 )
@@ -38,7 +39,10 @@ from .organization import Organization
 from .poc_report_data import POCReportData
 from .refresh_response import RefreshResponse
 from .report import Report
+from .report_text_summary_request import ReportTextSummaryRequest
+from .report_text_summary_response import ReportTextSummaryResponse
 from .snapshot_report_data import SnapshotReportData
+from .snapshot_report_data_files import SnapshotReportDataFiles
 from .tab_info import TabInfo
 from .tab_info_parameters_type_0 import TabInfoParametersType0
 from .tab_info_state_type_0 import TabInfoStateType0
@@ -57,6 +61,7 @@ __all__ = (
     "ChallengeResponse",
     "ChallengeResponseChallenge",
     "ComparisonReportdata",
+    "ComparisonReportdataFiles",
     "CreateIntegrationRequestGithubAppInstallation",
     "CreateIntegrationRequestGithubAppInstallationData",
     "CreateTokenRequest",
@@ -78,7 +83,10 @@ __all__ = (
     "POCReportData",
     "RefreshResponse",
     "Report",
+    "ReportTextSummaryRequest",
+    "ReportTextSummaryResponse",
     "SnapshotReportData",
+    "SnapshotReportDataFiles",
     "TabInfo",
     "TabInfoParametersType0",
     "TabInfoStateType0",

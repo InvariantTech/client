@@ -18,7 +18,9 @@ from tabulate import tabulate
 
 from invariant_client import auth, display, zip_util
 from invariant_client import pysdk
+from invariant_client.bindings.invariant_instance_client.models.snapshot_report_data import SnapshotReportData
 from invariant_client.display import OutputFormat
+from invariant_client.version import VersionClient
 
 
 CREDS_FILE_PATH = pathlib.Path.cwd()
@@ -76,12 +78,7 @@ def parse_args():
             action='store_true',
             help='Output data as TSV.',
         )
-        parser.add_argument(
-            '--debug',
-            dest='debug',
-            action='store_true',
-            help='Enable detailed logging.',
-        )
+
     
     add_common_arguments(command_login)
     add_common_arguments(command_run)
@@ -122,10 +119,23 @@ def parse_args():
         help='The solution to examine.'
     )
 
+    parser.add_argument(
+        '--debug',
+        dest='debug',
+        action='store_true',
+        help='Enable detailed logging.',
+    )
+
+    parser.add_argument(
+        '--version',
+        dest='version',
+        action='store_true',
+        help="Display the client and server version.")
+
     args = parser.parse_args()
 
     command = getattr(args, 'command')
-    if not command:
+    if not command and not args.version:
         parser.print_help()
         exit(0)
 
@@ -172,14 +182,18 @@ def configure_logging(debug: bool):
 def EntryPoint():
     args = parse_args()
 
-    command = getattr(args, 'command')
+    if args.version:
+        command = None
+        format = None
+    else:
+        command = getattr(args, 'command')
 
-    format = OutputFormat.TABULATE
-    if getattr(args, 'json'):
-        format = OutputFormat.JSON
-    elif getattr(args, 'tsv'):
-        format = OutputFormat.TSV
-    
+        format = OutputFormat.TABULATE
+        if getattr(args, 'json'):
+            format = OutputFormat.JSON
+        elif getattr(args, 'tsv'):
+            format = OutputFormat.TSV
+        
     debug = getattr(args, 'debug') or False
     configure_logging(debug)
     
@@ -202,6 +216,12 @@ def EntryPoint_inner(args, command, format, debug):
     invariant_domain = env.get('INVARIANT_DOMAIN', 'https://invariant.tech')
 
     creds = None
+
+    if args.version:
+        with open(pathlib.Path(__file__).parent.parent.joinpath("VERSION"), "r") as f:
+            print(f"client: {f.read().strip()}")
+        print(f"server: {VersionClient(invariant_domain, ssl.create_default_context()).get_version()}")
+        return
 
     if command == 'login':
         # TODO warn before logging in if an API token is present (possibly check if it works?)
@@ -348,9 +368,34 @@ def EntryPoint_inner(args, command, format, debug):
                     file: str = getattr(reports, file)
                     file = uuid.UUID(file, version=4)
                 except AttributeError as e:
-                    raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
-            file_response = sdk.snapshot_file(str(file))
-            display.print_frame(file_response, format)
+                    if not isinstance(reports, SnapshotReportData):
+                        raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
+                    try:
+                        file: str = reports.files[file]
+                        file = uuid.UUID(file, version=4)
+                    except KeyError as e:
+                        raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
+
+            if format == OutputFormat.JSON:
+                file_summary = sdk.snapshot_file_text(str(file), False, json_mode=True)
+                if file_summary.json:
+                    print(file_summary.json)
+                else:
+                    file_data = sdk.snapshot_file(str(file))
+                    print(file_data.to_json(orient='records'))
+            elif format == OutputFormat.TSV:
+                file_data = sdk.snapshot_file(str(file))
+                display.print_frame(file_data, format)
+            else:
+                file_summary = sdk.snapshot_file_text(str(file), False, json_mode=False)
+                if file_summary.text:
+                    print(file_summary.text)
+                else:
+                    file_data = sdk.snapshot_file(str(file))
+                    display.print_frame(file_data, format)
+                # print("Set --traces to display all example traces")
+                print("Set --json to get JSON")
+                print("See 'show --help' for more options")
 
         else:
             # Display the process summary for the snapshot
@@ -360,10 +405,14 @@ def EntryPoint_inner(args, command, format, debug):
                 display.snapshot_halted(response)
                 print('')
                 display.snapshot_summary_table(response, format)
+                print(f"\nRun 'invariant show {exec_uuid} <file>' to examine any file.")
 
                 if response.summary['errors'] > 0:
-                    print(f"{response.summary['errors']} found. Run 'invariant errors {exec_uuid}' to examine.")
-                print(f"\nRun 'invariant show {exec_uuid} <file>' to examine any file.")
+                    print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
+                    errors_uuid = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_uuid)
+                    display.snapshot_errors(errors_response, format)
+
             else:
                 if response.summary['errors'] > 0:
                     errors_uuid = response.report.reports.errors

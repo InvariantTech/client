@@ -7,9 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
 from typing import cast, Union
 from typing import cast
+from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.tab_info_state_type_0 import TabInfoStateType0

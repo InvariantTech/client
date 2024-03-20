@@ -7,10 +7,10 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.validation_error_response import ValidationErrorResponse
 from ...models.challenge_response import ChallengeResponse
-from ...models.get_report_summary_response import GetReportSummaryResponse
 from ...models.base_error_response import BaseErrorResponse
+from ...models.get_report_summary_response import GetReportSummaryResponse
+from ...models.validation_error_response import ValidationErrorResponse
 from typing import Dict
 
 

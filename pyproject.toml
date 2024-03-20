@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "invariant_client"
-version = "1.0.0"
+name = "invariant-client"
+version = "1.1.1"
 description = "Invariant Website"
 authors = ["Rob Ankeny <ankenyr@gmail.com>", "Jason Benterou <jason.benterou@invariant.tech>"]
 readme = "README.md"

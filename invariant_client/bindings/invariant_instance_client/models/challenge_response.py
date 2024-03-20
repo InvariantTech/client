@@ -9,10 +9,10 @@ from attrs import field as _attrs_field
 from ..types import UNSET, Unset
 
 from typing import Union
+from typing import Literal
 from typing import cast, Union
 from ..types import UNSET, Unset
 from ..models.challenge_response_challenge import ChallengeResponseChallenge
-from typing import Literal
 
 
 T = TypeVar("T", bound="ChallengeResponse")

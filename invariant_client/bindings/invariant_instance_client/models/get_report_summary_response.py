@@ -10,13 +10,13 @@ from attrs import field as _attrs_field
 from typing import Dict
 
 if TYPE_CHECKING:
+    from ..models.get_report_summary_response_status import (
+        GetReportSummaryResponseStatus,
+    )
     from ..models.get_report_summary_response_summary import (
         GetReportSummaryResponseSummary,
     )
     from ..models.report import Report
-    from ..models.get_report_summary_response_status import (
-        GetReportSummaryResponseStatus,
-    )
 
 
 T = TypeVar("T", bound="GetReportSummaryResponse")
@@ -57,13 +57,13 @@ class GetReportSummaryResponse:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.get_report_summary_response_status import (
+            GetReportSummaryResponseStatus,
+        )
         from ..models.get_report_summary_response_summary import (
             GetReportSummaryResponseSummary,
         )
         from ..models.report import Report
-        from ..models.get_report_summary_response_status import (
-            GetReportSummaryResponseStatus,
-        )
 
         d = src_dict.copy()
         report = Report.from_dict(d.pop("report"))

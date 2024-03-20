@@ -54,15 +54,21 @@ def snapshot_halted(response: GetReportSummaryResponse):
 
 def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
     """Describe each error."""
-    for error in errors.to_dict(orient='records'):
-        data = json.loads(error['detail'])
-        if data['type'] == 'urn:invariant:errors:child_step_failed':
-            continue
-        if data['type'] == 'urn:invariant:errors:internal_exception':
-            print(f"\nInternal error in {error['label']}:\n    {data['detail']}")
-            continue
+    # Group errors by label, then repeat the header every 10th member
+    for label, error_group in errors.groupby(by=['label']):
+        label = label[0]
+        for i, error in enumerate(error_group.to_dict(orient='records')):
+            prefix = ""
+            if not i % 10:
+                prefix = f"In {label}{' (continued)' if i > 0 else ''}:\n\n"
+            data = json.loads(error['detail'])
+            if data['type'] == 'urn:invariant:errors:child_step_failed':
+                continue
+            if data['type'] == 'urn:invariant:errors:internal_exception':
+                print(f"\nInternal error in {label}:\n    {data['detail']}")
+                continue
 
-        print(f"\nIn {error['label']}:\n    {data['title']}\n    {data['detail']}")
+            print(f"\n{prefix}    {data['title']}\n    {data['detail']}")
 
 
 def print_frame(data: pandas.DataFrame, format: OutputFormat):

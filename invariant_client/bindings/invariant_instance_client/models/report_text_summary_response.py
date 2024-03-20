@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
+from typing import Any, Dict, Type, TypeVar
 
 from typing import List
 
@@ -8,76 +8,68 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
 from typing import cast, Union
-from typing import cast
-from typing import Dict
 from ..types import UNSET, Unset
-
-if TYPE_CHECKING:
-    from ..models.comparison_reportdata_files import ComparisonReportdataFiles
+from typing import Union
 
 
-T = TypeVar("T", bound="ComparisonReportdata")
+T = TypeVar("T", bound="ReportTextSummaryResponse")
 
 
 @_attrs_define
-class ComparisonReportdata:
+class ReportTextSummaryResponse:
     """
     Attributes:
-        files (ComparisonReportdataFiles):
-        solutions (Union[None, Unset, str]):
+        text (str):
+        json (Union[None, Unset, str]):
     """
 
-    files: "ComparisonReportdataFiles"
-    solutions: Union[None, Unset, str] = UNSET
+    text: str
+    json: Union[None, Unset, str] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        files = self.files.to_dict()
-
-        solutions: Union[None, Unset, str]
-        if isinstance(self.solutions, Unset):
-            solutions = UNSET
+        text = self.text
+        json: Union[None, Unset, str]
+        if isinstance(self.json, Unset):
+            json = UNSET
 
         else:
-            solutions = self.solutions
+            json = self.json
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "files": files,
+                "text": text,
             }
         )
-        if solutions is not UNSET:
-            field_dict["solutions"] = solutions
+        if json is not UNSET:
+            field_dict["json"] = json
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.comparison_reportdata_files import ComparisonReportdataFiles
-
         d = src_dict.copy()
-        files = ComparisonReportdataFiles.from_dict(d.pop("files"))
+        text = d.pop("text")
 
-        def _parse_solutions(data: object) -> Union[None, Unset, str]:
+        def _parse_json(data: object) -> Union[None, Unset, str]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             return cast(Union[None, Unset, str], data)
 
-        solutions = _parse_solutions(d.pop("solutions", UNSET))
+        json = _parse_json(d.pop("json", UNSET))
 
-        comparison_reportdata = cls(
-            files=files,
-            solutions=solutions,
+        report_text_summary_response = cls(
+            text=text,
+            json=json,
         )
 
-        comparison_reportdata.additional_properties = d
-        return comparison_reportdata
+        report_text_summary_response.additional_properties = d
+        return report_text_summary_response
 
     @property
     def additional_keys(self) -> List[str]:

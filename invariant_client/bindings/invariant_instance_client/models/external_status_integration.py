@@ -7,8 +7,8 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
 import datetime
+from typing import Dict
 from dateutil.parser import isoparse
 
 if TYPE_CHECKING:

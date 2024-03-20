@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, Union
 
 import httpx
 
@@ -9,35 +9,27 @@ from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
 from typing import Dict
-from typing import cast
-from ...models.base_error_response import BaseErrorResponse
+from ...models.get_version_response import GetVersionResponse
 
 
 def _get_kwargs() -> Dict[str, Any]:
     return {
-        "method": "post",
-        "url": "/api/v1/github-webhook",
+        "method": "get",
+        "url": "/api/v1/login/version",
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
-        response_204 = cast(Any, None)
-        return response_204
+) -> Optional[Union[GetVersionResponse, ValidationErrorResponse]]:
+    if response.status_code == HTTPStatus.OK:
+        response_200 = GetVersionResponse.from_dict(response.json())
+
+        return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.FORBIDDEN:
-        response_403 = BaseErrorResponse.from_dict(response.json())
-
-        return response_403
-    if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
-        response_500 = BaseErrorResponse.from_dict(response.json())
-
-        return response_500
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -46,7 +38,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
+) -> Response[Union[GetVersionResponse, ValidationErrorResponse]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -58,15 +50,15 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    """Receive a signed webhook message from Github
+) -> Response[Union[GetVersionResponse, ValidationErrorResponse]]:
+    """Return the current server version.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]
+        Response[Union[GetVersionResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs()
@@ -81,15 +73,15 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    """Receive a signed webhook message from Github
+) -> Optional[Union[GetVersionResponse, ValidationErrorResponse]]:
+    """Return the current server version.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, BaseErrorResponse, ValidationErrorResponse]
+        Union[GetVersionResponse, ValidationErrorResponse]
     """
 
     return sync_detailed(
@@ -100,15 +92,15 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    """Receive a signed webhook message from Github
+) -> Response[Union[GetVersionResponse, ValidationErrorResponse]]:
+    """Return the current server version.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]
+        Response[Union[GetVersionResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs()
@@ -121,15 +113,15 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    """Receive a signed webhook message from Github
+) -> Optional[Union[GetVersionResponse, ValidationErrorResponse]]:
+    """Return the current server version.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, BaseErrorResponse, ValidationErrorResponse]
+        Union[GetVersionResponse, ValidationErrorResponse]
     """
 
     return (

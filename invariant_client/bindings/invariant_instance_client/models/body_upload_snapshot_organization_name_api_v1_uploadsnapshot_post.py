@@ -9,10 +9,10 @@ import json
 
 from ..types import UNSET
 
-from ..types import File, FileJsonType
-from typing import List
 from typing import Union
+from typing import List
 from io import BytesIO
+from ..types import File, FileJsonType
 
 
 T = TypeVar("T", bound="BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost")

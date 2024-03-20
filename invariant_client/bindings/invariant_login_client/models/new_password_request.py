@@ -7,8 +7,8 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import cast, Union
 from ..models.new_password_request_authn_type import NewPasswordRequestAuthnType
+from typing import cast, Union
 
 
 T = TypeVar("T", bound="NewPasswordRequest")
