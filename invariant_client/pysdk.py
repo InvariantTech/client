@@ -25,6 +25,7 @@ from invariant_client.bindings.invariant_login_client.client import Authenticate
 from invariant_client.bindings.invariant_instance_client.api.organization.upload_snapshot_organization_name_api_v_1_uploadsnapshot_post import sync_detailed as upload_snapshot_organization_name_api_v_1_uploadsnapshot_post
 from invariant_client.bindings.invariant_instance_client.api.organization.upload_snapshot_status_organization_name_api_v_1_uploadsnapshot_status_get import sync_detailed as upload_snapshot_status_organization_name_api_v_1_uploadsnapshot_status_get
 from invariant_client.bindings.invariant_instance_client.api.organization.get_report_summary_organization_name_api_v_1_reports_report_id_summary_get import sync_detailed as get_report_summary_organization_name_api_v_1_reports_report_id_summary_get
+from invariant_client.bindings.invariant_instance_client.api.organization.get_report_summary_text_summary_organization_name_api_v_1_reports_report_id_summary_text_get import sync_detailed as get_report_summary_text_summary_organization_name_api_v_1_reports_report_id_summary_text_get
 from invariant_client.bindings.invariant_instance_client.api.organization.get_report_organization_name_api_v_1_reports_report_id_get import _get_kwargs as get_report_organization_name_api_v_1_reports_report_id_get__get_kwargs
 from invariant_client.bindings.invariant_instance_client.api.organization.get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get import sync_detailed as get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get
 
@@ -33,7 +34,8 @@ from invariant_client.bindings.invariant_login_client.models.base_error_response
 from invariant_client.bindings.invariant_login_client.models.validation_error_response import ValidationErrorResponse
 
 
-DOMAIN_NAME = "https://invariant.tech"
+
+DOMAIN_NAME = "https://prod.invariant.tech"
 
 
 class NoOrganization(Exception):
@@ -210,7 +212,7 @@ class Invariant:
             raise RemoteError(response)
         return response
 
-    def list_snapshots(self):
+    def list_snapshots(self) -> models.ListReportsResponse:
         response = list_reports_organization_name_api_v_1_reports_get(self.creds.organization_name, client=self.client)
         response = response.parsed
         if not response:
@@ -223,7 +225,7 @@ class Invariant:
 
     def snapshot_detail(
             self,
-            report_uuid: str):
+            report_uuid: str) -> models.GetReportSummaryResponse:
         response = get_report_summary_organization_name_api_v_1_reports_report_id_summary_get(self.creds.organization_name, report_uuid, client=self.client)
         response = response.parsed
         if not response:
@@ -231,6 +233,28 @@ class Invariant:
         if isinstance(response, models.ChallengeResponse):
             raise AuthorizationException(f"{response.title}: {response.detail}")
         if not isinstance(response, models.GetReportSummaryResponse):
+            raise RemoteError(response)
+        return response
+
+    def snapshot_detail_text(
+            self,
+            report_uuid: str,
+            json_mode: bool
+        ) -> models.ReportTextSummaryResponse:
+        json_body = ReportTextSummaryRequest(
+            traces=False,
+            mode='json' if json_mode else 'text')
+        response = get_report_summary_text_summary_organization_name_api_v_1_reports_report_id_summary_text_get(
+            self.creds.organization_name,
+            report_uuid,
+            client=self.client,
+            json_body=json_body)
+        response = response.parsed
+        if not response:
+            raise RemoteError(f"Unable to connect to {self.base_url}")
+        if isinstance(response, models.ChallengeResponse):
+            raise AuthorizationException(f"{response.title}: {response.detail}")
+        if not isinstance(response, models.ReportTextSummaryResponse):
             raise RemoteError(response)
         return response
 

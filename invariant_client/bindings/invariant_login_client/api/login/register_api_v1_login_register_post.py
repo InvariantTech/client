@@ -8,10 +8,10 @@ from ...types import Response
 from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
-from ...models.register_organization_request_body import RegisterOrganizationRequestBody
+from ...models.base_error_response import BaseErrorResponse
 from typing import Dict
 from typing import cast
-from ...models.base_error_response import BaseErrorResponse
+from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 
 
 def _get_kwargs(

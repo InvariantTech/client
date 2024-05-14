@@ -8,8 +8,8 @@ from ...types import Response
 from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
 from ...models.get_version_response import GetVersionResponse
+from typing import Dict
 
 
 def _get_kwargs() -> Dict[str, Any]:

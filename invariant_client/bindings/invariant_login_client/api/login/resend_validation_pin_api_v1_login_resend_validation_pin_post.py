@@ -8,10 +8,10 @@ from ...types import Response
 from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
 from ...models.base_error_response import BaseErrorResponse
-from ...models.challenge_response import ChallengeResponse
+from typing import Dict
 from typing import cast
+from ...models.challenge_response import ChallengeResponse
 
 
 def _get_kwargs() -> Dict[str, Any]:

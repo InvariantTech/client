@@ -8,8 +8,8 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Literal, Union
 from ..types import UNSET, Unset
+from typing import Literal, Union
 
 
 T = TypeVar("T", bound="CheckInviteResponse")

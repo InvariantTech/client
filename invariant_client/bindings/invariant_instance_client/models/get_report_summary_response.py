@@ -13,10 +13,10 @@ if TYPE_CHECKING:
     from ..models.get_report_summary_response_status import (
         GetReportSummaryResponseStatus,
     )
+    from ..models.report import Report
     from ..models.get_report_summary_response_summary import (
         GetReportSummaryResponseSummary,
     )
-    from ..models.report import Report
 
 
 T = TypeVar("T", bound="GetReportSummaryResponse")
@@ -60,10 +60,10 @@ class GetReportSummaryResponse:
         from ..models.get_report_summary_response_status import (
             GetReportSummaryResponseStatus,
         )
+        from ..models.report import Report
         from ..models.get_report_summary_response_summary import (
             GetReportSummaryResponseSummary,
         )
-        from ..models.report import Report
 
         d = src_dict.copy()
         report = Report.from_dict(d.pop("report"))

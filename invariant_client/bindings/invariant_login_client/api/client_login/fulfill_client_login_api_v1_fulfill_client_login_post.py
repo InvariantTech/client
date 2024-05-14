@@ -8,11 +8,11 @@ from ...types import Response
 from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
-from ...models.fulfill_client_login_request import FulfillClientLoginRequest
+from ...models.base_error_response import BaseErrorResponse
 from typing import Dict
 from typing import cast
-from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
+from ...models.fulfill_client_login_request import FulfillClientLoginRequest
 
 
 def _get_kwargs(

@@ -10,8 +10,8 @@ from attrs import field as _attrs_field
 from typing import Dict
 
 if TYPE_CHECKING:
-    from ..models.integration import Integration
     from ..models.external_status_integration import ExternalStatusIntegration
+    from ..models.integration import Integration
 
 
 T = TypeVar("T", bound="IntegrationWithStatus")
@@ -47,8 +47,8 @@ class IntegrationWithStatus:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.integration import Integration
         from ..models.external_status_integration import ExternalStatusIntegration
+        from ..models.integration import Integration
 
         d = src_dict.copy()
         integration = Integration.from_dict(d.pop("integration"))

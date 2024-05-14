@@ -8,37 +8,42 @@ from attrs import field as _attrs_field
 
 
 from typing import Dict
-from typing import List
 
 if TYPE_CHECKING:
-    from ..models.tab_info import TabInfo
+    from ..models.flags_response_environment import FlagsResponseEnvironment
+    from ..models.flags_response_flags import FlagsResponseFlags
 
 
-T = TypeVar("T", bound="UserTabsConfig")
+T = TypeVar("T", bound="FlagsResponse")
 
 
 @_attrs_define
-class UserTabsConfig:
+class FlagsResponse:
     """
     Attributes:
-        tabs (List['TabInfo']):
+        etag (str):
+        environment (FlagsResponseEnvironment):
+        flags (FlagsResponseFlags):
     """
 
-    tabs: List["TabInfo"]
+    etag: str
+    environment: "FlagsResponseEnvironment"
+    flags: "FlagsResponseFlags"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        tabs = []
-        for tabs_item_data in self.tabs:
-            tabs_item = tabs_item_data.to_dict()
+        etag = self.etag
+        environment = self.environment.to_dict()
 
-            tabs.append(tabs_item)
+        flags = self.flags.to_dict()
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "tabs": tabs,
+                "etag": etag,
+                "environment": environment,
+                "flags": flags,
             }
         )
 
@@ -46,22 +51,24 @@ class UserTabsConfig:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.tab_info import TabInfo
+        from ..models.flags_response_environment import FlagsResponseEnvironment
+        from ..models.flags_response_flags import FlagsResponseFlags
 
         d = src_dict.copy()
-        tabs = []
-        _tabs = d.pop("tabs")
-        for tabs_item_data in _tabs:
-            tabs_item = TabInfo.from_dict(tabs_item_data)
+        etag = d.pop("etag")
 
-            tabs.append(tabs_item)
+        environment = FlagsResponseEnvironment.from_dict(d.pop("environment"))
 
-        user_tabs_config = cls(
-            tabs=tabs,
+        flags = FlagsResponseFlags.from_dict(d.pop("flags"))
+
+        flags_response = cls(
+            etag=etag,
+            environment=environment,
+            flags=flags,
         )
 
-        user_tabs_config.additional_properties = d
-        return user_tabs_config
+        flags_response.additional_properties = d
+        return flags_response
 
     @property
     def additional_keys(self) -> List[str]:

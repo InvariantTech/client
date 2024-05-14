@@ -9,27 +9,19 @@ from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
 from ...models.base_error_response import BaseErrorResponse
-from ...models.challenge_response import ChallengeResponse
-from ...models.report_text_summary_response import ReportTextSummaryResponse
 from typing import Dict
-from ...models.report_text_summary_request import ReportTextSummaryRequest
+from ...models.challenge_response import ChallengeResponse
+from ...models.list_report_tasks_response import ListReportTasksResponse
 
 
 def _get_kwargs(
     organization_name: str,
-    report_id: str,
-    *,
-    json_body: ReportTextSummaryRequest,
 ) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
-
     return {
         "method": "get",
-        "url": "/{organization_name}/api/v1/reports/{report_id}/text".format(
+        "url": "/{organization_name}/api/v1/reports/in_progress".format(
             organization_name=organization_name,
-            report_id=report_id,
         ),
-        "json": json_json_body,
     }
 
 
@@ -39,12 +31,12 @@ def _parse_response(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = ReportTextSummaryResponse.from_dict(response.json())
+        response_200 = ListReportTasksResponse.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -71,7 +63,7 @@ def _build_response(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
@@ -85,37 +77,31 @@ def _build_response(
 
 def sync_detailed(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Response[
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Lists all in-progress report tasks for an organization.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]]
+        Response[Union[BaseErrorResponse, ChallengeResponse, ListReportTasksResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        report_id=report_id,
-        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -127,74 +113,62 @@ def sync_detailed(
 
 def sync(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Optional[
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Lists all in-progress report tasks for an organization.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]
+        Union[BaseErrorResponse, ChallengeResponse, ListReportTasksResponse, ValidationErrorResponse]
     """
 
     return sync_detailed(
         organization_name=organization_name,
-        report_id=report_id,
         client=client,
-        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Response[
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Lists all in-progress report tasks for an organization.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]]
+        Response[Union[BaseErrorResponse, ChallengeResponse, ListReportTasksResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        report_id=report_id,
-        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -204,38 +178,32 @@ async def asyncio_detailed(
 
 async def asyncio(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Optional[
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        ListReportTasksResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Lists all in-progress report tasks for an organization.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]
+        Union[BaseErrorResponse, ChallengeResponse, ListReportTasksResponse, ValidationErrorResponse]
     """
 
     return (
         await asyncio_detailed(
             organization_name=organization_name,
-            report_id=report_id,
             client=client,
-            json_body=json_body,
         )
     ).parsed

@@ -11,34 +11,34 @@ from typing import Dict
 from typing import List
 
 if TYPE_CHECKING:
-    from ..models.tab_info import TabInfo
+    from ..models.report_task import ReportTask
 
 
-T = TypeVar("T", bound="UserTabsConfig")
+T = TypeVar("T", bound="ListReportTasksResponse")
 
 
 @_attrs_define
-class UserTabsConfig:
+class ListReportTasksResponse:
     """
     Attributes:
-        tabs (List['TabInfo']):
+        in_progress (List['ReportTask']):
     """
 
-    tabs: List["TabInfo"]
+    in_progress: List["ReportTask"]
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        tabs = []
-        for tabs_item_data in self.tabs:
-            tabs_item = tabs_item_data.to_dict()
+        in_progress = []
+        for in_progress_item_data in self.in_progress:
+            in_progress_item = in_progress_item_data.to_dict()
 
-            tabs.append(tabs_item)
+            in_progress.append(in_progress_item)
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "tabs": tabs,
+                "in_progress": in_progress,
             }
         )
 
@@ -46,22 +46,22 @@ class UserTabsConfig:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.tab_info import TabInfo
+        from ..models.report_task import ReportTask
 
         d = src_dict.copy()
-        tabs = []
-        _tabs = d.pop("tabs")
-        for tabs_item_data in _tabs:
-            tabs_item = TabInfo.from_dict(tabs_item_data)
+        in_progress = []
+        _in_progress = d.pop("in_progress")
+        for in_progress_item_data in _in_progress:
+            in_progress_item = ReportTask.from_dict(in_progress_item_data)
 
-            tabs.append(tabs_item)
+            in_progress.append(in_progress_item)
 
-        user_tabs_config = cls(
-            tabs=tabs,
+        list_report_tasks_response = cls(
+            in_progress=in_progress,
         )
 
-        user_tabs_config.additional_properties = d
-        return user_tabs_config
+        list_report_tasks_response.additional_properties = d
+        return list_report_tasks_response
 
     @property
     def additional_keys(self) -> List[str]:

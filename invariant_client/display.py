@@ -1,7 +1,9 @@
 import enum
 import json
+import sys
 from attr import asdict
 import pandas
+from rich import print_json
 from tabulate import tabulate
 from invariant_client.bindings.invariant_instance_client.models.get_report_summary_response import GetReportSummaryResponse
 
@@ -10,6 +12,7 @@ class OutputFormat(enum.Enum):
     TABULATE = enum.auto()
     JSON = enum.auto()
     TSV = enum.auto()
+    FAST_JSON = enum.auto()
     # etc
 
 
@@ -28,7 +31,9 @@ def snapshot_status(response: GetReportSummaryResponse):
 def snapshot_summary_table(response: GetReportSummaryResponse, format: OutputFormat):
     """Display a table containing row counts for all emitted reports."""
     if format == OutputFormat.JSON:
-        pass
+        print_json(data=response.to_dict())
+    elif format == OutputFormat.FAST_JSON:
+        print(json.dumps(response.to_dict()))
     else:
         print_frame(pandas.DataFrame(response.summary.to_dict().items(), columns=['File', 'RowCount']), format)
 
@@ -65,10 +70,10 @@ def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
             if data['type'] == 'urn:invariant:errors:child_step_failed':
                 continue
             if data['type'] == 'urn:invariant:errors:internal_exception':
-                print(f"\nInternal error in {label}:\n    {data['detail']}")
+                print(f"\nInternal error in {label}:\n    {data['detail']}", file=sys.stderr)
                 continue
 
-            print(f"\n{prefix}    {data['title']}\n    {data['detail']}")
+            print(f"\n{prefix}    {data['title']}\n    {data['detail']}", file=sys.stderr)
 
 
 def print_frame(data: pandas.DataFrame, format: OutputFormat):

@@ -25,7 +25,7 @@ def _get_kwargs(
 
     return {
         "method": "get",
-        "url": "/{organization_name}/api/v1/reports/{report_id}/text".format(
+        "url": "/{organization_name}/api/v1/reports/{report_id}/summary/text".format(
             organization_name=organization_name,
             report_id=report_id,
         ),

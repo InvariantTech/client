@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
+from typing import Any, Dict, Type, TypeVar
 
 from typing import List
 
@@ -8,48 +8,46 @@ from attrs import field as _attrs_field
 
 
 import datetime
-from typing import Union
-from typing import Dict
 from dateutil.parser import isoparse
 
-if TYPE_CHECKING:
-    from ..models.poc_report_data import POCReportData
-    from ..models.snapshot_report_data import SnapshotReportData
 
-
-T = TypeVar("T", bound="Report")
+T = TypeVar("T", bound="ReportTask")
 
 
 @_attrs_define
-class Report:
+class ReportTask:
     """
     Attributes:
         uuid (str):
         organization_uuid (str):
-        reports (Union['POCReportData', 'SnapshotReportData']):
         created_at (datetime.datetime):
+        urn (str):
+        type (str):
+        initiator_urn (str):
+        worker_pod (str):
+        was_killed (bool):
     """
 
     uuid: str
     organization_uuid: str
-    reports: Union["POCReportData", "SnapshotReportData"]
     created_at: datetime.datetime
+    urn: str
+    type: str
+    initiator_urn: str
+    worker_pod: str
+    was_killed: bool
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.snapshot_report_data import SnapshotReportData
-
         uuid = self.uuid
         organization_uuid = self.organization_uuid
-        reports: Dict[str, Any]
-
-        if isinstance(self.reports, SnapshotReportData):
-            reports = self.reports.to_dict()
-
-        else:
-            reports = self.reports.to_dict()
-
         created_at = self.created_at.isoformat()
+
+        urn = self.urn
+        type = self.type
+        initiator_urn = self.initiator_urn
+        worker_pod = self.worker_pod
+        was_killed = self.was_killed
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -57,8 +55,12 @@ class Report:
             {
                 "uuid": uuid,
                 "organization_uuid": organization_uuid,
-                "reports": reports,
                 "created_at": created_at,
+                "urn": urn,
+                "type": type,
+                "initiator_urn": initiator_urn,
+                "worker_pod": worker_pod,
+                "was_killed": was_killed,
             }
         )
 
@@ -66,44 +68,36 @@ class Report:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.poc_report_data import POCReportData
-        from ..models.snapshot_report_data import SnapshotReportData
-
         d = src_dict.copy()
         uuid = d.pop("uuid")
 
         organization_uuid = d.pop("organization_uuid")
 
-        def _parse_reports(
-            data: object,
-        ) -> Union["POCReportData", "SnapshotReportData"]:
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                reports_type_0 = SnapshotReportData.from_dict(data)
-
-                return reports_type_0
-            except:  # noqa: E722
-                pass
-            if not isinstance(data, dict):
-                raise TypeError()
-            reports_type_1 = POCReportData.from_dict(data)
-
-            return reports_type_1
-
-        reports = _parse_reports(d.pop("reports"))
-
         created_at = isoparse(d.pop("created_at"))
 
-        report = cls(
+        urn = d.pop("urn")
+
+        type = d.pop("type")
+
+        initiator_urn = d.pop("initiator_urn")
+
+        worker_pod = d.pop("worker_pod")
+
+        was_killed = d.pop("was_killed")
+
+        report_task = cls(
             uuid=uuid,
             organization_uuid=organization_uuid,
-            reports=reports,
             created_at=created_at,
+            urn=urn,
+            type=type,
+            initiator_urn=initiator_urn,
+            worker_pod=worker_pod,
+            was_killed=was_killed,
         )
 
-        report.additional_properties = d
-        return report
+        report_task.additional_properties = d
+        return report_task
 
     @property
     def additional_keys(self) -> List[str]:

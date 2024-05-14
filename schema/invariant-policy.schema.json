@@ -1,0 +1,142 @@
+{
+    "properties": {
+        "access-policy": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": true,
+                "properties": {
+                    "name": { "$ref": "#/$defs/token" },
+                    "comment": {
+                        "type": "string"
+                    },
+                    "owner": {
+                        "type": "string"
+                    },
+                    "enforce": {
+                        "type": "boolean"
+                    },
+                    "rules": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "allOf": [
+                                { "$ref": "#/$defs/flow" }
+                            ],
+                            "properties": {
+                                "type": {
+                                    "type": "string"
+                                },
+                                "within": {
+                                    "type": "array",
+                                    "items": { "$ref": "#/$defs/flow" }
+                                },
+                                "deny-all-except": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "properties": {
+                                        "critical-flows": {
+                                            "type": "boolean"
+                                        },
+                                        "flows": {
+                                            "type": "array",
+                                            "items": { "$ref": "#/$defs/flow" }
+                                        }
+                                    }
+                                }
+                            },
+                            "required": ["type"]
+                        }
+                    },
+                    "ingress-network": {
+                        "oneOf": [
+                            { "$ref": "#/$defs/string-separated-list" },
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "destination-address": { "$ref": "#/$defs/string-separated-list" },
+                                    "destination-exclude": { "$ref": "#/$defs/string-separated-list" },
+                                    "destination-node": { "$ref": "#/$defs/string-separated-list" }
+                                }
+                            }
+                        ]
+                    },
+                    "egress-network": {
+                        "oneOf": [
+                            { "$ref": "#/$defs/string-separated-list" },
+                            {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "properties": {
+                                    "source-address": { "$ref": "#/$defs/string-separated-list" },
+                                    "source-exclude": { "$ref": "#/$defs/string-separated-list" },
+                                    "source-interface": { "$ref": "#/$defs/string-separated-list" },
+                                    "enter-interface": { "$ref": "#/$defs/string-separated-list" }
+                                }
+                            }
+                        ]
+                    }            
+                },
+                "required": ["name"]
+            }
+        }
+    },
+    "$defs": {
+        "token": {
+            "description": "An identifier name. Identifier names must be composed only of a-z, A-Z, 0-9, _ , - .",
+            "type": "string",
+            "pattern": "^[-_a-zA-Z0-9]+$"
+        },
+        "string-separated-list": {
+            "description": "A string containing space-separated items or a list of items.",
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "string-separated-int-list": {
+            "description": "A number, string containing space-separated numbers, or a list of numbers.",
+            "oneOf": [
+                { "$ref": "#/$defs/string-separated-list" },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            ]
+        },
+        "flow": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "source-address": { "$ref": "#/$defs/string-separated-list" },
+                "source-exclude": { "$ref": "#/$defs/string-separated-list" },
+                "source-port": { "$ref": "#/$defs/string-separated-list" },
+                "source-interface": { "$ref": "#/$defs/string-separated-list" },
+                "enter-interface": { "$ref": "#/$defs/string-separated-list" },
+                "destination-address": { "$ref": "#/$defs/string-separated-list" },
+                "destination-exclude": { "$ref": "#/$defs/string-separated-list" },
+                "destination-port": { "$ref": "#/$defs/string-separated-list" },
+                "protocol": { "$ref": "#/$defs/string-separated-list" },
+                "icmp-type": { "$ref": "#/$defs/string-separated-int-list" },
+                "icmp-code": { "$ref": "#/$defs/string-separated-int-list" }
+            }
+        }
+    },
+    "$id": "urn:invariant:schemas:definitions:1.0.0",
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

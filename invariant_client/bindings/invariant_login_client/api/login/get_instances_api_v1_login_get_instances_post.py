@@ -9,9 +9,9 @@ from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
 from typing import Dict
-from typing import List
-from ...models.challenge_response import ChallengeResponse
 from ...models.user import User
+from ...models.challenge_response import ChallengeResponse
+from typing import List
 
 
 def _get_kwargs() -> Dict[str, Any]:

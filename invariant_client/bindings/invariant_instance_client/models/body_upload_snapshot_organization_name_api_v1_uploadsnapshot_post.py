@@ -10,8 +10,8 @@ import json
 from ..types import UNSET
 
 from typing import Union
-from typing import List
 from io import BytesIO
+from typing import List
 from ..types import File, FileJsonType
 
 

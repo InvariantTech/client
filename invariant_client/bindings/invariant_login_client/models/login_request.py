@@ -8,18 +8,18 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import Dict
-from typing import cast
-from typing import Union
+from ..types import UNSET, Unset
 from typing import cast, Union
+from typing import Union
+from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.email_password_login import EmailPasswordLogin
-    from ..models.reset_pin_request import ResetPINRequest
-    from ..models.reset_request import ResetRequest
     from ..models.validation_request import ValidationRequest
     from ..models.new_password_request import NewPasswordRequest
+    from ..models.reset_pin_request import ResetPINRequest
+    from ..models.reset_request import ResetRequest
+    from ..models.email_password_login import EmailPasswordLogin
 
 
 T = TypeVar("T", bound="LoginRequest")
@@ -45,11 +45,11 @@ class LoginRequest:
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.email_password_login import EmailPasswordLogin
-        from ..models.reset_pin_request import ResetPINRequest
-        from ..models.reset_request import ResetRequest
         from ..models.validation_request import ValidationRequest
         from ..models.new_password_request import NewPasswordRequest
+        from ..models.reset_pin_request import ResetPINRequest
+        from ..models.reset_request import ResetRequest
+        from ..models.email_password_login import EmailPasswordLogin
 
         basic_auth: Union[Dict[str, Any], None, Unset]
         if isinstance(self.basic_auth, Unset):
@@ -129,11 +129,11 @@ class LoginRequest:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.email_password_login import EmailPasswordLogin
-        from ..models.reset_pin_request import ResetPINRequest
-        from ..models.reset_request import ResetRequest
         from ..models.validation_request import ValidationRequest
         from ..models.new_password_request import NewPasswordRequest
+        from ..models.reset_pin_request import ResetPINRequest
+        from ..models.reset_request import ResetRequest
+        from ..models.email_password_login import EmailPasswordLogin
 
         d = src_dict.copy()
 

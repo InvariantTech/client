@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, cast
 
 import httpx
 
@@ -9,27 +9,20 @@ from ... import errors
 
 from ...models.validation_error_response import ValidationErrorResponse
 from ...models.base_error_response import BaseErrorResponse
+from ...models.flags_response import FlagsResponse
 from ...models.challenge_response import ChallengeResponse
-from ...models.report_text_summary_response import ReportTextSummaryResponse
+from typing import cast
 from typing import Dict
-from ...models.report_text_summary_request import ReportTextSummaryRequest
 
 
 def _get_kwargs(
     organization_name: str,
-    report_id: str,
-    *,
-    json_body: ReportTextSummaryRequest,
 ) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
-
     return {
         "method": "get",
-        "url": "/{organization_name}/api/v1/reports/{report_id}/text".format(
+        "url": "/{organization_name}/api/v1/flags".format(
             organization_name=organization_name,
-            report_id=report_id,
         ),
-        "json": json_json_body,
     }
 
 
@@ -37,20 +30,24 @@ def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = ReportTextSummaryResponse.from_dict(response.json())
+        response_200 = FlagsResponse.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
+    if response.status_code == HTTPStatus.NOT_MODIFIED:
+        response_304 = cast(Any, None)
+        return response_304
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = ChallengeResponse.from_dict(response.json())
 
@@ -69,9 +66,10 @@ def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Response[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
@@ -85,37 +83,32 @@ def _build_response(
 
 def sync_detailed(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Response[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Get settings for the current entity.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]]
+        Response[Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        report_id=report_id,
-        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -127,74 +120,64 @@ def sync_detailed(
 
 def sync(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Optional[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Get settings for the current entity.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]
+        Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]
     """
 
     return sync_detailed(
         organization_name=organization_name,
-        report_id=report_id,
         client=client,
-        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Response[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Get settings for the current entity.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]]
+        Response[Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        report_id=report_id,
-        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -204,38 +187,33 @@ async def asyncio_detailed(
 
 async def asyncio(
     organization_name: str,
-    report_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ReportTextSummaryRequest,
 ) -> Optional[
     Union[
+        Any,
         BaseErrorResponse,
         ChallengeResponse,
-        ReportTextSummaryResponse,
+        FlagsResponse,
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Get settings for the current entity.
 
     Args:
         organization_name (str):
-        report_id (str):
-        json_body (ReportTextSummaryRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, ReportTextSummaryResponse, ValidationErrorResponse]
+        Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]
     """
 
     return (
         await asyncio_detailed(
             organization_name=organization_name,
-            report_id=report_id,
             client=client,
-            json_body=json_body,
         )
     ).parsed

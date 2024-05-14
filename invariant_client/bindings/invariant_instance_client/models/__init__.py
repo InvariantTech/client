@@ -8,6 +8,7 @@ from .challenge_response import ChallengeResponse
 from .challenge_response_challenge import ChallengeResponseChallenge
 from .comparison_reportdata import ComparisonReportdata
 from .comparison_reportdata_files import ComparisonReportdataFiles
+from .console_request_options import ConsoleRequestOptions
 from .create_integration_request_github_app_installation import (
     CreateIntegrationRequestGithubAppInstallation,
 )
@@ -17,6 +18,9 @@ from .create_integration_request_github_app_installation_data import (
 from .create_token_request import CreateTokenRequest
 from .external_status_data_integration import ExternalStatusDataIntegration
 from .external_status_integration import ExternalStatusIntegration
+from .flags_response import FlagsResponse
+from .flags_response_environment import FlagsResponseEnvironment
+from .flags_response_flags import FlagsResponseFlags
 from .generic_state import GenericState
 from .get_report_summary_response import GetReportSummaryResponse
 from .get_report_summary_response_status import GetReportSummaryResponseStatus
@@ -33,12 +37,14 @@ from .integration_data_github_app_installation_data_extra import (
 )
 from .integration_with_status import IntegrationWithStatus
 from .invite_user_request import InviteUserRequest
+from .list_report_tasks_response import ListReportTasksResponse
 from .list_reports_response import ListReportsResponse
 from .metadata import Metadata
 from .organization import Organization
 from .poc_report_data import POCReportData
 from .refresh_response import RefreshResponse
 from .report import Report
+from .report_task import ReportTask
 from .report_text_summary_request import ReportTextSummaryRequest
 from .report_text_summary_response import ReportTextSummaryResponse
 from .snapshot_report_data import SnapshotReportData
@@ -62,11 +68,15 @@ __all__ = (
     "ChallengeResponseChallenge",
     "ComparisonReportdata",
     "ComparisonReportdataFiles",
+    "ConsoleRequestOptions",
     "CreateIntegrationRequestGithubAppInstallation",
     "CreateIntegrationRequestGithubAppInstallationData",
     "CreateTokenRequest",
     "ExternalStatusDataIntegration",
     "ExternalStatusIntegration",
+    "FlagsResponse",
+    "FlagsResponseEnvironment",
+    "FlagsResponseFlags",
     "GenericState",
     "GetReportSummaryResponse",
     "GetReportSummaryResponseStatus",
@@ -78,11 +88,13 @@ __all__ = (
     "IntegrationWithStatus",
     "InviteUserRequest",
     "ListReportsResponse",
+    "ListReportTasksResponse",
     "Metadata",
     "Organization",
     "POCReportData",
     "RefreshResponse",
     "Report",
+    "ReportTask",
     "ReportTextSummaryRequest",
     "ReportTextSummaryResponse",
     "SnapshotReportData",

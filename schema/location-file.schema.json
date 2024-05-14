@@ -1,5 +1,4 @@
 {
-    "allOf":[{ "$ref": "aerleon-definitions.schema.json"}],
     "properties": {
         "locations": {
             "type": "object",
