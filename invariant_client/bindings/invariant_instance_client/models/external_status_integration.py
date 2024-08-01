@@ -8,8 +8,8 @@ from attrs import field as _attrs_field
 
 
 from dateutil.parser import isoparse
-import datetime
 from typing import Dict
+import datetime
 
 if TYPE_CHECKING:
     from ..models.external_status_data_integration import ExternalStatusDataIntegration

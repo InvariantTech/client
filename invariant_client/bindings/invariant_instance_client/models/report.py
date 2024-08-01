@@ -7,14 +7,15 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-import datetime
-from typing import Union
 from typing import Dict
+import datetime
 from dateutil.parser import isoparse
+from typing import Union
 
 if TYPE_CHECKING:
-    from ..models.poc_report_data import POCReportData
     from ..models.snapshot_report_data import SnapshotReportData
+    from ..models.report_metadata import ReportMetadata
+    from ..models.poc_report_data import POCReportData
 
 
 T = TypeVar("T", bound="Report")
@@ -26,13 +27,17 @@ class Report:
     Attributes:
         uuid (str):
         organization_uuid (str):
+        network_uuid (str):
         reports (Union['POCReportData', 'SnapshotReportData']):
+        metadata (ReportMetadata):
         created_at (datetime.datetime):
     """
 
     uuid: str
     organization_uuid: str
+    network_uuid: str
     reports: Union["POCReportData", "SnapshotReportData"]
+    metadata: "ReportMetadata"
     created_at: datetime.datetime
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -41,6 +46,7 @@ class Report:
 
         uuid = self.uuid
         organization_uuid = self.organization_uuid
+        network_uuid = self.network_uuid
         reports: Dict[str, Any]
 
         if isinstance(self.reports, SnapshotReportData):
@@ -48,6 +54,8 @@ class Report:
 
         else:
             reports = self.reports.to_dict()
+
+        metadata = self.metadata.to_dict()
 
         created_at = self.created_at.isoformat()
 
@@ -57,7 +65,9 @@ class Report:
             {
                 "uuid": uuid,
                 "organization_uuid": organization_uuid,
+                "network_uuid": network_uuid,
                 "reports": reports,
+                "metadata": metadata,
                 "created_at": created_at,
             }
         )
@@ -66,13 +76,16 @@ class Report:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.poc_report_data import POCReportData
         from ..models.snapshot_report_data import SnapshotReportData
+        from ..models.report_metadata import ReportMetadata
+        from ..models.poc_report_data import POCReportData
 
         d = src_dict.copy()
         uuid = d.pop("uuid")
 
         organization_uuid = d.pop("organization_uuid")
+
+        network_uuid = d.pop("network_uuid")
 
         def _parse_reports(
             data: object,
@@ -93,12 +106,16 @@ class Report:
 
         reports = _parse_reports(d.pop("reports"))
 
+        metadata = ReportMetadata.from_dict(d.pop("metadata"))
+
         created_at = isoparse(d.pop("created_at"))
 
         report = cls(
             uuid=uuid,
             organization_uuid=organization_uuid,
+            network_uuid=network_uuid,
             reports=reports,
+            metadata=metadata,
             created_at=created_at,
         )
 

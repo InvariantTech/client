@@ -112,7 +112,6 @@ class AccessCredential:
             base_url = base_url or DOMAIN_NAME
             client = pysdk.InvariantLogin(settings={}, creds=creds, base_url=base_url, verify_ssl=verify_ssl)
             try:
-                client.get_instances() # Will throw if refresh token is no good
                 sdk = client.to_instance_sdk(verify_ssl)
                 return sdk.creds
             except RemoteError as r_error:
@@ -173,6 +172,8 @@ class Invariant:
     def upload_snapshot(
             self,
             source: 'Union[IO, BinaryIO]',
+            network: Optional[str] = None,
+            role: Optional[str] = None,
             compare_to: Optional[str] = None) -> models.UploadSnapshotResponse:
         """Zip and upload the current folder. Display a summary of processing results when complete."""
         response = upload_snapshot_organization_name_api_v_1_uploadsnapshot_post(
@@ -184,7 +185,9 @@ class Invariant:
                     file_name="snapshot_upload.zip",
                     mime_type="application/zip"
                 )
-            ))
+            ),
+            network=network,
+            role=role)
         response = response.parsed
         # TODO idiom should be to examine error responses by status code as we do in the UI
         # Note that DNS NX_DOMAIN error actually raises httpx.ConnectError (-2: Name or service not known) at request time
@@ -212,8 +215,25 @@ class Invariant:
             raise RemoteError(response)
         return response
 
-    def list_snapshots(self) -> models.ListReportsResponse:
-        response = list_reports_organization_name_api_v_1_reports_get(self.creds.organization_name, client=self.client)
+    def list_snapshots(
+            self,
+            filter_session: bool = None,
+            filter_net: str = None,
+            filter_role: str = None,
+            limit: int = None) -> models.ListReportsResponse:
+        kwargs = {}
+        if filter_session:
+            kwargs['filter_session'] = 1
+        if filter_net:
+            kwargs['filter_net'] = filter_net
+        if filter_role:
+            kwargs['filter_role'] = filter_role
+        if limit:
+            kwargs['limit'] = limit
+        response = list_reports_organization_name_api_v_1_reports_get(
+            self.creds.organization_name,
+            client=self.client,
+            **kwargs)
         response = response.parsed
         if not response:
             raise RemoteError(f"Unable to connect to {self.base_url}")

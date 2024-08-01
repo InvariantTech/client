@@ -4,24 +4,72 @@ from typing import Any, Dict, Optional, Union
 import httpx
 
 from ...client import AuthenticatedClient, Client
-from ...types import Response
+from ...types import Response, UNSET
 from ... import errors
 
-from ...models.validation_error_response import ValidationErrorResponse
-from ...models.list_reports_response import ListReportsResponse
+from ...types import UNSET, Unset
 from ...models.base_error_response import BaseErrorResponse
-from ...models.challenge_response import ChallengeResponse
 from typing import Dict
+from ...models.list_reports_response import ListReportsResponse
+from ...models.challenge_response import ChallengeResponse
+from typing import Union
+from typing import Union
+from ...models.validation_error_response import ValidationErrorResponse
 
 
 def _get_kwargs(
     organization_name: str,
+    *,
+    filter_session: Union[None, Unset, int] = 0,
+    filter_net: Union[None, Unset, str] = UNSET,
+    filter_role: Union[None, Unset, str] = UNSET,
+    limit: Union[None, Unset, int] = 0,
 ) -> Dict[str, Any]:
+    params: Dict[str, Any] = {}
+    json_filter_session: Union[None, Unset, int]
+    if isinstance(filter_session, Unset):
+        json_filter_session = UNSET
+
+    else:
+        json_filter_session = filter_session
+
+    params["filter_session"] = json_filter_session
+
+    json_filter_net: Union[None, Unset, str]
+    if isinstance(filter_net, Unset):
+        json_filter_net = UNSET
+
+    else:
+        json_filter_net = filter_net
+
+    params["filter_net"] = json_filter_net
+
+    json_filter_role: Union[None, Unset, str]
+    if isinstance(filter_role, Unset):
+        json_filter_role = UNSET
+
+    else:
+        json_filter_role = filter_role
+
+    params["filter_role"] = json_filter_role
+
+    json_limit: Union[None, Unset, int]
+    if isinstance(limit, Unset):
+        json_limit = UNSET
+
+    else:
+        json_limit = limit
+
+    params["limit"] = json_limit
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
     return {
         "method": "get",
         "url": "/{organization_name}/api/v1/reports/".format(
             organization_name=organization_name,
         ),
+        "params": params,
     }
 
 
@@ -79,6 +127,10 @@ def sync_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
+    filter_session: Union[None, Unset, int] = 0,
+    filter_net: Union[None, Unset, str] = UNSET,
+    filter_role: Union[None, Unset, str] = UNSET,
+    limit: Union[None, Unset, int] = 0,
 ) -> Response[
     Union[
         BaseErrorResponse,
@@ -87,10 +139,15 @@ def sync_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization.
+    """Lists all reports for an organization. Note that filter_session is not compatible with other
+    filters.
 
     Args:
         organization_name (str):
+        filter_session (Union[None, Unset, int]):
+        filter_net (Union[None, Unset, str]):
+        filter_role (Union[None, Unset, str]):
+        limit (Union[None, Unset, int]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -102,6 +159,10 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
+        filter_session=filter_session,
+        filter_net=filter_net,
+        filter_role=filter_role,
+        limit=limit,
     )
 
     response = client.get_httpx_client().request(
@@ -115,6 +176,10 @@ def sync(
     organization_name: str,
     *,
     client: AuthenticatedClient,
+    filter_session: Union[None, Unset, int] = 0,
+    filter_net: Union[None, Unset, str] = UNSET,
+    filter_role: Union[None, Unset, str] = UNSET,
+    limit: Union[None, Unset, int] = 0,
 ) -> Optional[
     Union[
         BaseErrorResponse,
@@ -123,10 +188,15 @@ def sync(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization.
+    """Lists all reports for an organization. Note that filter_session is not compatible with other
+    filters.
 
     Args:
         organization_name (str):
+        filter_session (Union[None, Unset, int]):
+        filter_net (Union[None, Unset, str]):
+        filter_role (Union[None, Unset, str]):
+        limit (Union[None, Unset, int]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -139,6 +209,10 @@ def sync(
     return sync_detailed(
         organization_name=organization_name,
         client=client,
+        filter_session=filter_session,
+        filter_net=filter_net,
+        filter_role=filter_role,
+        limit=limit,
     ).parsed
 
 
@@ -146,6 +220,10 @@ async def asyncio_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
+    filter_session: Union[None, Unset, int] = 0,
+    filter_net: Union[None, Unset, str] = UNSET,
+    filter_role: Union[None, Unset, str] = UNSET,
+    limit: Union[None, Unset, int] = 0,
 ) -> Response[
     Union[
         BaseErrorResponse,
@@ -154,10 +232,15 @@ async def asyncio_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization.
+    """Lists all reports for an organization. Note that filter_session is not compatible with other
+    filters.
 
     Args:
         organization_name (str):
+        filter_session (Union[None, Unset, int]):
+        filter_net (Union[None, Unset, str]):
+        filter_role (Union[None, Unset, str]):
+        limit (Union[None, Unset, int]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -169,6 +252,10 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
+        filter_session=filter_session,
+        filter_net=filter_net,
+        filter_role=filter_role,
+        limit=limit,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -180,6 +267,10 @@ async def asyncio(
     organization_name: str,
     *,
     client: AuthenticatedClient,
+    filter_session: Union[None, Unset, int] = 0,
+    filter_net: Union[None, Unset, str] = UNSET,
+    filter_role: Union[None, Unset, str] = UNSET,
+    limit: Union[None, Unset, int] = 0,
 ) -> Optional[
     Union[
         BaseErrorResponse,
@@ -188,10 +279,15 @@ async def asyncio(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization.
+    """Lists all reports for an organization. Note that filter_session is not compatible with other
+    filters.
 
     Args:
         organization_name (str):
+        filter_session (Union[None, Unset, int]):
+        filter_net (Union[None, Unset, str]):
+        filter_role (Union[None, Unset, str]):
+        limit (Union[None, Unset, int]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -205,5 +301,9 @@ async def asyncio(
         await asyncio_detailed(
             organization_name=organization_name,
             client=client,
+            filter_session=filter_session,
+            filter_net=filter_net,
+            filter_role=filter_role,
+            limit=limit,
         )
     ).parsed

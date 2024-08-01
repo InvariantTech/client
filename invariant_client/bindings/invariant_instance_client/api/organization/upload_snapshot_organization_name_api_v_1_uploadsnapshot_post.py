@@ -4,25 +4,51 @@ from typing import Any, Dict, Optional, Union, cast
 import httpx
 
 from ...client import AuthenticatedClient, Client
-from ...types import Response
+from ...types import Response, UNSET
 from ... import errors
 
-from ...models.validation_error_response import ValidationErrorResponse
+from ...types import UNSET, Unset
 from ...models.base_error_response import BaseErrorResponse
+from typing import Dict
 from ...models.body_upload_snapshot_organization_name_api_v1_uploadsnapshot_post import (
     BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
 )
 from ...models.upload_snapshot_response import UploadSnapshotResponse
 from ...models.challenge_response import ChallengeResponse
+from typing import Union
+from typing import cast, Union
 from typing import cast
-from typing import Dict
+from ...models.validation_error_response import ValidationErrorResponse
 
 
 def _get_kwargs(
     organization_name: str,
     *,
     multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    network: Union[None, Unset, str] = UNSET,
+    role: Union[None, Unset, str] = UNSET,
 ) -> Dict[str, Any]:
+    params: Dict[str, Any] = {}
+    json_network: Union[None, Unset, str]
+    if isinstance(network, Unset):
+        json_network = UNSET
+
+    else:
+        json_network = network
+
+    params["network"] = json_network
+
+    json_role: Union[None, Unset, str]
+    if isinstance(role, Unset):
+        json_role = UNSET
+
+    else:
+        json_role = role
+
+    params["role"] = json_role
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
     multipart_multipart_data = multipart_data.to_multipart()
 
     return {
@@ -31,6 +57,7 @@ def _get_kwargs(
             organization_name=organization_name,
         ),
         "files": multipart_multipart_data,
+        "params": params,
     }
 
 
@@ -94,6 +121,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    network: Union[None, Unset, str] = UNSET,
+    role: Union[None, Unset, str] = UNSET,
 ) -> Response[
     Union[
         Any,
@@ -107,6 +136,8 @@ def sync_detailed(
 
     Args:
         organization_name (str):
+        network (Union[None, Unset, str]):
+        role (Union[None, Unset, str]):
         multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
@@ -120,6 +151,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         organization_name=organization_name,
         multipart_data=multipart_data,
+        network=network,
+        role=role,
     )
 
     response = client.get_httpx_client().request(
@@ -134,6 +167,8 @@ def sync(
     *,
     client: AuthenticatedClient,
     multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    network: Union[None, Unset, str] = UNSET,
+    role: Union[None, Unset, str] = UNSET,
 ) -> Optional[
     Union[
         Any,
@@ -147,6 +182,8 @@ def sync(
 
     Args:
         organization_name (str):
+        network (Union[None, Unset, str]):
+        role (Union[None, Unset, str]):
         multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
@@ -161,6 +198,8 @@ def sync(
         organization_name=organization_name,
         client=client,
         multipart_data=multipart_data,
+        network=network,
+        role=role,
     ).parsed
 
 
@@ -169,6 +208,8 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    network: Union[None, Unset, str] = UNSET,
+    role: Union[None, Unset, str] = UNSET,
 ) -> Response[
     Union[
         Any,
@@ -182,6 +223,8 @@ async def asyncio_detailed(
 
     Args:
         organization_name (str):
+        network (Union[None, Unset, str]):
+        role (Union[None, Unset, str]):
         multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
@@ -195,6 +238,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         organization_name=organization_name,
         multipart_data=multipart_data,
+        network=network,
+        role=role,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -207,6 +252,8 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    network: Union[None, Unset, str] = UNSET,
+    role: Union[None, Unset, str] = UNSET,
 ) -> Optional[
     Union[
         Any,
@@ -220,6 +267,8 @@ async def asyncio(
 
     Args:
         organization_name (str):
+        network (Union[None, Unset, str]):
+        role (Union[None, Unset, str]):
         multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
@@ -235,5 +284,7 @@ async def asyncio(
             organization_name=organization_name,
             client=client,
             multipart_data=multipart_data,
+            network=network,
+            role=role,
         )
     ).parsed

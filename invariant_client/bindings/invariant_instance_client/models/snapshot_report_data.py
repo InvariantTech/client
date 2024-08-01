@@ -8,15 +8,15 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
-from typing import cast, Union
-from typing import cast
-from typing import Union
 from typing import Dict
+from typing import Union
+from typing import cast, Union
+from ..types import UNSET, Unset
+from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.snapshot_report_data_files import SnapshotReportDataFiles
     from ..models.comparison_reportdata import ComparisonReportdata
+    from ..models.snapshot_report_data_files import SnapshotReportDataFiles
 
 
 T = TypeVar("T", bound="SnapshotReportData")
@@ -88,8 +88,8 @@ class SnapshotReportData:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.snapshot_report_data_files import SnapshotReportDataFiles
         from ..models.comparison_reportdata import ComparisonReportdata
+        from ..models.snapshot_report_data_files import SnapshotReportDataFiles
 
         d = src_dict.copy()
         files = SnapshotReportDataFiles.from_dict(d.pop("files"))

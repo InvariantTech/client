@@ -105,6 +105,30 @@ def parse_args():
         help='An Invariant project root directory. Default is current directory.',
     )
 
+    command_run.add_argument(
+        '--network',
+        dest='network',
+        help='The name of the network being evaluated.',
+    )
+
+    command_run.add_argument(
+        '--role',
+        dest='role',
+        help='The network role being evaluated, e.g. "live", "intended".',
+    )
+
+    command_snapshots.add_argument(
+        '--network',
+        dest='network',
+        help='Filter snapshots by network.',
+    )
+
+    command_snapshots.add_argument(
+        '--role',
+        dest='role',
+        help='Filter by network role being evaluated, e.g. "live", "intended".',
+    )
+
     command_show.add_argument(
         'file_name',
         nargs="?",
@@ -302,6 +326,9 @@ def EntryPoint_inner(args, command, format, debug):
 
     if command == "run":
         target = getattr(args, 'target') or '.'
+        network = getattr(args, 'network') or ''
+        role = getattr(args, 'role') or ''
+
         bytes = None
         if pathlib.Path(target).is_file():
             with open(target, "rb") as f:
@@ -318,7 +345,7 @@ def EntryPoint_inner(args, command, format, debug):
         try:
             exec_uuid = retry_call(
                 upload_snapshot,
-                fargs=[sdk, bytes, compare_to],
+                fargs=[sdk, bytes, compare_to, network, role],
                 exceptions=UploadTerminationError,
                 tries=3,
                 delay=2,
@@ -356,7 +383,11 @@ def EntryPoint_inner(args, command, format, debug):
                 display.snapshot_errors(errors_response, format)
 
     elif command == "snapshots":
-        snapshots = sdk.list_snapshots()
+        network = getattr(args, 'network') or None
+        role = getattr(args, 'role') or None
+        snapshots = sdk.list_snapshots(
+            filter_net=network,
+            filter_role=role)
         if format == OutputFormat.JSON:
             print_json(data=asdict(snapshots, value_serializer=serialize), default=vars)
         elif format == OutputFormat.FAST_JSON:
@@ -377,7 +408,11 @@ def EntryPoint_inner(args, command, format, debug):
         if not snapshot_name:
             snapshot_name = env_snapshot
         if not snapshot_name:
-            raise ValueError(f"Missing --snapshot <name> argument or INVARIANT_SNAPSHOT environment variable.")
+            # NOTE: API Token users should explicitly set --snapshot or INVARIANT_SNAPSHOT
+            last_snapshot = sdk.list_snapshots(filter_session=True, limit=1)
+            if not last_snapshot:
+                raise ValueError(f"Use --snapshot <name> argument or INVARIANT_SNAPSHOT environment variable to select a snapshot.")
+            snapshot_name = last_snapshot.reports[0].uuid
 
         try:
             exec_uuid = uuid.UUID(snapshot_name, version=4)
@@ -496,10 +531,12 @@ def EntryPoint_inner(args, command, format, debug):
         print(f"Unknown command {command}", file=sys.stderr)
 
 
-def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str) -> str:
+def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, network: str, role: str) -> str:
     print("Uploading snapshot...")
     exec_uuid = sdk.upload_snapshot(
         source=bytes,
+        network=network,
+        role=role,
         compare_to=compare_to)
     exec_uuid = exec_uuid.exec_uuid
     end_time = datetime.datetime.now() + datetime.timedelta(weeks=1)

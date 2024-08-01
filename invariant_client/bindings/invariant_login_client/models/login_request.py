@@ -8,16 +8,16 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Dict
 from ..types import UNSET, Unset
-from typing import cast, Union
-from typing import Union
 from typing import cast
+from typing import Dict
+from typing import Union
+from typing import cast, Union
 
 if TYPE_CHECKING:
+    from ..models.reset_pin_request import ResetPINRequest
     from ..models.validation_request import ValidationRequest
     from ..models.new_password_request import NewPasswordRequest
-    from ..models.reset_pin_request import ResetPINRequest
     from ..models.reset_request import ResetRequest
     from ..models.email_password_login import EmailPasswordLogin
 
@@ -45,9 +45,9 @@ class LoginRequest:
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        from ..models.reset_pin_request import ResetPINRequest
         from ..models.validation_request import ValidationRequest
         from ..models.new_password_request import NewPasswordRequest
-        from ..models.reset_pin_request import ResetPINRequest
         from ..models.reset_request import ResetRequest
         from ..models.email_password_login import EmailPasswordLogin
 
@@ -129,9 +129,9 @@ class LoginRequest:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.reset_pin_request import ResetPINRequest
         from ..models.validation_request import ValidationRequest
         from ..models.new_password_request import NewPasswordRequest
-        from ..models.reset_pin_request import ResetPINRequest
         from ..models.reset_request import ResetRequest
         from ..models.email_password_login import EmailPasswordLogin
 

@@ -3,7 +3,6 @@
 from .base_error_response import BaseErrorResponse
 from .challenge_response import ChallengeResponse
 from .challenge_response_challenge import ChallengeResponseChallenge
-from .check_invite_response import CheckInviteResponse
 from .consume_client_login_session_response import ConsumeClientLoginSessionResponse
 from .create_client_login_session_response import CreateClientLoginSessionResponse
 from .email_check_request import EmailCheckRequest
@@ -27,7 +26,6 @@ __all__ = (
     "BaseErrorResponse",
     "ChallengeResponse",
     "ChallengeResponseChallenge",
-    "CheckInviteResponse",
     "ConsumeClientLoginSessionResponse",
     "CreateClientLoginSessionResponse",
     "EmailCheckRequest",

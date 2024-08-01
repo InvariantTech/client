@@ -8,9 +8,9 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import Literal, Union
 from typing import cast, Union
+from ..types import UNSET, Unset
 
 
 T = TypeVar("T", bound="ConsumeClientLoginSessionResponse")
