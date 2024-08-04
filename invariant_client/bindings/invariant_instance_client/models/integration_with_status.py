@@ -8,8 +8,10 @@ from attrs import field as _attrs_field
 
 
 from typing import Dict
+from typing import List
 
 if TYPE_CHECKING:
+    from ..models.repository import Repository
     from ..models.integration import Integration
     from ..models.external_status_integration import ExternalStatusIntegration
 
@@ -22,15 +24,23 @@ class IntegrationWithStatus:
     """
     Attributes:
         integration (Integration):
+        repositories (List['Repository']):
         status (ExternalStatusIntegration):
     """
 
     integration: "Integration"
+    repositories: List["Repository"]
     status: "ExternalStatusIntegration"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         integration = self.integration.to_dict()
+
+        repositories = []
+        for repositories_item_data in self.repositories:
+            repositories_item = repositories_item_data.to_dict()
+
+            repositories.append(repositories_item)
 
         status = self.status.to_dict()
 
@@ -39,6 +49,7 @@ class IntegrationWithStatus:
         field_dict.update(
             {
                 "integration": integration,
+                "repositories": repositories,
                 "status": status,
             }
         )
@@ -47,16 +58,25 @@ class IntegrationWithStatus:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.repository import Repository
         from ..models.integration import Integration
         from ..models.external_status_integration import ExternalStatusIntegration
 
         d = src_dict.copy()
         integration = Integration.from_dict(d.pop("integration"))
 
+        repositories = []
+        _repositories = d.pop("repositories")
+        for repositories_item_data in _repositories:
+            repositories_item = Repository.from_dict(repositories_item_data)
+
+            repositories.append(repositories_item)
+
         status = ExternalStatusIntegration.from_dict(d.pop("status"))
 
         integration_with_status = cls(
             integration=integration,
+            repositories=repositories,
             status=status,
         )
 

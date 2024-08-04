@@ -7,14 +7,14 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...types import UNSET, Unset
+from typing import Union
+from typing import Union
 from ...models.base_error_response import BaseErrorResponse
-from typing import Dict
 from ...models.list_reports_response import ListReportsResponse
-from ...models.challenge_response import ChallengeResponse
-from typing import Union
-from typing import Union
 from ...models.validation_error_response import ValidationErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from ...types import UNSET, Unset
+from typing import Dict
 
 
 def _get_kwargs(

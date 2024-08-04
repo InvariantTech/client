@@ -7,18 +7,18 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...types import UNSET, Unset
-from ...models.base_error_response import BaseErrorResponse
-from typing import Dict
+from typing import cast, Union
 from ...models.body_upload_snapshot_organization_name_api_v1_uploadsnapshot_post import (
     BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
 )
-from ...models.upload_snapshot_response import UploadSnapshotResponse
-from ...models.challenge_response import ChallengeResponse
 from typing import Union
-from typing import cast, Union
-from typing import cast
+from ...models.base_error_response import BaseErrorResponse
 from ...models.validation_error_response import ValidationErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from ...types import UNSET, Unset
+from typing import Dict
+from ...models.upload_snapshot_response import UploadSnapshotResponse
+from typing import cast
 
 
 def _get_kwargs(

@@ -8,13 +8,13 @@ from ...types import Response
 from ... import errors
 
 from ...models.base_error_response import BaseErrorResponse
-from typing import Dict
 from ...models.challenge_response import ChallengeResponse
 from ...models.create_integration_request_github_app_installation import (
     CreateIntegrationRequestGithubAppInstallation,
 )
-from typing import cast
 from ...models.validation_error_response import ValidationErrorResponse
+from typing import Dict
+from typing import cast
 
 
 def _get_kwargs(

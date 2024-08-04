@@ -8,9 +8,9 @@ from ...types import Response
 from ... import errors
 
 from typing import List
-from typing import Dict
 from ...models.user import User
 from ...models.challenge_response import ChallengeResponse
+from typing import Dict
 from ...models.validation_error_response import ValidationErrorResponse
 
 

@@ -9,9 +9,9 @@ import json
 
 from ..types import UNSET
 
-from ..types import File, FileJsonType
 from typing import List
 from typing import Union
+from ..types import File, FileJsonType
 from io import BytesIO
 
 

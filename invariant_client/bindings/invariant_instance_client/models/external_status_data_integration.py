@@ -7,16 +7,16 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
+from typing import cast, Union
 import datetime
+from typing import Literal
+from typing import Dict
 from dateutil.parser import isoparse
 from ..models.generic_state import GenericState
-from typing import Literal
-from typing import cast, Union
 from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.base_error_response import BaseErrorResponse
+    from ..models.error_info import ErrorInfo
 
 
 T = TypeVar("T", bound="ExternalStatusDataIntegration")
@@ -28,27 +28,27 @@ class ExternalStatusDataIntegration:
     Attributes:
         type (Literal['integration']):
         state (GenericState):
-        error (Union['BaseErrorResponse', None]):
+        error (Union['ErrorInfo', None]):
         last_used_at (datetime.datetime):
         modified_at (datetime.datetime):
     """
 
     type: Literal["integration"]
     state: GenericState
-    error: Union["BaseErrorResponse", None]
+    error: Union["ErrorInfo", None]
     last_used_at: datetime.datetime
     modified_at: datetime.datetime
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.base_error_response import BaseErrorResponse
+        from ..models.error_info import ErrorInfo
 
         type = self.type
         state = self.state.value
 
         error: Union[Dict[str, Any], None]
 
-        if isinstance(self.error, BaseErrorResponse):
+        if isinstance(self.error, ErrorInfo):
             error = self.error.to_dict()
 
         else:
@@ -74,25 +74,25 @@ class ExternalStatusDataIntegration:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.base_error_response import BaseErrorResponse
+        from ..models.error_info import ErrorInfo
 
         d = src_dict.copy()
         type = d.pop("type")
 
         state = GenericState(d.pop("state"))
 
-        def _parse_error(data: object) -> Union["BaseErrorResponse", None]:
+        def _parse_error(data: object) -> Union["ErrorInfo", None]:
             if data is None:
                 return data
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                error_type_0 = BaseErrorResponse.from_dict(data)
+                error_type_0 = ErrorInfo.from_dict(data)
 
                 return error_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union["BaseErrorResponse", None], data)
+            return cast(Union["ErrorInfo", None], data)
 
         error = _parse_error(d.pop("error"))
 
