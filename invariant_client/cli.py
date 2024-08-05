@@ -1,5 +1,6 @@
 import argparse
 import datetime
+from importlib.metadata import version
 import io
 import json
 import logging
@@ -253,8 +254,7 @@ def EntryPoint_inner(args, command, format, debug):
     creds = None
 
     if args.version:
-        with open(pathlib.Path(__file__).parent.parent.joinpath("VERSION"), "r") as f:
-            print(f"client: {f.read().strip()}")
+        print(f"client: {version('invariant-client')}")
         print(f"server: {VersionClient(invariant_domain, ssl.create_default_context()).get_version()}")
         return
 
