@@ -10,8 +10,8 @@ from ... import errors
 from ...models.create_client_login_session_response import (
     CreateClientLoginSessionResponse,
 )
-from ...models.base_error_response import BaseErrorResponse
 from typing import Dict
+from ...models.base_error_response import BaseErrorResponse
 from ...models.validation_error_response import ValidationErrorResponse
 
 

@@ -7,7 +7,6 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.flags_response import FlagsResponse
 from ...models.challenge_response import ChallengeResponse
 from typing import Dict
 from ...models.validation_error_response import ValidationErrorResponse
@@ -19,8 +18,8 @@ def _get_kwargs(
     organization_name: str,
 ) -> Dict[str, Any]:
     return {
-        "method": "get",
-        "url": "/{organization_name}/api/v1/flags".format(
+        "method": "post",
+        "url": "/{organization_name}/api/v1/ui/interact".format(
             organization_name=organization_name,
         ),
     }
@@ -29,25 +28,15 @@ def _get_kwargs(
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.OK:
-        response_200 = FlagsResponse.from_dict(response.json())
-
-        return response_200
+    if response.status_code == HTTPStatus.NO_CONTENT:
+        response_204 = cast(Any, None)
+        return response_204
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.NOT_MODIFIED:
-        response_304 = cast(Any, None)
-        return response_304
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         response_401 = ChallengeResponse.from_dict(response.json())
 
@@ -65,13 +54,7 @@ def _parse_response(
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Response[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -86,15 +69,9 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Get settings for the current entity.
+    """Extend interactive session
 
     Args:
         organization_name (str):
@@ -104,7 +81,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]]
+        Response[Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
@@ -123,15 +100,9 @@ def sync(
     *,
     client: AuthenticatedClient,
 ) -> Optional[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Get settings for the current entity.
+    """Extend interactive session
 
     Args:
         organization_name (str):
@@ -141,7 +112,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]
+        Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
     """
 
     return sync_detailed(
@@ -155,15 +126,9 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 ) -> Response[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Get settings for the current entity.
+    """Extend interactive session
 
     Args:
         organization_name (str):
@@ -173,7 +138,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]]
+        Response[Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs(
@@ -190,15 +155,9 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 ) -> Optional[
-    Union[
-        Any,
-        BaseErrorResponse,
-        ChallengeResponse,
-        FlagsResponse,
-        ValidationErrorResponse,
-    ]
+    Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Get settings for the current entity.
+    """Extend interactive session
 
     Args:
         organization_name (str):
@@ -208,7 +167,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Any, BaseErrorResponse, ChallengeResponse, FlagsResponse, ValidationErrorResponse]
+        Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
     """
 
     return (

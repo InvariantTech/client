@@ -367,8 +367,7 @@ def EntryPoint_inner(args, command, format, debug):
             else:
                 display.snapshot_summary_table(response, format)
 
-            print(f"\nRun 'invariant show <file> --snapshot {exec_uuid}' to examine any file,")
-            print(f"or run 'export INVARIANT_SNAPSHOT={exec_uuid}' to skip the --snapshot argument.")
+            print(f"\nRun 'invariant show <file>' to examine any file.")
 
             if response.summary['errors'] > 0:
                 print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
@@ -388,20 +387,27 @@ def EntryPoint_inner(args, command, format, debug):
         snapshots = sdk.list_snapshots(
             filter_net=network,
             filter_role=role)
+        snapshots_dict = {report.uuid: {"report": asdict(report, value_serializer=serialize), "extras": None} for report in snapshots.reports}
+        for extras in snapshots.with_extras:
+            record = snapshots_dict.get(extras.report_uuid, None)
+            if not record:
+                continue
+            record["extras"] = asdict(extras, value_serializer=serialize)
+        snapshots = list(snapshots_dict.values())
         if format == OutputFormat.JSON:
-            print_json(data=asdict(snapshots, value_serializer=serialize), default=vars)
+            print_json(data=snapshots, default=vars)
         elif format == OutputFormat.FAST_JSON:
-            print(json.dumps(asdict(snapshots, value_serializer=serialize), default=vars))
-        elif format == OutputFormat.TSV:
-            reports = asdict(snapshots)
-            reports = reports['reports']
-            print(tabulate(reports, headers='keys', tablefmt='tsv'))
-        # if format == 'markdown':
-        #     return tabulate(result, headers='keys', tablefmt='github')
+            print(json.dumps(snapshots, default=vars))
         else:
-            reports = asdict(snapshots)
-            reports = reports['reports']
-            print(tabulate(reports, headers='keys', tablefmt='psql'))
+            report_table = []
+            skip_extras = ["errors_lines", "report_uuid", "additional_properties"]
+            if network is not None:
+                skip_extras.append("network_name")
+            for row in snapshots:
+                out = {k: v for k, v in row["report"].items() if k not in ["reports", "organization_uuid", "network_uuid", "metadata", "additional_properties"]}
+                out.update({k: v for k, v in row["extras"].items() if k not in skip_extras})
+                report_table.append(out)
+            display.print_frame(report_table, format)
 
     elif command == "show":
         snapshot_name = args.snapshot_name
@@ -506,11 +512,7 @@ def EntryPoint_inner(args, command, format, debug):
                 else:
                     display.snapshot_summary_table(response, format)
                 if format == OutputFormat.TABULATE:
-                    if env_snapshot:
-                        print(f"\nRun 'invariant show <file>' to examine any file.")
-                    else:
-                        print(f"\nRun 'invariant show <file> --snapshot {exec_uuid}' to examine any file,")
-                        print(f"or run 'export INVARIANT_SNAPSHOT={exec_uuid}' to skip the --snapshot argument.")
+                    print(f"\nRun 'invariant show <file>' to examine any file.")
 
                     if response.summary['errors'] > 0:
                         print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.", file=sys.stderr)

@@ -8,18 +8,18 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
-from typing import cast, Union
-from typing import Dict
 from typing import cast
+from typing import Union
+from typing import Dict
 from ..types import UNSET, Unset
+from typing import cast, Union
 
 if TYPE_CHECKING:
     from ..models.validation_request import ValidationRequest
     from ..models.email_password_login import EmailPasswordLogin
-    from ..models.reset_request import ResetRequest
     from ..models.new_password_request import NewPasswordRequest
     from ..models.reset_pin_request import ResetPINRequest
+    from ..models.reset_request import ResetRequest
 
 
 T = TypeVar("T", bound="LoginRequest")
@@ -47,9 +47,9 @@ class LoginRequest:
     def to_dict(self) -> Dict[str, Any]:
         from ..models.validation_request import ValidationRequest
         from ..models.email_password_login import EmailPasswordLogin
-        from ..models.reset_request import ResetRequest
         from ..models.new_password_request import NewPasswordRequest
         from ..models.reset_pin_request import ResetPINRequest
+        from ..models.reset_request import ResetRequest
 
         basic_auth: Union[Dict[str, Any], None, Unset]
         if isinstance(self.basic_auth, Unset):
@@ -131,9 +131,9 @@ class LoginRequest:
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.validation_request import ValidationRequest
         from ..models.email_password_login import EmailPasswordLogin
-        from ..models.reset_request import ResetRequest
         from ..models.new_password_request import NewPasswordRequest
         from ..models.reset_pin_request import ResetPINRequest
+        from ..models.reset_request import ResetRequest
 
         d = src_dict.copy()
 

@@ -1,6 +1,9 @@
 import enum
 import json
+import os
+import pydoc
 import sys
+from typing import Any, Iterable, Mapping
 from attr import asdict
 import pandas
 from rich import print_json
@@ -76,10 +79,11 @@ def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
             print(f"\n{prefix}    {data['title']}\n    {data['detail']}", file=sys.stderr)
 
 
-def print_frame(data: pandas.DataFrame, format: OutputFormat):
+def print_frame(data: Mapping[str, Iterable[Any]] | Iterable[Iterable[Any]], format: OutputFormat):
     if format == OutputFormat.TSV:
         print(tabulate(data, headers='keys', tablefmt='tsv'))
     elif format == OutputFormat.TABULATE:
-        print(tabulate(data, headers='keys', tablefmt='psql'))
+        os.environ["LESS"] = "-SXFRs"
+        pydoc.pager(tabulate(data, headers='keys', tablefmt='psql'))
     else:
         raise ValueError(f"Unacceptable format: {format}")

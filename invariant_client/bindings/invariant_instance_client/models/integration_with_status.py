@@ -11,9 +11,9 @@ from typing import Dict
 from typing import List
 
 if TYPE_CHECKING:
-    from ..models.repository import Repository
-    from ..models.integration import Integration
     from ..models.external_status_integration import ExternalStatusIntegration
+    from ..models.integration import Integration
+    from ..models.repository import Repository
 
 
 T = TypeVar("T", bound="IntegrationWithStatus")
@@ -58,9 +58,9 @@ class IntegrationWithStatus:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.repository import Repository
-        from ..models.integration import Integration
         from ..models.external_status_integration import ExternalStatusIntegration
+        from ..models.integration import Integration
+        from ..models.repository import Repository
 
         d = src_dict.copy()
         integration = Integration.from_dict(d.pop("integration"))

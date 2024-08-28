@@ -61,6 +61,7 @@ from .organization import Organization
 from .poc_report_data import POCReportData
 from .refresh_response import RefreshResponse
 from .report import Report
+from .report_extras import ReportExtras
 from .report_metadata import ReportMetadata
 from .report_task import ReportTask
 from .report_text_summary_request import ReportTextSummaryRequest
@@ -130,6 +131,7 @@ __all__ = (
     "POCReportData",
     "RefreshResponse",
     "Report",
+    "ReportExtras",
     "ReportMetadata",
     "ReportTask",
     "ReportTextSummaryRequest",

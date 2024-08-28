@@ -7,12 +7,12 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import cast, Union
+from dateutil.parser import isoparse
+from typing import Dict
 import datetime
 from typing import Literal
-from typing import Dict
-from dateutil.parser import isoparse
 from ..models.generic_state import GenericState
+from typing import cast, Union
 from typing import cast
 
 if TYPE_CHECKING:

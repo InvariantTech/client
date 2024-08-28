@@ -8,13 +8,13 @@ from ...types import Response, UNSET
 from ... import errors
 
 from typing import Union
-from typing import Union
-from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from typing import Dict
 from ...models.list_reports_response import ListReportsResponse
 from ...models.validation_error_response import ValidationErrorResponse
-from ...models.challenge_response import ChallengeResponse
+from ...models.base_error_response import BaseErrorResponse
 from ...types import UNSET, Unset
-from typing import Dict
+from typing import Union
 
 
 def _get_kwargs(
@@ -22,7 +22,6 @@ def _get_kwargs(
     *,
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
-    filter_role: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
@@ -43,15 +42,6 @@ def _get_kwargs(
         json_filter_net = filter_net
 
     params["filter_net"] = json_filter_net
-
-    json_filter_role: Union[None, Unset, str]
-    if isinstance(filter_role, Unset):
-        json_filter_role = UNSET
-
-    else:
-        json_filter_role = filter_role
-
-    params["filter_role"] = json_filter_role
 
     json_limit: Union[None, Unset, int]
     if isinstance(limit, Unset):
@@ -129,7 +119,6 @@ def sync_detailed(
     client: AuthenticatedClient,
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
-    filter_role: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
 ) -> Response[
     Union[
@@ -146,7 +135,6 @@ def sync_detailed(
         organization_name (str):
         filter_session (Union[None, Unset, int]):
         filter_net (Union[None, Unset, str]):
-        filter_role (Union[None, Unset, str]):
         limit (Union[None, Unset, int]):
 
     Raises:
@@ -161,7 +149,6 @@ def sync_detailed(
         organization_name=organization_name,
         filter_session=filter_session,
         filter_net=filter_net,
-        filter_role=filter_role,
         limit=limit,
     )
 
@@ -178,7 +165,6 @@ def sync(
     client: AuthenticatedClient,
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
-    filter_role: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
 ) -> Optional[
     Union[
@@ -195,7 +181,6 @@ def sync(
         organization_name (str):
         filter_session (Union[None, Unset, int]):
         filter_net (Union[None, Unset, str]):
-        filter_role (Union[None, Unset, str]):
         limit (Union[None, Unset, int]):
 
     Raises:
@@ -211,7 +196,6 @@ def sync(
         client=client,
         filter_session=filter_session,
         filter_net=filter_net,
-        filter_role=filter_role,
         limit=limit,
     ).parsed
 
@@ -222,7 +206,6 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
-    filter_role: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
 ) -> Response[
     Union[
@@ -239,7 +222,6 @@ async def asyncio_detailed(
         organization_name (str):
         filter_session (Union[None, Unset, int]):
         filter_net (Union[None, Unset, str]):
-        filter_role (Union[None, Unset, str]):
         limit (Union[None, Unset, int]):
 
     Raises:
@@ -254,7 +236,6 @@ async def asyncio_detailed(
         organization_name=organization_name,
         filter_session=filter_session,
         filter_net=filter_net,
-        filter_role=filter_role,
         limit=limit,
     )
 
@@ -269,7 +250,6 @@ async def asyncio(
     client: AuthenticatedClient,
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
-    filter_role: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
 ) -> Optional[
     Union[
@@ -286,7 +266,6 @@ async def asyncio(
         organization_name (str):
         filter_session (Union[None, Unset, int]):
         filter_net (Union[None, Unset, str]):
-        filter_role (Union[None, Unset, str]):
         limit (Union[None, Unset, int]):
 
     Raises:
@@ -303,7 +282,6 @@ async def asyncio(
             client=client,
             filter_session=filter_session,
             filter_net=filter_net,
-            filter_role=filter_role,
             limit=limit,
         )
     ).parsed

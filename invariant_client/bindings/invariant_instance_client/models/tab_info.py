@@ -7,13 +7,13 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import cast, Union
 from typing import Dict
+from typing import cast, Union
 from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
     from ..models.tab_info_state_type_0 import TabInfoStateType0
+    from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
 
 
 T = TypeVar("T", bound="TabInfo")
@@ -38,8 +38,8 @@ class TabInfo:
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
         from ..models.tab_info_state_type_0 import TabInfoStateType0
+        from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
 
         urn = self.urn
         active = self.active
@@ -79,8 +79,8 @@ class TabInfo:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
         from ..models.tab_info_state_type_0 import TabInfoStateType0
+        from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
 
         d = src_dict.copy()
         urn = d.pop("urn")

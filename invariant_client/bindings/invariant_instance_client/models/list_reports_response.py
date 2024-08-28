@@ -11,6 +11,7 @@ from typing import Dict
 from typing import List
 
 if TYPE_CHECKING:
+    from ..models.report_extras import ReportExtras
     from ..models.report import Report
 
 
@@ -22,9 +23,11 @@ class ListReportsResponse:
     """
     Attributes:
         reports (List['Report']):
+        with_extras (List['ReportExtras']):
     """
 
     reports: List["Report"]
+    with_extras: List["ReportExtras"]
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -34,11 +37,18 @@ class ListReportsResponse:
 
             reports.append(reports_item)
 
+        with_extras = []
+        for with_extras_item_data in self.with_extras:
+            with_extras_item = with_extras_item_data.to_dict()
+
+            with_extras.append(with_extras_item)
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "reports": reports,
+                "with_extras": with_extras,
             }
         )
 
@@ -46,6 +56,7 @@ class ListReportsResponse:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.report_extras import ReportExtras
         from ..models.report import Report
 
         d = src_dict.copy()
@@ -56,8 +67,16 @@ class ListReportsResponse:
 
             reports.append(reports_item)
 
+        with_extras = []
+        _with_extras = d.pop("with_extras")
+        for with_extras_item_data in _with_extras:
+            with_extras_item = ReportExtras.from_dict(with_extras_item_data)
+
+            with_extras.append(with_extras_item)
+
         list_reports_response = cls(
             reports=reports,
+            with_extras=with_extras,
         )
 
         list_reports_response.additional_properties = d
