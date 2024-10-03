@@ -16,6 +16,7 @@ class OutputFormat(enum.Enum):
     JSON = enum.auto()
     TSV = enum.auto()
     FAST_JSON = enum.auto()
+    CONDENSED = enum.auto()
     # etc
 
 
@@ -29,6 +30,59 @@ def snapshot_status(response: GetReportSummaryResponse):
         print("Error: Snapshot could not be evaluated.")
     elif status == 'INCOMPLETE':
         print("Error: Snapshot evaluation did not finish.")
+
+
+# AP_KEYS = [
+#     'critical_flows_ok', 'critical_flows_violations', 'critical_flows_violations_unenforced', 'critical_flows_skipped', 'critical_flows_details', 'critical_flows_logs',
+#     'policy_ok', 'policy_violations', 'policy_violations_unenforced', 'policy_skipped', 'policy_details', 'policy_logs']
+
+
+class CondensedOutcomes(str, enum.Enum):
+    OK = "All rules passed"
+    VIOLATIONS = "Rule violations found"
+    NO_MODEL = "Could not model network"
+    NO_RULES = "No rules provided"
+    SKIPPED = "Some rules skipped"
+    ERROR = "Processing failed"
+
+    @classmethod
+    def from_GetReportSummaryResponse(cls, response: GetReportSummaryResponse):
+        """Map this response onto an outcome."""
+        # Total disaster
+        if response.status['state'] == 'FAILED':
+            return cls.ERROR
+
+        # No model could be created at all
+        summary = response.summary.to_dict()
+        if summary.get('nodes', None) is None:
+            return cls.NO_MODEL
+
+        # No rules were provided
+        if summary.get('policy_violations', None) is None:
+            return cls.NO_RULES
+
+        # Violations found
+        if summary.get('policy_violations', 0) + summary.get('critical_flows_violations', 0) > 0:
+            return cls.VIOLATIONS
+
+        # OK but some invalid rules were found
+        if summary.get('policy_skipped', 0) + summary.get('critical_flows_skipped', 0) > 0:
+            return cls.SKIPPED
+
+        # OK
+        if summary.get('policy_ok', 0) + summary.get('critical_flows_ok', 0) > 0:
+            return cls.OK
+
+        # if sum(summary.get(key, 0) for key in AP_KEYS) == 0:
+        #     return cls.NO_RULES
+        # Fall back to no-rules
+        return cls.NO_RULES
+
+
+def snapshot_condensed_status(response: GetReportSummaryResponse):
+    """Display a single message indicating the overall snapshot outcome."""
+    outcome = CondensedOutcomes.from_GetReportSummaryResponse(response)
+    print(f"outcome: {outcome.value}")
 
 
 def snapshot_summary_table(response: GetReportSummaryResponse, format: OutputFormat):
@@ -77,12 +131,12 @@ def snapshot_errors(errors: pandas.DataFrame, format: OutputFormat):
                 continue
 
             print(f"\n{prefix}    {data['title']}\n    {data['detail']}", file=sys.stderr)
-
+    print('', file=sys.stderr)
 
 def print_frame(data: Mapping[str, Iterable[Any]] | Iterable[Iterable[Any]], format: OutputFormat):
     if format == OutputFormat.TSV:
         print(tabulate(data, headers='keys', tablefmt='tsv'))
-    elif format == OutputFormat.TABULATE:
+    elif format == OutputFormat.TABULATE or format == OutputFormat.CONDENSED:
         os.environ["LESS"] = "-SXFRs"
         pydoc.pager(tabulate(data, headers='keys', tablefmt='psql'))
     else:

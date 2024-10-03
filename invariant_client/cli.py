@@ -16,7 +16,6 @@ import uuid
 from attrs import asdict
 from retry.api import retry_call
 from rich import print_json
-from tabulate import tabulate
 
 from invariant_client import auth, display, zip_util
 from invariant_client import pysdk
@@ -58,41 +57,61 @@ def parse_args():
         'show',
         description='Examine Invariant analysis results.',
         help="Examine Invariant analysis results.")
-    command_solution    = subparsers.add_parser(
-        'show_solution',
-        description='Display a suggested patch result.',
-        help="Display a suggested patch result.")
+    # command_solution    = subparsers.add_parser(
+    #     'show_solution',
+    #     description='Display a suggested patch result.',
+    #     help="Display a suggested patch result.")
     command_snapshots   = subparsers.add_parser(
         'snapshots',
         description='List prior snapshot analysis results.',
         help="List prior snapshot analysis results.")
 
-    def add_common_arguments(parser):
+    def add_debug(parser: argparse.ArgumentParser):
         parser.add_argument(
+            '--debug',
+            dest='debug',
+            action='store_true',
+            help='Enable detailed logging.',
+        )
+    add_debug(command_login)
+    add_debug(command_run)
+    add_debug(command_snapshots)
+    add_debug(command_show)
+
+    def add_common_arguments(parser: argparse.ArgumentParser, allow_tsv: bool = True, allow_condensed: bool = True):
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument(
             '--json',
             dest='json',
             action='store_true',
             help='Output data as JSON.',
         )
-        parser.add_argument(
+        group.add_argument(
             '--fast-json',
             dest='fast_json',
             action='store_true',
             help='Output data as JSON (unformatted).',
         )
-        parser.add_argument(
-            '--tsv',
-            dest='tsv',
-            action='store_true',
-            help='Output data as TSV.',
-        )
 
-    
-    add_common_arguments(command_login)
-    add_common_arguments(command_run)
-    add_common_arguments(command_snapshots)
+        if allow_tsv:
+            group.add_argument(
+                '--tsv',
+                dest='tsv',
+                action='store_true',
+                help='Output data as TSV.',
+            )
+
+        if allow_condensed:
+            group.add_argument(
+                '--condensed',
+                dest='condensed',
+                action='store_true',
+                help='Output only snapshot ID and outcome.',
+            )
+
+    add_common_arguments(command_run, allow_tsv=False)
+    add_common_arguments(command_snapshots, allow_condensed=False)
     add_common_arguments(command_show)
-    add_common_arguments(command_solution)
 
     command_run.add_argument(
         '--compare-to',
@@ -142,22 +161,15 @@ def parse_args():
         help='The snapshot to examine. If unset, environment variable INVARIANT_SNAPSHOT is used.'
     )
 
-    command_solution.add_argument(
-        'snapshot_name',
-        help='The snapshot to examine.'
-    )
+    # command_solution.add_argument(
+    #     'snapshot_name',
+    #     help='The snapshot to examine.'
+    # )
 
-    command_solution.add_argument(
-        'solution_name',
-        help='The solution to examine.'
-    )
-
-    parser.add_argument(
-        '--debug',
-        dest='debug',
-        action='store_true',
-        help='Enable detailed logging.',
-    )
+    # command_solution.add_argument(
+    #     'solution_name',
+    #     help='The solution to examine.'
+    # )
 
     parser.add_argument(
         '--version',
@@ -220,16 +232,17 @@ def EntryPoint():
         format = None
     else:
         command = getattr(args, 'command')
-
         format = OutputFormat.TABULATE
-        if getattr(args, 'json'):
+        if getattr(args, 'json', False):
             format = OutputFormat.JSON
-        elif getattr(args, 'fast_json'):
+        elif getattr(args, 'fast_json', False):
             format = OutputFormat.FAST_JSON
-        elif getattr(args, 'tsv'):
+        elif getattr(args, 'tsv', False):
             format = OutputFormat.TSV
+        elif getattr(args, 'condensed', False):
+            format = OutputFormat.CONDENSED
         
-    debug = getattr(args, 'debug') or False
+    debug = getattr(args, 'debug', False)
     configure_logging(debug)
     
     try:
@@ -345,7 +358,7 @@ def EntryPoint_inner(args, command, format, debug):
         try:
             exec_uuid = retry_call(
                 upload_snapshot,
-                fargs=[sdk, bytes, compare_to, network, role],
+                fargs=[sdk, bytes, compare_to, network, role, format],
                 exceptions=UploadTerminationError,
                 tries=3,
                 delay=2,
@@ -354,32 +367,47 @@ def EntryPoint_inner(args, command, format, debug):
             print("Exiting...", file=sys.stderr)
             exit(1)
 
-        print("Analysis complete.")
+        if format == OutputFormat.TABULATE:
+            print("Analysis complete.")
         response = sdk.snapshot_detail(exec_uuid)
         # pprint.pprint(asdict(response), width=200)
-        display.snapshot_status(response)
-        if response.status['state'] == 'COMPLETE':
-            display.snapshot_halted(response)
-            print('')
-            summary = sdk.snapshot_detail_text(str(exec_uuid), json_mode=False)
-            if summary.text:
-                print(summary.text)
-            else:
-                display.snapshot_summary_table(response, format)
-
-            print(f"\nRun 'invariant show <file>' to examine any file.")
-
-            if response.summary['errors'] > 0:
-                print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
-                errors_uuid = response.report.reports.errors
-                errors_response = sdk.snapshot_file(errors_uuid)
-                display.snapshot_errors(errors_response, format)
-
+        if format == OutputFormat.JSON or format == OutputFormat.FAST_JSON:
+            response_json = json.dumps(response.to_dict(), sort_keys=True)
+            try:
+                print_json(response_json)
+            except:
+                print(response_json)
+        elif format == OutputFormat.CONDENSED:
+            if response.status['state'] != 'COMPLETE':
+                if response.summary['errors'] > 0:
+                    errors_uuid = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_uuid)
+                    display.snapshot_errors(errors_response, format)
+            display.snapshot_condensed_status(response)
         else:
-            if response.summary['errors'] > 0:
-                errors_uuid = response.report.reports.errors
-                errors_response = sdk.snapshot_file(errors_uuid)
-                display.snapshot_errors(errors_response, format)
+            display.snapshot_status(response)
+            if response.status['state'] == 'COMPLETE':
+                display.snapshot_halted(response)
+                print('')
+                summary = sdk.snapshot_detail_text(str(exec_uuid), json_mode=False)
+                if summary.text:
+                    print(summary.text)
+                else:
+                    display.snapshot_summary_table(response, format)
+
+                print(f"\nRun 'invariant show <file>' to examine any file.")
+
+                if response.summary['errors'] > 0:
+                    print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
+                    errors_uuid = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_uuid)
+                    display.snapshot_errors(errors_response, format)
+
+            else:
+                if response.summary['errors'] > 0:
+                    errors_uuid = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_uuid)
+                    display.snapshot_errors(errors_response, format)
 
     elif command == "snapshots":
         network = getattr(args, 'network') or None
@@ -416,7 +444,7 @@ def EntryPoint_inner(args, command, format, debug):
         if not snapshot_name:
             # NOTE: API Token users should explicitly set --snapshot or INVARIANT_SNAPSHOT
             last_snapshot = sdk.list_snapshots(filter_session=True, limit=1)
-            if not last_snapshot:
+            if not last_snapshot or len(last_snapshot.reports) == 0:
                 raise ValueError(f"Use --snapshot <name> argument or INVARIANT_SNAPSHOT environment variable to select a snapshot.")
             snapshot_name = last_snapshot.reports[0].uuid
 
@@ -483,20 +511,27 @@ def EntryPoint_inner(args, command, format, debug):
             # Display the process summary for the snapshot
             if format == OutputFormat.TABULATE:
                 print(f"Snapshot {exec_uuid}")
+            elif format == OutputFormat.CONDENSED:
+                print(f"snapshot: {exec_uuid}")
             response = sdk.snapshot_detail(str(exec_uuid))
             if format == OutputFormat.TABULATE:
                 display.snapshot_status(response)
-            if response.status['state'] == 'COMPLETE':
+            if format == OutputFormat.CONDENSED:
+                if response.status['state'] != 'COMPLETE':
+                    if response.summary['errors'] > 0:
+                        errors_uuid = response.report.reports.errors
+                        errors_response = sdk.snapshot_file(errors_uuid)
+                        display.snapshot_errors(errors_response, format)
+                display.snapshot_condensed_status(response)
+            elif response.status['state'] == 'COMPLETE':
                 if format == OutputFormat.TABULATE:
                     display.snapshot_halted(response)
                     print('')
-                if format == OutputFormat.TABULATE:
                     summary = sdk.snapshot_detail_text(str(exec_uuid), json_mode=False)
                     if summary.text:
                         print(summary.text)
                     else:
                         display.snapshot_summary_table(response, format)
-
                 elif format == OutputFormat.JSON or format == OutputFormat.FAST_JSON:
                     summary = sdk.snapshot_detail_text(str(exec_uuid), json_mode=True)
                     if summary.json:
@@ -533,8 +568,9 @@ def EntryPoint_inner(args, command, format, debug):
         print(f"Unknown command {command}", file=sys.stderr)
 
 
-def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, network: str, role: str) -> str:
-    print("Uploading snapshot...")
+def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, network: str, role: str, format: OutputFormat) -> str:
+    if format == OutputFormat.TABULATE:
+        print("Uploading snapshot...")
     exec_uuid = sdk.upload_snapshot(
         source=bytes,
         network=network,
@@ -542,7 +578,10 @@ def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, ne
         compare_to=compare_to)
     exec_uuid = exec_uuid.exec_uuid
     end_time = datetime.datetime.now() + datetime.timedelta(weeks=1)
-    print(f"Processing... ({exec_uuid})")
+    if format == OutputFormat.TABULATE:
+        print(f"Processing... ({exec_uuid})")
+    elif format == OutputFormat.CONDENSED:
+        print(f"snapshot: {exec_uuid}")
     while datetime.datetime.now() < end_time:
         response = sdk.upload_is_running(exec_uuid)
         if response.terminated:
