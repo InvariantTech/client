@@ -7,11 +7,11 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
+from typing import Dict
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.challenge_response import ChallengeResponse
 from typing import List
 from ...models.user import User
-from typing import Dict
-from ...models.challenge_response import ChallengeResponse
-from ...models.validation_error_response import ValidationErrorResponse
 
 
 def _get_kwargs() -> Dict[str, Any]:

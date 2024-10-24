@@ -7,10 +7,10 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from dateutil.parser import isoparse
-from typing import Dict
 import datetime
+from typing import Dict
 from typing import Union
+from dateutil.parser import isoparse
 
 if TYPE_CHECKING:
     from ..models.poc_report_data import POCReportData

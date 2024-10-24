@@ -24,6 +24,7 @@ from .create_notification_group_request import CreateNotificationGroupRequest
 from .create_token_request import CreateTokenRequest
 from .external_status_data_integration import ExternalStatusDataIntegration
 from .external_status_integration import ExternalStatusIntegration
+from .file_index import FileIndex
 from .flags_response import FlagsResponse
 from .flags_response_environment import FlagsResponseEnvironment
 from .flags_response_flags import FlagsResponseFlags
@@ -100,6 +101,7 @@ __all__ = (
     "CreateTokenRequest",
     "ExternalStatusDataIntegration",
     "ExternalStatusIntegration",
+    "FileIndex",
     "FlagsResponse",
     "FlagsResponseEnvironment",
     "FlagsResponseFlags",

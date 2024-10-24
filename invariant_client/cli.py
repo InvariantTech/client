@@ -267,7 +267,8 @@ def EntryPoint_inner(args, command, format, debug):
     creds = None
 
     if args.version:
-        print(f"client: {version('invariant-client')}")
+        with open(pathlib.Path(__file__).parent.parent.joinpath("VERSION"), "r") as f:
+            print(f"client: {f.read().strip()}")
         print(f"server: {VersionClient(invariant_domain, ssl.create_default_context()).get_version()}")
         return
 
@@ -380,8 +381,8 @@ def EntryPoint_inner(args, command, format, debug):
         elif format == OutputFormat.CONDENSED:
             if response.status['state'] != 'COMPLETE':
                 if response.summary['errors'] > 0:
-                    errors_uuid = response.report.reports.errors
-                    errors_response = sdk.snapshot_file(errors_uuid)
+                    errors_locator = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_locator)
                     display.snapshot_errors(errors_response, format)
             display.snapshot_condensed_status(response)
         else:
@@ -399,14 +400,14 @@ def EntryPoint_inner(args, command, format, debug):
 
                 if response.summary['errors'] > 0:
                     print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.")
-                    errors_uuid = response.report.reports.errors
-                    errors_response = sdk.snapshot_file(errors_uuid)
+                    errors_locator = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_locator)
                     display.snapshot_errors(errors_response, format)
 
             else:
                 if response.summary['errors'] > 0:
-                    errors_uuid = response.report.reports.errors
-                    errors_response = sdk.snapshot_file(errors_uuid)
+                    errors_locator = response.report.reports.errors
+                    errors_response = sdk.snapshot_file(errors_locator)
                     display.snapshot_errors(errors_response, format)
 
     elif command == "snapshots":
@@ -465,44 +466,28 @@ def EntryPoint_inner(args, command, format, debug):
                 response = sdk.snapshot_detail(exec_uuid)
                 reports = response.report.reports
                 try:
-                    file: str = getattr(reports, file)
-                    file = uuid.UUID(file, version=4)
+                    file_locator: str = getattr(reports, file)
                 except AttributeError as e:
                     if not isinstance(reports, SnapshotReportData):
                         raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
                     try:
-                        file: str = reports.files[file]
-                        file = uuid.UUID(file, version=4)
+                        file_locator: str = reports.files[file]
                     except KeyError as e:
                         raise ValueError(f"Report {file} not found for snapshot {exec_uuid}.") from e
 
             if format == OutputFormat.JSON or format == OutputFormat.FAST_JSON:
-                file_summary = sdk.snapshot_file_text(str(file), False, json_mode=True)
-                if file_summary.json:
-                    if format == OutputFormat.JSON:
-                        try:
-                            print_json(file_summary.json)
-                        except:
-                            print(file_summary.json)
-                    elif format == OutputFormat.FAST_JSON:
-                        print(file_summary.json)
-                else:
-                    file_data = sdk.snapshot_file(str(file))
-                    if format == OutputFormat.JSON:
-                        print_json(file_data.to_json(orient='records'))
-                    elif format == OutputFormat.FAST_JSON:
-                        print(file_data.to_json(orient='records'))
+                file_data = sdk.snapshot_file(file_locator)
+                if format == OutputFormat.JSON:
+                    print_json(file_data.to_json(orient='records'))
+                elif format == OutputFormat.FAST_JSON:
+                    print(file_data.to_json(orient='records'))
 
             elif format == OutputFormat.TSV:
-                file_data = sdk.snapshot_file(str(file))
+                file_data = sdk.snapshot_file(file_locator)
                 display.print_frame(file_data, format)
             else:
-                file_summary = sdk.snapshot_file_text(str(file), False, json_mode=False)
-                if file_summary.text:
-                    print(file_summary.text)
-                else:
-                    file_data = sdk.snapshot_file(str(file))
-                    display.print_frame(file_data, format)
+                file_data = sdk.snapshot_file(file_locator)
+                display.print_frame(file_data, format)
                 # print("Set --traces to display all example traces")
                 print("Set --json to get JSON")
                 print("See 'show --help' for more options")
@@ -519,8 +504,8 @@ def EntryPoint_inner(args, command, format, debug):
             if format == OutputFormat.CONDENSED:
                 if response.status['state'] != 'COMPLETE':
                     if response.summary['errors'] > 0:
-                        errors_uuid = response.report.reports.errors
-                        errors_response = sdk.snapshot_file(errors_uuid)
+                        errors_locator = response.report.reports.errors
+                        errors_response = sdk.snapshot_file(errors_locator)
                         display.snapshot_errors(errors_response, format)
                 display.snapshot_condensed_status(response)
             elif response.status['state'] == 'COMPLETE':
@@ -551,12 +536,12 @@ def EntryPoint_inner(args, command, format, debug):
 
                     if response.summary['errors'] > 0:
                         print(f"\n{response.summary['errors']} {'error' if response.summary['errors'] == 1 else 'errors'} found.", file=sys.stderr)
-                        errors_uuid = response.report.reports.errors
-                        errors_response = sdk.snapshot_file(errors_uuid)
+                        errors_locator = response.report.reports.errors
+                        errors_response = sdk.snapshot_file(errors_locator)
                         display.snapshot_errors(errors_response, format)
             elif response.summary['errors'] > 0:
-                errors_uuid = response.report.reports.errors
-                errors_response = sdk.snapshot_file(errors_uuid)
+                errors_locator = response.report.reports.errors
+                errors_response = sdk.snapshot_file(errors_locator)
                 display.snapshot_errors(errors_response, format)
 
     elif command == "show_solution":

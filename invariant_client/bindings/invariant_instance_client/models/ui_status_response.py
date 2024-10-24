@@ -7,14 +7,14 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
-from typing import cast, Union
 from typing import cast
+from typing import cast, Union
+from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.user import User
-    from ..models.user_tabs_config import UserTabsConfig
     from ..models.organization import Organization
+    from ..models.user_tabs_config import UserTabsConfig
 
 
 T = TypeVar("T", bound="UIStatusResponse")
@@ -64,8 +64,8 @@ class UIStatusResponse:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.user import User
-        from ..models.user_tabs_config import UserTabsConfig
         from ..models.organization import Organization
+        from ..models.user_tabs_config import UserTabsConfig
 
         d = src_dict.copy()
         user = User.from_dict(d.pop("user"))

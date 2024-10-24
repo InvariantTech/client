@@ -7,9 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
-from typing import cast, List
 from typing import cast
+from typing import cast, List
+from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.integration_data_github_app_installation_data_extra import (

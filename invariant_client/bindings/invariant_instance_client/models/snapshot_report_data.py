@@ -8,13 +8,14 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import cast, Union
 from ..types import UNSET, Unset
 from typing import Dict
-from typing import Union
 from typing import cast
+from typing import cast, Union
+from typing import Union
 
 if TYPE_CHECKING:
+    from ..models.file_index import FileIndex
     from ..models.snapshot_report_data_files import SnapshotReportDataFiles
     from ..models.comparison_reportdata import ComparisonReportdata
 
@@ -27,32 +28,59 @@ class SnapshotReportData:
     """
     Attributes:
         files (SnapshotReportDataFiles):
-        summary (str):
-        status (str):
-        errors (str):
-        solutions (Union[None, Unset, str]):
+        summary (Union['FileIndex', str]):
+        status (Union['FileIndex', str]):
+        errors (Union['FileIndex', str]):
+        solutions (Union['FileIndex', None, Unset, str]):
         compare_to (Union['ComparisonReportdata', None, Unset]):
     """
 
     files: "SnapshotReportDataFiles"
-    summary: str
-    status: str
-    errors: str
-    solutions: Union[None, Unset, str] = UNSET
+    summary: Union["FileIndex", str]
+    status: Union["FileIndex", str]
+    errors: Union["FileIndex", str]
+    solutions: Union["FileIndex", None, Unset, str] = UNSET
     compare_to: Union["ComparisonReportdata", None, Unset] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        from ..models.file_index import FileIndex
         from ..models.comparison_reportdata import ComparisonReportdata
 
         files = self.files.to_dict()
 
-        summary = self.summary
-        status = self.status
-        errors = self.errors
-        solutions: Union[None, Unset, str]
+        summary: Union[Dict[str, Any], str]
+
+        if isinstance(self.summary, FileIndex):
+            summary = self.summary.to_dict()
+
+        else:
+            summary = self.summary
+
+        status: Union[Dict[str, Any], str]
+
+        if isinstance(self.status, FileIndex):
+            status = self.status.to_dict()
+
+        else:
+            status = self.status
+
+        errors: Union[Dict[str, Any], str]
+
+        if isinstance(self.errors, FileIndex):
+            errors = self.errors.to_dict()
+
+        else:
+            errors = self.errors
+
+        solutions: Union[Dict[str, Any], None, Unset, str]
         if isinstance(self.solutions, Unset):
             solutions = UNSET
+
+        elif isinstance(self.solutions, FileIndex):
+            solutions = UNSET
+            if not isinstance(self.solutions, Unset):
+                solutions = self.solutions.to_dict()
 
         else:
             solutions = self.solutions
@@ -88,24 +116,71 @@ class SnapshotReportData:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.file_index import FileIndex
         from ..models.snapshot_report_data_files import SnapshotReportDataFiles
         from ..models.comparison_reportdata import ComparisonReportdata
 
         d = src_dict.copy()
         files = SnapshotReportDataFiles.from_dict(d.pop("files"))
 
-        summary = d.pop("summary")
+        def _parse_summary(data: object) -> Union["FileIndex", str]:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                summary_type_1 = FileIndex.from_dict(data)
 
-        status = d.pop("status")
+                return summary_type_1
+            except:  # noqa: E722
+                pass
+            return cast(Union["FileIndex", str], data)
 
-        errors = d.pop("errors")
+        summary = _parse_summary(d.pop("summary"))
 
-        def _parse_solutions(data: object) -> Union[None, Unset, str]:
+        def _parse_status(data: object) -> Union["FileIndex", str]:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                status_type_1 = FileIndex.from_dict(data)
+
+                return status_type_1
+            except:  # noqa: E722
+                pass
+            return cast(Union["FileIndex", str], data)
+
+        status = _parse_status(d.pop("status"))
+
+        def _parse_errors(data: object) -> Union["FileIndex", str]:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                errors_type_1 = FileIndex.from_dict(data)
+
+                return errors_type_1
+            except:  # noqa: E722
+                pass
+            return cast(Union["FileIndex", str], data)
+
+        errors = _parse_errors(d.pop("errors"))
+
+        def _parse_solutions(data: object) -> Union["FileIndex", None, Unset, str]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                _solutions_type_1 = data
+                solutions_type_1: Union[Unset, FileIndex]
+                if isinstance(_solutions_type_1, Unset):
+                    solutions_type_1 = UNSET
+                else:
+                    solutions_type_1 = FileIndex.from_dict(_solutions_type_1)
+
+                return solutions_type_1
+            except:  # noqa: E722
+                pass
+            return cast(Union["FileIndex", None, Unset, str], data)
 
         solutions = _parse_solutions(d.pop("solutions", UNSET))
 

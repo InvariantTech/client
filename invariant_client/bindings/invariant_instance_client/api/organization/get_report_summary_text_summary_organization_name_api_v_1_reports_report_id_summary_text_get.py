@@ -7,12 +7,12 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.report_text_summary_response import ReportTextSummaryResponse
+from ...models.report_text_summary_request import ReportTextSummaryRequest
 from ...models.challenge_response import ChallengeResponse
 from typing import Dict
-from ...models.validation_error_response import ValidationErrorResponse
+from ...models.report_text_summary_response import ReportTextSummaryResponse
 from ...models.base_error_response import BaseErrorResponse
-from ...models.report_text_summary_request import ReportTextSummaryRequest
+from ...models.validation_error_response import ValidationErrorResponse
 
 
 def _get_kwargs(
@@ -97,7 +97,7 @@ def sync_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Returns a user-facing textual or JSON summary of the whole snapshot.
 
     Args:
         organization_name (str):
@@ -139,7 +139,7 @@ def sync(
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Returns a user-facing textual or JSON summary of the whole snapshot.
 
     Args:
         organization_name (str):
@@ -176,7 +176,7 @@ async def asyncio_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Returns a user-facing textual or JSON summary of the whole snapshot.
 
     Args:
         organization_name (str):
@@ -216,7 +216,7 @@ async def asyncio(
         ValidationErrorResponse,
     ]
 ]:
-    """Returns a user-facing textual summary of a report file.
+    """Returns a user-facing textual or JSON summary of the whole snapshot.
 
     Args:
         organization_name (str):

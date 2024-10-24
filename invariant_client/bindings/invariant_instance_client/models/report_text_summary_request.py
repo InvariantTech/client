@@ -8,11 +8,11 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import cast, Union
 from ..types import UNSET, Unset
 from typing import Dict
-from typing import Union
 from typing import cast
+from typing import cast, Union
+from typing import Union
 
 if TYPE_CHECKING:
     from ..models.console_request_options import ConsoleRequestOptions

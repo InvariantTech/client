@@ -20,6 +20,7 @@ from invariant_client.bindings.invariant_instance_client import models
 from invariant_client.bindings.invariant_instance_client import types
 from invariant_client.bindings.invariant_instance_client.api.organization.list_reports_organization_name_api_v_1_reports_get import sync_detailed as list_reports_organization_name_api_v_1_reports_get
 from invariant_client.bindings.invariant_instance_client.api.organization.refresh_organization_name_api_v1_refresh_post import sync_detailed as refresh_organization_name_api_v1_refresh_post
+from invariant_client.bindings.invariant_instance_client.models.file_index import FileIndex
 from invariant_client.bindings.invariant_instance_client.models.report_text_summary_request import ReportTextSummaryRequest
 from invariant_client.bindings.invariant_login_client.client import AuthenticatedClient as LoginAuthenticatedClient, Client as LoginClient
 from invariant_client.bindings.invariant_instance_client.api.organization.upload_snapshot_organization_name_api_v_1_uploadsnapshot_post import sync_detailed as upload_snapshot_organization_name_api_v_1_uploadsnapshot_post
@@ -280,43 +281,36 @@ class Invariant:
 
     def snapshot_file(
             self,
-            file_uuid: str) -> pandas.DataFrame:
-        kwargs = get_report_organization_name_api_v_1_reports_report_id_get__get_kwargs(
-            organization_name=self.creds.organization_name,
-            report_id=file_uuid,
-        )
-        response = self.client.get_httpx_client().request(
-            **kwargs,
-        )
-        
-        # TODO approach checking for errors more carefully as the expected value is not JSON
-        if not response:
-            raise RemoteError(f"Unable to connect to {self.base_url}")
-        # if isinstance(response, models.ChallengeResponse):
-        #     raise AuthorizationException(f"{response.title}: {response.detail}")
-        # if isinstance(response, models.BaseErrorResponse):
-        #     raise RemoteError(response)
-        response: pandas.DataFrame = feather.read_feather(io.BytesIO(response.content))
-        return response
+            file_locator: FileIndex | str) -> pandas.DataFrame:
+        """Download a remote file as a pandas DataFrame."""
+        if isinstance(file_locator, str):
+            file_uuids = [file_locator]
+        elif isinstance(file_locator, FileIndex):
+            file_uuids = file_locator.all_files
+        else:
+            raise ValueError('Unsupported file locator format. You may a newer client version.')
 
-    def snapshot_file_text(
-            self,
-            file_uuid: str,
-            traces: bool,
-            json_mode: bool):
-        response = get_report_text_summary_organization_name_api_v_1_reports_report_id_text_get(
-            self.creds.organization_name,
-            file_uuid,
-            client=self.client,
-            json_body=ReportTextSummaryRequest(traces=traces, mode='json' if json_mode else 'text'))
-        response = response.parsed
-        if not response:
-            raise RemoteError(f"Unable to connect to {self.base_url}")
-        if isinstance(response, models.ChallengeResponse):
-            raise AuthorizationException(f"{response.title}: {response.detail}")
-        if not isinstance(response, models.ReportTextSummaryResponse):
-            raise RemoteError(response)
-        return response
+        responses: list[pandas.DataFrame] = []
+        for file_uuid in file_uuids:
+            kwargs = get_report_organization_name_api_v_1_reports_report_id_get__get_kwargs(
+                organization_name=self.creds.organization_name,
+                report_id=file_uuid,
+            )
+            response = self.client.get_httpx_client().request(
+                **kwargs,
+            )
+
+            # TODO approach checking for errors more carefully as the expected value is not JSON
+            if not response:
+                raise RemoteError(f"Unable to connect to {self.base_url}")
+            # if isinstance(response, models.ChallengeResponse):
+            #     raise AuthorizationException(f"{response.title}: {response.detail}")
+            # if isinstance(response, models.BaseErrorResponse):
+            #     raise RemoteError(response)
+            file_df = feather.read_feather(io.BytesIO(response.content))
+            responses.append(file_df)
+        combined_df = pandas.concat(responses)
+        return combined_df
 
     def show(
             self,
