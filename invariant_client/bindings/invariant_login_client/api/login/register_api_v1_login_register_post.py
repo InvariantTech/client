@@ -7,11 +7,11 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 from typing import Dict
+from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 from ...models.validation_error_response import ValidationErrorResponse
-from ...models.base_error_response import BaseErrorResponse
 from typing import cast
+from ...models.base_error_response import BaseErrorResponse
 
 
 def _get_kwargs(
@@ -37,6 +37,10 @@ def _parse_response(
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
+    if response.status_code == HTTPStatus.BAD_REQUEST:
+        response_400 = BaseErrorResponse.from_dict(response.json())
+
+        return response_400
     if response.status_code == HTTPStatus.FORBIDDEN:
         response_403 = BaseErrorResponse.from_dict(response.json())
 

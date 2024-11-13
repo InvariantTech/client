@@ -8,18 +8,64 @@ from ...types import Response
 from ... import errors
 
 from typing import Dict
-from ...models.validation_error_response import ValidationErrorResponse
+from ...models.validation_request import ValidationRequest
 from ...models.challenge_response import ChallengeResponse
-from ...models.base_error_response import BaseErrorResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.reset_pin_request import ResetPINRequest
+from ...models.email_password_login_request import EmailPasswordLoginRequest
+from ...models.new_password_request import NewPasswordRequest
+from ...models.init_login_request import InitLoginRequest
+from typing import cast, Union
+from ...models.create_login_request import CreateLoginRequest
 from typing import cast
-from ...models.login_request import LoginRequest
+from ...models.setup_code_request import SetupCodeRequest
+from ...models.reset_request import ResetRequest
+from ...models.init_login_invitation_request import InitLoginInvitationRequest
+from ...models.base_error_response import BaseErrorResponse
 
 
 def _get_kwargs(
     *,
-    json_body: LoginRequest,
+    json_body: Union[
+        "CreateLoginRequest",
+        "EmailPasswordLoginRequest",
+        "InitLoginInvitationRequest",
+        "InitLoginRequest",
+        "NewPasswordRequest",
+        "ResetPINRequest",
+        "ResetRequest",
+        "SetupCodeRequest",
+        "ValidationRequest",
+    ],
 ) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    json_json_body: Dict[str, Any]
+
+    if isinstance(json_body, InitLoginRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, SetupCodeRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, InitLoginInvitationRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, CreateLoginRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, EmailPasswordLoginRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, ResetRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, ResetPINRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, NewPasswordRequest):
+        json_json_body = json_body.to_dict()
+
+    else:
+        json_json_body = json_body.to_dict()
 
     return {
         "method": "post",
@@ -70,79 +116,103 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: LoginRequest,
+    json_body: Union[
+        "CreateLoginRequest",
+        "EmailPasswordLoginRequest",
+        "InitLoginInvitationRequest",
+        "InitLoginRequest",
+        "NewPasswordRequest",
+        "ResetPINRequest",
+        "ResetRequest",
+        "SetupCodeRequest",
+        "ValidationRequest",
+    ],
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Authenticate and respond to authentication challenges
+    r"""Authenticate and respond to authentication challenges
 
-     To authenticate, send a request with basic_auth provided.
+     The challenge-response workflow API. This API may do one of the following:
 
-    If additional steps are neded by the user, this API will send a ChallengeResponse (HTTP 401),
-    which includes a challenge type and a Login Session Token. Use this API to respond to the challenge
-    and send the given token.
+    1. Create a login session with a \"next challenge\" for the caller.
+    2. Reject an incorrect request.
+    3. Issue a refresh token cookie.
 
-    On successful authentication an HTTPOnly refresh token cookie will be issued through a set-cookie
-    header.
+    ## Login session
 
-    Note: this is not the only authentication entrypoint. It is also possible to authenticate from a
-    single-use email invitation link using the /check_invite method.
+    This API will respond with HTTP status 401 containing a Login Session Token when it needs
+    the user to complete additional challenges. The Login Session Token (LST) is a signed JWT
+    asserting the state of the user in the login workflow. The client must include the LST in
+    their next init_login API call to continue the workflow.
 
-    ## Using the cookie
+    ## Challenges
 
-    The HTTPOnly refresh token cookie can be used to:
+    These challenge types may be issued by this API.
 
-    -   Get a list of available instances: /get_instances.
-    -   Get an instance access token: /:org/api/v1/refresh.
-    -   Refresh the refresh token before it expires: /refresh.
+    ### Primary authentication
 
-    ## Basic authentication
+    The user must provide a primary authetication credential in response to challenge `auth`. This could
+    include basic authentication
+    (username / password) or federated login (OIDC, SAML) or passkey.
 
-        Key: basic_auth
-        Authentication: none
+    Acceptable methods can include `basic_auth`, `oidc`, etc. OIDC may be accompanied by provider
+    config info.
 
-    Provide an email and password value. If the password is incorrect a ChallengeResponse will be issued
-    with
-    challenge=basic_auth.
+    ### Email validation
 
-    ## Email verification
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account as part of initial account setup in response to challenge `validate_email`.
 
-        Key: email_valid
-        Authentication: Login Session Token
+    ### Setup code
 
-    Provide a secret PIN value from the verification email. The PIN must be non-expired and is consumed
-    on use.
-    /resend_validation_pin can be used to re-send a verification email.
+    The user must provide a setup code transmitted from the administrator through some means in
+    response to challenge 'setup_code' as part of initial account setup.
 
-    ## Password reset
+    ### New password
 
-        Key: reset_request
-        Authentication: none
+    The user must provide a new password as part of initial account setup in response to challenge
+    `new_password`. Relevant only if basic_auth is supported.
 
-    Provide an email to send a password reset email to it. A ChallengeResponse will be issued with
-    challenge=reset_pin .
+    ### Password reset PIN
 
-    ## Password reset check PIN
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account in order to proceed with password reset in response to challenge `reset_pin`.
 
-        Key: reset_pin_request
-        Authentication: Login Session Token
+    ### Start challenge
 
-    Provide a secret PIN value from the password reset email. The PIN must be non-expired. Checking the
-    PIN
-    does not consume it, it will be re-checked and consumed when the user provides a new password. A
-    ChallengeResponse will be issued with challenge=new_password .
+    The client should display the email selection screen. This challenge is typically issued when the
+    user session has expired.
 
-    ## New password
+    ## Initiating the login process
 
-        Key: new_password
-        Authentication: Login Session Token
+    The client can initiate a login session using the following message types.
 
-    Provide a new password and a secret PIN value from the password reset email OR an email invitation
-    token (which is a JWT
-    containing a secret PIN). The PIN must be non-expired and will be consumed on use.
+    ### Initialize login
+
+    The basic scenario where the user provides an email address. The server will reply with
+    challenge `auth` and a list of available login methods if a login exists for this email.
+
+    ### Consume setup link
+
+    In this scenario the client provides an email address and a setup link. The server will
+    confirm the validity of the setup link and allow the session to proceed.
+
+    ## Cookie and cookie session
+
+    This API will issue a refresh token cookie upon successful login. The cookie is linked to
+    a cookie session in the database (table user_sessions). The cookie expires after 24 hours
+    and cannot be refreshed or extended. The user session auto-expires after a period of inactivity.
+
+    The refresh token cookie is accepted by the following notable APIs:
+
+    -   Get a list of available instances: /get_instances .
+    -   Get an instance access token: /:org/api/v1/refresh .
+    -   Log out /logout .
 
     Args:
-        json_body (LoginRequest): Request to determine login method (Basic, SAML, etc).
+        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
+            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -166,79 +236,103 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    json_body: LoginRequest,
+    json_body: Union[
+        "CreateLoginRequest",
+        "EmailPasswordLoginRequest",
+        "InitLoginInvitationRequest",
+        "InitLoginRequest",
+        "NewPasswordRequest",
+        "ResetPINRequest",
+        "ResetRequest",
+        "SetupCodeRequest",
+        "ValidationRequest",
+    ],
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Authenticate and respond to authentication challenges
+    r"""Authenticate and respond to authentication challenges
 
-     To authenticate, send a request with basic_auth provided.
+     The challenge-response workflow API. This API may do one of the following:
 
-    If additional steps are neded by the user, this API will send a ChallengeResponse (HTTP 401),
-    which includes a challenge type and a Login Session Token. Use this API to respond to the challenge
-    and send the given token.
+    1. Create a login session with a \"next challenge\" for the caller.
+    2. Reject an incorrect request.
+    3. Issue a refresh token cookie.
 
-    On successful authentication an HTTPOnly refresh token cookie will be issued through a set-cookie
-    header.
+    ## Login session
 
-    Note: this is not the only authentication entrypoint. It is also possible to authenticate from a
-    single-use email invitation link using the /check_invite method.
+    This API will respond with HTTP status 401 containing a Login Session Token when it needs
+    the user to complete additional challenges. The Login Session Token (LST) is a signed JWT
+    asserting the state of the user in the login workflow. The client must include the LST in
+    their next init_login API call to continue the workflow.
 
-    ## Using the cookie
+    ## Challenges
 
-    The HTTPOnly refresh token cookie can be used to:
+    These challenge types may be issued by this API.
 
-    -   Get a list of available instances: /get_instances.
-    -   Get an instance access token: /:org/api/v1/refresh.
-    -   Refresh the refresh token before it expires: /refresh.
+    ### Primary authentication
 
-    ## Basic authentication
+    The user must provide a primary authetication credential in response to challenge `auth`. This could
+    include basic authentication
+    (username / password) or federated login (OIDC, SAML) or passkey.
 
-        Key: basic_auth
-        Authentication: none
+    Acceptable methods can include `basic_auth`, `oidc`, etc. OIDC may be accompanied by provider
+    config info.
 
-    Provide an email and password value. If the password is incorrect a ChallengeResponse will be issued
-    with
-    challenge=basic_auth.
+    ### Email validation
 
-    ## Email verification
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account as part of initial account setup in response to challenge `validate_email`.
 
-        Key: email_valid
-        Authentication: Login Session Token
+    ### Setup code
 
-    Provide a secret PIN value from the verification email. The PIN must be non-expired and is consumed
-    on use.
-    /resend_validation_pin can be used to re-send a verification email.
+    The user must provide a setup code transmitted from the administrator through some means in
+    response to challenge 'setup_code' as part of initial account setup.
 
-    ## Password reset
+    ### New password
 
-        Key: reset_request
-        Authentication: none
+    The user must provide a new password as part of initial account setup in response to challenge
+    `new_password`. Relevant only if basic_auth is supported.
 
-    Provide an email to send a password reset email to it. A ChallengeResponse will be issued with
-    challenge=reset_pin .
+    ### Password reset PIN
 
-    ## Password reset check PIN
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account in order to proceed with password reset in response to challenge `reset_pin`.
 
-        Key: reset_pin_request
-        Authentication: Login Session Token
+    ### Start challenge
 
-    Provide a secret PIN value from the password reset email. The PIN must be non-expired. Checking the
-    PIN
-    does not consume it, it will be re-checked and consumed when the user provides a new password. A
-    ChallengeResponse will be issued with challenge=new_password .
+    The client should display the email selection screen. This challenge is typically issued when the
+    user session has expired.
 
-    ## New password
+    ## Initiating the login process
 
-        Key: new_password
-        Authentication: Login Session Token
+    The client can initiate a login session using the following message types.
 
-    Provide a new password and a secret PIN value from the password reset email OR an email invitation
-    token (which is a JWT
-    containing a secret PIN). The PIN must be non-expired and will be consumed on use.
+    ### Initialize login
+
+    The basic scenario where the user provides an email address. The server will reply with
+    challenge `auth` and a list of available login methods if a login exists for this email.
+
+    ### Consume setup link
+
+    In this scenario the client provides an email address and a setup link. The server will
+    confirm the validity of the setup link and allow the session to proceed.
+
+    ## Cookie and cookie session
+
+    This API will issue a refresh token cookie upon successful login. The cookie is linked to
+    a cookie session in the database (table user_sessions). The cookie expires after 24 hours
+    and cannot be refreshed or extended. The user session auto-expires after a period of inactivity.
+
+    The refresh token cookie is accepted by the following notable APIs:
+
+    -   Get a list of available instances: /get_instances .
+    -   Get an instance access token: /:org/api/v1/refresh .
+    -   Log out /logout .
 
     Args:
-        json_body (LoginRequest): Request to determine login method (Basic, SAML, etc).
+        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
+            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -257,79 +351,103 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: LoginRequest,
+    json_body: Union[
+        "CreateLoginRequest",
+        "EmailPasswordLoginRequest",
+        "InitLoginInvitationRequest",
+        "InitLoginRequest",
+        "NewPasswordRequest",
+        "ResetPINRequest",
+        "ResetRequest",
+        "SetupCodeRequest",
+        "ValidationRequest",
+    ],
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Authenticate and respond to authentication challenges
+    r"""Authenticate and respond to authentication challenges
 
-     To authenticate, send a request with basic_auth provided.
+     The challenge-response workflow API. This API may do one of the following:
 
-    If additional steps are neded by the user, this API will send a ChallengeResponse (HTTP 401),
-    which includes a challenge type and a Login Session Token. Use this API to respond to the challenge
-    and send the given token.
+    1. Create a login session with a \"next challenge\" for the caller.
+    2. Reject an incorrect request.
+    3. Issue a refresh token cookie.
 
-    On successful authentication an HTTPOnly refresh token cookie will be issued through a set-cookie
-    header.
+    ## Login session
 
-    Note: this is not the only authentication entrypoint. It is also possible to authenticate from a
-    single-use email invitation link using the /check_invite method.
+    This API will respond with HTTP status 401 containing a Login Session Token when it needs
+    the user to complete additional challenges. The Login Session Token (LST) is a signed JWT
+    asserting the state of the user in the login workflow. The client must include the LST in
+    their next init_login API call to continue the workflow.
 
-    ## Using the cookie
+    ## Challenges
 
-    The HTTPOnly refresh token cookie can be used to:
+    These challenge types may be issued by this API.
 
-    -   Get a list of available instances: /get_instances.
-    -   Get an instance access token: /:org/api/v1/refresh.
-    -   Refresh the refresh token before it expires: /refresh.
+    ### Primary authentication
 
-    ## Basic authentication
+    The user must provide a primary authetication credential in response to challenge `auth`. This could
+    include basic authentication
+    (username / password) or federated login (OIDC, SAML) or passkey.
 
-        Key: basic_auth
-        Authentication: none
+    Acceptable methods can include `basic_auth`, `oidc`, etc. OIDC may be accompanied by provider
+    config info.
 
-    Provide an email and password value. If the password is incorrect a ChallengeResponse will be issued
-    with
-    challenge=basic_auth.
+    ### Email validation
 
-    ## Email verification
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account as part of initial account setup in response to challenge `validate_email`.
 
-        Key: email_valid
-        Authentication: Login Session Token
+    ### Setup code
 
-    Provide a secret PIN value from the verification email. The PIN must be non-expired and is consumed
-    on use.
-    /resend_validation_pin can be used to re-send a verification email.
+    The user must provide a setup code transmitted from the administrator through some means in
+    response to challenge 'setup_code' as part of initial account setup.
 
-    ## Password reset
+    ### New password
 
-        Key: reset_request
-        Authentication: none
+    The user must provide a new password as part of initial account setup in response to challenge
+    `new_password`. Relevant only if basic_auth is supported.
 
-    Provide an email to send a password reset email to it. A ChallengeResponse will be issued with
-    challenge=reset_pin .
+    ### Password reset PIN
 
-    ## Password reset check PIN
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account in order to proceed with password reset in response to challenge `reset_pin`.
 
-        Key: reset_pin_request
-        Authentication: Login Session Token
+    ### Start challenge
 
-    Provide a secret PIN value from the password reset email. The PIN must be non-expired. Checking the
-    PIN
-    does not consume it, it will be re-checked and consumed when the user provides a new password. A
-    ChallengeResponse will be issued with challenge=new_password .
+    The client should display the email selection screen. This challenge is typically issued when the
+    user session has expired.
 
-    ## New password
+    ## Initiating the login process
 
-        Key: new_password
-        Authentication: Login Session Token
+    The client can initiate a login session using the following message types.
 
-    Provide a new password and a secret PIN value from the password reset email OR an email invitation
-    token (which is a JWT
-    containing a secret PIN). The PIN must be non-expired and will be consumed on use.
+    ### Initialize login
+
+    The basic scenario where the user provides an email address. The server will reply with
+    challenge `auth` and a list of available login methods if a login exists for this email.
+
+    ### Consume setup link
+
+    In this scenario the client provides an email address and a setup link. The server will
+    confirm the validity of the setup link and allow the session to proceed.
+
+    ## Cookie and cookie session
+
+    This API will issue a refresh token cookie upon successful login. The cookie is linked to
+    a cookie session in the database (table user_sessions). The cookie expires after 24 hours
+    and cannot be refreshed or extended. The user session auto-expires after a period of inactivity.
+
+    The refresh token cookie is accepted by the following notable APIs:
+
+    -   Get a list of available instances: /get_instances .
+    -   Get an instance access token: /:org/api/v1/refresh .
+    -   Log out /logout .
 
     Args:
-        json_body (LoginRequest): Request to determine login method (Basic, SAML, etc).
+        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
+            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -351,79 +469,103 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    json_body: LoginRequest,
+    json_body: Union[
+        "CreateLoginRequest",
+        "EmailPasswordLoginRequest",
+        "InitLoginInvitationRequest",
+        "InitLoginRequest",
+        "NewPasswordRequest",
+        "ResetPINRequest",
+        "ResetRequest",
+        "SetupCodeRequest",
+        "ValidationRequest",
+    ],
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Authenticate and respond to authentication challenges
+    r"""Authenticate and respond to authentication challenges
 
-     To authenticate, send a request with basic_auth provided.
+     The challenge-response workflow API. This API may do one of the following:
 
-    If additional steps are neded by the user, this API will send a ChallengeResponse (HTTP 401),
-    which includes a challenge type and a Login Session Token. Use this API to respond to the challenge
-    and send the given token.
+    1. Create a login session with a \"next challenge\" for the caller.
+    2. Reject an incorrect request.
+    3. Issue a refresh token cookie.
 
-    On successful authentication an HTTPOnly refresh token cookie will be issued through a set-cookie
-    header.
+    ## Login session
 
-    Note: this is not the only authentication entrypoint. It is also possible to authenticate from a
-    single-use email invitation link using the /check_invite method.
+    This API will respond with HTTP status 401 containing a Login Session Token when it needs
+    the user to complete additional challenges. The Login Session Token (LST) is a signed JWT
+    asserting the state of the user in the login workflow. The client must include the LST in
+    their next init_login API call to continue the workflow.
 
-    ## Using the cookie
+    ## Challenges
 
-    The HTTPOnly refresh token cookie can be used to:
+    These challenge types may be issued by this API.
 
-    -   Get a list of available instances: /get_instances.
-    -   Get an instance access token: /:org/api/v1/refresh.
-    -   Refresh the refresh token before it expires: /refresh.
+    ### Primary authentication
 
-    ## Basic authentication
+    The user must provide a primary authetication credential in response to challenge `auth`. This could
+    include basic authentication
+    (username / password) or federated login (OIDC, SAML) or passkey.
 
-        Key: basic_auth
-        Authentication: none
+    Acceptable methods can include `basic_auth`, `oidc`, etc. OIDC may be accompanied by provider
+    config info.
 
-    Provide an email and password value. If the password is incorrect a ChallengeResponse will be issued
-    with
-    challenge=basic_auth.
+    ### Email validation
 
-    ## Email verification
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account as part of initial account setup in response to challenge `validate_email`.
 
-        Key: email_valid
-        Authentication: Login Session Token
+    ### Setup code
 
-    Provide a secret PIN value from the verification email. The PIN must be non-expired and is consumed
-    on use.
-    /resend_validation_pin can be used to re-send a verification email.
+    The user must provide a setup code transmitted from the administrator through some means in
+    response to challenge 'setup_code' as part of initial account setup.
 
-    ## Password reset
+    ### New password
 
-        Key: reset_request
-        Authentication: none
+    The user must provide a new password as part of initial account setup in response to challenge
+    `new_password`. Relevant only if basic_auth is supported.
 
-    Provide an email to send a password reset email to it. A ChallengeResponse will be issued with
-    challenge=reset_pin .
+    ### Password reset PIN
 
-    ## Password reset check PIN
+    The user must retrieve a verification code (PIN) from their email to prove they have control of
+    that email account in order to proceed with password reset in response to challenge `reset_pin`.
 
-        Key: reset_pin_request
-        Authentication: Login Session Token
+    ### Start challenge
 
-    Provide a secret PIN value from the password reset email. The PIN must be non-expired. Checking the
-    PIN
-    does not consume it, it will be re-checked and consumed when the user provides a new password. A
-    ChallengeResponse will be issued with challenge=new_password .
+    The client should display the email selection screen. This challenge is typically issued when the
+    user session has expired.
 
-    ## New password
+    ## Initiating the login process
 
-        Key: new_password
-        Authentication: Login Session Token
+    The client can initiate a login session using the following message types.
 
-    Provide a new password and a secret PIN value from the password reset email OR an email invitation
-    token (which is a JWT
-    containing a secret PIN). The PIN must be non-expired and will be consumed on use.
+    ### Initialize login
+
+    The basic scenario where the user provides an email address. The server will reply with
+    challenge `auth` and a list of available login methods if a login exists for this email.
+
+    ### Consume setup link
+
+    In this scenario the client provides an email address and a setup link. The server will
+    confirm the validity of the setup link and allow the session to proceed.
+
+    ## Cookie and cookie session
+
+    This API will issue a refresh token cookie upon successful login. The cookie is linked to
+    a cookie session in the database (table user_sessions). The cookie expires after 24 hours
+    and cannot be refreshed or extended. The user session auto-expires after a period of inactivity.
+
+    The refresh token cookie is accepted by the following notable APIs:
+
+    -   Get a list of available instances: /get_instances .
+    -   Get an instance access token: /:org/api/v1/refresh .
+    -   Log out /logout .
 
     Args:
-        json_body (LoginRequest): Request to determine login method (Basic, SAML, etc).
+        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
+            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

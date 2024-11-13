@@ -1,46 +1,72 @@
 """ Contains all the data models used in inputs/outputs """
 
+from .authn_challenge import AuthnChallenge
 from .base_error_response import BaseErrorResponse
+from .basic_auth_login_method import BasicAuthLoginMethod
 from .challenge_response import ChallengeResponse
-from .challenge_response_challenge import ChallengeResponseChallenge
 from .consume_client_login_session_response import ConsumeClientLoginSessionResponse
+from .consume_invite_request import ConsumeInviteRequest
+from .consume_invite_response import ConsumeInviteResponse
 from .create_client_login_session_response import CreateClientLoginSessionResponse
+from .create_login_request import CreateLoginRequest
 from .email_check_request import EmailCheckRequest
-from .email_password_login import EmailPasswordLogin
+from .email_password_login_request import EmailPasswordLoginRequest
 from .fulfill_client_login_request import FulfillClientLoginRequest
 from .get_version_response import GetVersionResponse
-from .login import Login
-from .login_request import LoginRequest
+from .init_login_invitation_request import InitLoginInvitationRequest
+from .init_login_request import InitLoginRequest
+from .login_summary import LoginSummary
+from .new_login_challenge import NewLoginChallenge
 from .new_password_request import NewPasswordRequest
 from .new_password_request_authn_type import NewPasswordRequestAuthnType
-from .organization import Organization
+from .organization_summary import OrganizationSummary
+from .password_reset_pin_challenge import PasswordResetPINChallenge
+from .public import Public
 from .register_organization_request_body import RegisterOrganizationRequestBody
 from .reset_pin_request import ResetPINRequest
 from .reset_request import ResetRequest
-from .user import User
+from .set_password_challenge import SetPasswordChallenge
+from .setup_code_challenge import SetupCodeChallenge
+from .setup_code_request import SetupCodeRequest
+from .start_challenge import StartChallenge
+from .user_summary import UserSummary
+from .validate_email_challenge import ValidateEmailChallenge
 from .validation_error_response import ValidationErrorResponse
 from .validation_error_response_part import ValidationErrorResponsePart
 from .validation_request import ValidationRequest
 
 __all__ = (
+    "AuthnChallenge",
     "BaseErrorResponse",
+    "BasicAuthLoginMethod",
     "ChallengeResponse",
-    "ChallengeResponseChallenge",
     "ConsumeClientLoginSessionResponse",
+    "ConsumeInviteRequest",
+    "ConsumeInviteResponse",
     "CreateClientLoginSessionResponse",
+    "CreateLoginRequest",
     "EmailCheckRequest",
-    "EmailPasswordLogin",
+    "EmailPasswordLoginRequest",
     "FulfillClientLoginRequest",
     "GetVersionResponse",
-    "Login",
-    "LoginRequest",
+    "InitLoginInvitationRequest",
+    "InitLoginRequest",
+    "LoginSummary",
+    "NewLoginChallenge",
     "NewPasswordRequest",
     "NewPasswordRequestAuthnType",
-    "Organization",
+    "OrganizationSummary",
+    "PasswordResetPINChallenge",
+    "Public",
     "RegisterOrganizationRequestBody",
     "ResetPINRequest",
     "ResetRequest",
-    "User",
+    "SetPasswordChallenge",
+    "SetupCodeChallenge",
+    "SetupCodeRequest",
+    "StartChallenge",
+    "UserSummary",
+    "ValidateEmailChallenge",
     "ValidationErrorResponse",
     "ValidationErrorResponsePart",
     "ValidationRequest",

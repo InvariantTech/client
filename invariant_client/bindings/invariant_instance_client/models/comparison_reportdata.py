@@ -8,15 +8,15 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from ..types import UNSET, Unset
 from typing import Dict
+from ..types import UNSET, Unset
 from typing import cast
-from typing import cast, Union
 from typing import Union
+from typing import cast, Union
 
 if TYPE_CHECKING:
-    from ..models.file_index import FileIndex
     from ..models.comparison_reportdata_files import ComparisonReportdataFiles
+    from ..models.file_index import FileIndex
 
 
 T = TypeVar("T", bound="ComparisonReportdata")
@@ -65,8 +65,8 @@ class ComparisonReportdata:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.file_index import FileIndex
         from ..models.comparison_reportdata_files import ComparisonReportdataFiles
+        from ..models.file_index import FileIndex
 
         d = src_dict.copy()
         files = ComparisonReportdataFiles.from_dict(d.pop("files"))

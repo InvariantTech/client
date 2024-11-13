@@ -1,6 +1,6 @@
 import argparse
 import datetime
-from importlib.metadata import version
+import importlib.resources
 import io
 import json
 import logging
@@ -267,8 +267,9 @@ def EntryPoint_inner(args, command, format, debug):
     creds = None
 
     if args.version:
-        with open(pathlib.Path(__file__).parent.parent.joinpath("VERSION"), "r") as f:
-            print(f"client: {f.read().strip()}")
+        with importlib.resources.path(__package__, 'VERSION') as data_path:
+            with open(data_path, 'r') as f:
+                print(f"client: {f.read().strip()}")
         print(f"server: {VersionClient(invariant_domain, ssl.create_default_context()).get_version()}")
         return
 
@@ -301,7 +302,12 @@ def EntryPoint_inner(args, command, format, debug):
                 stat.S_IRUSR |
                 stat.S_IWUSR
             )
-            print("Login successful.")
+            sdk = pysdk.Invariant(
+                creds=creds,
+                settings=settings,
+                base_url=invariant_domain)
+            status = sdk.status()
+            print(f"Logged in as {status.user.email} (tenant={creds.organization_name}).")
         except KeyboardInterrupt as e:
             print("Exiting...", file=sys.stderr)
             exit(1)

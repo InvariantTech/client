@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "invariant-client"
-version = "1.6.0"
+version = "1.7.0"
 description = "Invariant: manage ACLs in an entirely new way"
 authors = ["Rob Ankeny <ankenyr@gmail.com>", "Jason Benterou <jason.benterou@invariant.tech>"]
 readme = "README.md"
+include = ["invariant_client/VERSION"]
 
 [tool.poetry.scripts]
 invariant = "invariant_client.cli:EntryPoint"

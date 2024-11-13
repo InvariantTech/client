@@ -7,7 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import cast, Union
+from typing import Literal
 from ..models.new_password_request_authn_type import NewPasswordRequestAuthnType
 
 
@@ -16,25 +16,23 @@ T = TypeVar("T", bound="NewPasswordRequest")
 
 @_attrs_define
 class NewPasswordRequest:
-    """
+    """Respond to the new_password challenge. The user is either setting an initial password or using password reset.
+
     Attributes:
-        email (Union[None, str]):
+        type (Literal['new_password']):
         password (str):
         authn_type (NewPasswordRequestAuthnType):
         authn (str):
     """
 
-    email: Union[None, str]
+    type: Literal["new_password"]
     password: str
     authn_type: NewPasswordRequestAuthnType
     authn: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        email: Union[None, str]
-
-        email = self.email
-
+        type = self.type
         password = self.password
         authn_type = self.authn_type.value
 
@@ -44,7 +42,7 @@ class NewPasswordRequest:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "email": email,
+                "type": type,
                 "password": password,
                 "authn_type": authn_type,
                 "authn": authn,
@@ -56,13 +54,7 @@ class NewPasswordRequest:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-
-        def _parse_email(data: object) -> Union[None, str]:
-            if data is None:
-                return data
-            return cast(Union[None, str], data)
-
-        email = _parse_email(d.pop("email"))
+        type = d.pop("type")
 
         password = d.pop("password")
 
@@ -71,7 +63,7 @@ class NewPasswordRequest:
         authn = d.pop("authn")
 
         new_password_request = cls(
-            email=email,
+            type=type,
             password=password,
             authn_type=authn_type,
             authn=authn,

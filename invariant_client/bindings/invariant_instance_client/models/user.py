@@ -8,12 +8,12 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-import datetime
-from ..types import UNSET, Unset
 from typing import Dict
+from ..types import UNSET, Unset
+import datetime
 from typing import cast
-from typing import cast, Union
 from typing import Union
+from typing import cast, Union
 from dateutil.parser import isoparse
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class User:
     Attributes:
         uuid (str):
         organization_uuid (str):
-        login_uuid (str):
+        login_uuid (Union[None, str]):
         email (str):
         metadata (UserMetadata):
         is_active (bool):
@@ -39,7 +39,7 @@ class User:
 
     uuid: str
     organization_uuid: str
-    login_uuid: str
+    login_uuid: Union[None, str]
     email: str
     metadata: "UserMetadata"
     is_active: bool
@@ -50,7 +50,10 @@ class User:
     def to_dict(self) -> Dict[str, Any]:
         uuid = self.uuid
         organization_uuid = self.organization_uuid
+        login_uuid: Union[None, str]
+
         login_uuid = self.login_uuid
+
         email = self.email
         metadata = self.metadata.to_dict()
 
@@ -96,7 +99,12 @@ class User:
 
         organization_uuid = d.pop("organization_uuid")
 
-        login_uuid = d.pop("login_uuid")
+        def _parse_login_uuid(data: object) -> Union[None, str]:
+            if data is None:
+                return data
+            return cast(Union[None, str], data)
+
+        login_uuid = _parse_login_uuid(d.pop("login_uuid"))
 
         email = d.pop("email")
 

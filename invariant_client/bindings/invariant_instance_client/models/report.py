@@ -7,15 +7,15 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-import datetime
 from typing import Dict
-from typing import Union
+import datetime
 from dateutil.parser import isoparse
+from typing import Union
 
 if TYPE_CHECKING:
+    from ..models.snapshot_report_data import SnapshotReportData
     from ..models.poc_report_data import POCReportData
     from ..models.report_metadata import ReportMetadata
-    from ..models.snapshot_report_data import SnapshotReportData
 
 
 T = TypeVar("T", bound="Report")
@@ -76,9 +76,9 @@ class Report:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.snapshot_report_data import SnapshotReportData
         from ..models.poc_report_data import POCReportData
         from ..models.report_metadata import ReportMetadata
-        from ..models.snapshot_report_data import SnapshotReportData
 
         d = src_dict.copy()
         uuid = d.pop("uuid")

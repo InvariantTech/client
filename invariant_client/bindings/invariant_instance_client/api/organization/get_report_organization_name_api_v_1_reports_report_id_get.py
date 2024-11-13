@@ -7,9 +7,9 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.challenge_response import ChallengeResponse
 from typing import Dict
 from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
 from ...models.validation_error_response import ValidationErrorResponse
 
 

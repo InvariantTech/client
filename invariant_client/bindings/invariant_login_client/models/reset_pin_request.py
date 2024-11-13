@@ -7,30 +7,34 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from typing import Literal
+
+
 T = TypeVar("T", bound="ResetPINRequest")
 
 
 @_attrs_define
 class ResetPINRequest:
-    """
+    """Respond to the reset_pin challenge.
+
     Attributes:
-        email (str):
+        type (Literal['reset_pin_request']):
         pin (str):
     """
 
-    email: str
+    type: Literal["reset_pin_request"]
     pin: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        email = self.email
+        type = self.type
         pin = self.pin
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "email": email,
+                "type": type,
                 "pin": pin,
             }
         )
@@ -40,12 +44,12 @@ class ResetPINRequest:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        email = d.pop("email")
+        type = d.pop("type")
 
         pin = d.pop("pin")
 
         reset_pin_request = cls(
-            email=email,
+            type=type,
             pin=pin,
         )
 

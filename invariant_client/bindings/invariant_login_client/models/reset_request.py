@@ -7,27 +7,31 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from typing import Literal
+
+
 T = TypeVar("T", bound="ResetRequest")
 
 
 @_attrs_define
 class ResetRequest:
-    """
+    """Initiate password reset. Requires a login session. Not permitted during initial account setup for managed domains.
+
     Attributes:
-        email (str):
+        type (Literal['reset_request']):
     """
 
-    email: str
+    type: Literal["reset_request"]
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        email = self.email
+        type = self.type
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "email": email,
+                "type": type,
             }
         )
 
@@ -36,10 +40,10 @@ class ResetRequest:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        email = d.pop("email")
+        type = d.pop("type")
 
         reset_request = cls(
-            email=email,
+            type=type,
         )
 
         reset_request.additional_properties = d

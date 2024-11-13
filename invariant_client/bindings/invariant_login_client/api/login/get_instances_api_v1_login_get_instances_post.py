@@ -8,10 +8,10 @@ from ...types import Response
 from ... import errors
 
 from typing import Dict
-from ...models.validation_error_response import ValidationErrorResponse
 from ...models.challenge_response import ChallengeResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.user_summary import UserSummary
 from typing import List
-from ...models.user import User
 
 
 def _get_kwargs() -> Dict[str, Any]:
@@ -23,12 +23,12 @@ def _get_kwargs() -> Dict[str, Any]:
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Optional[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in _response_200:
-            response_200_item = User.from_dict(response_200_item_data)
+            response_200_item = UserSummary.from_dict(response_200_item_data)
 
             response_200.append(response_200_item)
 
@@ -49,7 +49,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Response[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -61,7 +61,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Response[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     """List instances available to the current login
 
      List instances where this login is associated with an active user.
@@ -71,7 +71,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[ChallengeResponse, List['User'], ValidationErrorResponse]]
+        Response[Union[ChallengeResponse, List['UserSummary'], ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs()
@@ -86,7 +86,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Optional[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     """List instances available to the current login
 
      List instances where this login is associated with an active user.
@@ -96,7 +96,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[ChallengeResponse, List['User'], ValidationErrorResponse]
+        Union[ChallengeResponse, List['UserSummary'], ValidationErrorResponse]
     """
 
     return sync_detailed(
@@ -107,7 +107,7 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Response[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     """List instances available to the current login
 
      List instances where this login is associated with an active user.
@@ -117,7 +117,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[ChallengeResponse, List['User'], ValidationErrorResponse]]
+        Response[Union[ChallengeResponse, List['UserSummary'], ValidationErrorResponse]]
     """
 
     kwargs = _get_kwargs()
@@ -130,7 +130,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[ChallengeResponse, List["User"], ValidationErrorResponse]]:
+) -> Optional[Union[ChallengeResponse, List["UserSummary"], ValidationErrorResponse]]:
     """List instances available to the current login
 
      List instances where this login is associated with an active user.
@@ -140,7 +140,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[ChallengeResponse, List['User'], ValidationErrorResponse]
+        Union[ChallengeResponse, List['UserSummary'], ValidationErrorResponse]
     """
 
     return (

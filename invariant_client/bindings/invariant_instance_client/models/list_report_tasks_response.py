@@ -7,8 +7,8 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import List
 from typing import Dict
+from typing import List
 
 if TYPE_CHECKING:
     from ..models.report_task import ReportTask

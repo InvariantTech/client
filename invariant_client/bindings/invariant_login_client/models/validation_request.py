@@ -7,26 +7,34 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from typing import Literal
+
+
 T = TypeVar("T", bound="ValidationRequest")
 
 
 @_attrs_define
 class ValidationRequest:
-    """
+    """Respond to the validate_email challenge.
+
     Attributes:
+        type (Literal['email_valid']):
         pin (str):
     """
 
+    type: Literal["email_valid"]
     pin: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        type = self.type
         pin = self.pin
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "type": type,
                 "pin": pin,
             }
         )
@@ -36,9 +44,12 @@ class ValidationRequest:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
+        type = d.pop("type")
+
         pin = d.pop("pin")
 
         validation_request = cls(
+            type=type,
             pin=pin,
         )
 

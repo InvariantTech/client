@@ -7,13 +7,13 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
+from typing import Dict
+from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from typing import cast
 from ...models.create_integration_request_github_app_installation import (
     CreateIntegrationRequestGithubAppInstallation,
 )
-from ...models.challenge_response import ChallengeResponse
-from typing import Dict
-from typing import cast
-from ...models.base_error_response import BaseErrorResponse
 from ...models.validation_error_response import ValidationErrorResponse
 
 

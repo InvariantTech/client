@@ -3,12 +3,13 @@
 from .api_token import APIToken
 from .api_token_metadata import APITokenMetadata
 from .api_token_response import APITokenResponse
+from .authn_challenge import AuthnChallenge
 from .base_error_response import BaseErrorResponse
+from .basic_auth_login_method import BasicAuthLoginMethod
 from .body_upload_snapshot_organization_name_api_v1_uploadsnapshot_post import (
     BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
 )
 from .challenge_response import ChallengeResponse
-from .challenge_response_challenge import ChallengeResponseChallenge
 from .comparison_reportdata import ComparisonReportdata
 from .comparison_reportdata_files import ComparisonReportdataFiles
 from .console_request_options import ConsoleRequestOptions
@@ -18,6 +19,8 @@ from .create_integration_request_github_app_installation import (
 from .create_integration_request_github_app_installation_data import (
     CreateIntegrationRequestGithubAppInstallationData,
 )
+from .create_member_response import CreateMemberResponse
+from .create_member_user_request import CreateMemberUserRequest
 from .create_monitor_target_request import CreateMonitorTargetRequest
 from .create_network_request import CreateNetworkRequest
 from .create_notification_group_request import CreateNotificationGroupRequest
@@ -47,19 +50,29 @@ from .integration_data_github_app_installation_data_extra import (
     IntegrationDataGithubAppInstallationDataExtra,
 )
 from .integration_with_status import IntegrationWithStatus
+from .invite_response import InviteResponse
+from .invite_user_request import InviteUserRequest
 from .list_networks_response import ListNetworksResponse
 from .list_notification_groups_response import ListNotificationGroupsResponse
 from .list_report_tasks_response import ListReportTasksResponse
 from .list_reports_response import ListReportsResponse
+from .login_metadata_public import LoginMetadataPublic
+from .login_public import LoginPublic
 from .metadata import Metadata
+from .modify_user_request import ModifyUserRequest
 from .monitor_target import MonitorTarget
 from .monitor_target_metadata import MonitorTargetMetadata
 from .network import Network
 from .network_metadata import NetworkMetadata
+from .new_login_challenge import NewLoginChallenge
 from .notification_group import NotificationGroup
 from .notification_group_metadata import NotificationGroupMetadata
+from .oidc_login_method import OIDCLoginMethod
 from .organization import Organization
+from .organization_member_with_extras import OrganizationMemberWithExtras
+from .password_reset_pin_challenge import PasswordResetPINChallenge
 from .poc_report_data import POCReportData
+from .public import Public
 from .refresh_response import RefreshResponse
 from .report import Report
 from .report_extras import ReportExtras
@@ -68,8 +81,11 @@ from .report_task import ReportTask
 from .report_text_summary_request import ReportTextSummaryRequest
 from .report_text_summary_response import ReportTextSummaryResponse
 from .repository import Repository
+from .set_password_challenge import SetPasswordChallenge
+from .setup_code_challenge import SetupCodeChallenge
 from .snapshot_report_data import SnapshotReportData
 from .snapshot_report_data_files import SnapshotReportDataFiles
+from .start_challenge import StartChallenge
 from .tab_info import TabInfo
 from .tab_info_parameters_type_0 import TabInfoParametersType0
 from .tab_info_state_type_0 import TabInfoStateType0
@@ -79,6 +95,7 @@ from .upload_snapshot_status_response import UploadSnapshotStatusResponse
 from .user import User
 from .user_metadata import UserMetadata
 from .user_tabs_config import UserTabsConfig
+from .validate_email_challenge import ValidateEmailChallenge
 from .validation_error_response import ValidationErrorResponse
 from .validation_error_response_part import ValidationErrorResponsePart
 
@@ -86,15 +103,18 @@ __all__ = (
     "APIToken",
     "APITokenMetadata",
     "APITokenResponse",
+    "AuthnChallenge",
     "BaseErrorResponse",
+    "BasicAuthLoginMethod",
     "BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost",
     "ChallengeResponse",
-    "ChallengeResponseChallenge",
     "ComparisonReportdata",
     "ComparisonReportdataFiles",
     "ConsoleRequestOptions",
     "CreateIntegrationRequestGithubAppInstallation",
     "CreateIntegrationRequestGithubAppInstallationData",
+    "CreateMemberResponse",
+    "CreateMemberUserRequest",
     "CreateMonitorTargetRequest",
     "CreateNetworkRequest",
     "CreateNotificationGroupRequest",
@@ -118,19 +138,29 @@ __all__ = (
     "IntegrationDataGithubAppInstallationData",
     "IntegrationDataGithubAppInstallationDataExtra",
     "IntegrationWithStatus",
+    "InviteResponse",
+    "InviteUserRequest",
     "ListNetworksResponse",
     "ListNotificationGroupsResponse",
     "ListReportsResponse",
     "ListReportTasksResponse",
+    "LoginMetadataPublic",
+    "LoginPublic",
     "Metadata",
+    "ModifyUserRequest",
     "MonitorTarget",
     "MonitorTargetMetadata",
     "Network",
     "NetworkMetadata",
+    "NewLoginChallenge",
     "NotificationGroup",
     "NotificationGroupMetadata",
+    "OIDCLoginMethod",
     "Organization",
+    "OrganizationMemberWithExtras",
+    "PasswordResetPINChallenge",
     "POCReportData",
+    "Public",
     "RefreshResponse",
     "Report",
     "ReportExtras",
@@ -139,8 +169,11 @@ __all__ = (
     "ReportTextSummaryRequest",
     "ReportTextSummaryResponse",
     "Repository",
+    "SetPasswordChallenge",
+    "SetupCodeChallenge",
     "SnapshotReportData",
     "SnapshotReportDataFiles",
+    "StartChallenge",
     "TabInfo",
     "TabInfoParametersType0",
     "TabInfoStateType0",
@@ -150,6 +183,7 @@ __all__ = (
     "User",
     "UserMetadata",
     "UserTabsConfig",
+    "ValidateEmailChallenge",
     "ValidationErrorResponse",
     "ValidationErrorResponsePart",
 )

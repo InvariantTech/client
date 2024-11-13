@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type, TypeVar
+from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
 
 from typing import List
 
@@ -8,11 +8,21 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import cast, Union
-from ..models.challenge_response_challenge import ChallengeResponseChallenge
+from typing import Dict
 from ..types import UNSET, Unset
 from typing import Literal
+from typing import cast, Union
+from typing import cast
 from typing import Union
+
+if TYPE_CHECKING:
+    from ..models.authn_challenge import AuthnChallenge
+    from ..models.setup_code_challenge import SetupCodeChallenge
+    from ..models.start_challenge import StartChallenge
+    from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
+    from ..models.validate_email_challenge import ValidateEmailChallenge
+    from ..models.set_password_challenge import SetPasswordChallenge
+    from ..models.new_login_challenge import NewLoginChallenge
 
 
 T = TypeVar("T", bound="ChallengeResponse")
@@ -26,7 +36,8 @@ class ChallengeResponse:
         type (Literal['urn:invariant:errors:auth_challenge']):
         title (str):
         detail (str):
-        challenge (ChallengeResponseChallenge):
+        challenge (Union['AuthnChallenge', 'NewLoginChallenge', 'PasswordResetPINChallenge', 'SetPasswordChallenge',
+            'SetupCodeChallenge', 'StartChallenge', 'ValidateEmailChallenge']):
         instance (Union[None, Unset, str]):
         login_token (Union[None, Unset, str]):
     """
@@ -35,17 +46,53 @@ class ChallengeResponse:
     type: Literal["urn:invariant:errors:auth_challenge"]
     title: str
     detail: str
-    challenge: ChallengeResponseChallenge
+    challenge: Union[
+        "AuthnChallenge",
+        "NewLoginChallenge",
+        "PasswordResetPINChallenge",
+        "SetPasswordChallenge",
+        "SetupCodeChallenge",
+        "StartChallenge",
+        "ValidateEmailChallenge",
+    ]
     instance: Union[None, Unset, str] = UNSET
     login_token: Union[None, Unset, str] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        from ..models.authn_challenge import AuthnChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
+        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
+        from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.new_login_challenge import NewLoginChallenge
+
         status = self.status
         type = self.type
         title = self.title
         detail = self.detail
-        challenge = self.challenge.value
+        challenge: Dict[str, Any]
+
+        if isinstance(self.challenge, AuthnChallenge):
+            challenge = self.challenge.to_dict()
+
+        elif isinstance(self.challenge, NewLoginChallenge):
+            challenge = self.challenge.to_dict()
+
+        elif isinstance(self.challenge, ValidateEmailChallenge):
+            challenge = self.challenge.to_dict()
+
+        elif isinstance(self.challenge, PasswordResetPINChallenge):
+            challenge = self.challenge.to_dict()
+
+        elif isinstance(self.challenge, SetPasswordChallenge):
+            challenge = self.challenge.to_dict()
+
+        elif isinstance(self.challenge, SetupCodeChallenge):
+            challenge = self.challenge.to_dict()
+
+        else:
+            challenge = self.challenge.to_dict()
 
         instance: Union[None, Unset, str]
         if isinstance(self.instance, Unset):
@@ -81,6 +128,14 @@ class ChallengeResponse:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.authn_challenge import AuthnChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
+        from ..models.start_challenge import StartChallenge
+        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
+        from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.new_login_challenge import NewLoginChallenge
+
         d = src_dict.copy()
         status = d.pop("status")
 
@@ -90,7 +145,72 @@ class ChallengeResponse:
 
         detail = d.pop("detail")
 
-        challenge = ChallengeResponseChallenge(d.pop("challenge"))
+        def _parse_challenge(
+            data: object,
+        ) -> Union[
+            "AuthnChallenge",
+            "NewLoginChallenge",
+            "PasswordResetPINChallenge",
+            "SetPasswordChallenge",
+            "SetupCodeChallenge",
+            "StartChallenge",
+            "ValidateEmailChallenge",
+        ]:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_0 = AuthnChallenge.from_dict(data)
+
+                return challenge_type_0
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_1 = NewLoginChallenge.from_dict(data)
+
+                return challenge_type_1
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_2 = ValidateEmailChallenge.from_dict(data)
+
+                return challenge_type_2
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_3 = PasswordResetPINChallenge.from_dict(data)
+
+                return challenge_type_3
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_4 = SetPasswordChallenge.from_dict(data)
+
+                return challenge_type_4
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                challenge_type_5 = SetupCodeChallenge.from_dict(data)
+
+                return challenge_type_5
+            except:  # noqa: E722
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            challenge_type_6 = StartChallenge.from_dict(data)
+
+            return challenge_type_6
+
+        challenge = _parse_challenge(d.pop("challenge"))
 
         def _parse_instance(data: object) -> Union[None, Unset, str]:
             if data is None:

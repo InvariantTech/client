@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class NewPasswordRequestAuthnType(str, Enum):
+    INITIAL_SETUP = "INITIAL_SETUP"
     PIN = "PIN"
     TOKEN = "TOKEN"
 

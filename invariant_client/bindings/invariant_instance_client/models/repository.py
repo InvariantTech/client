@@ -7,9 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from typing import Dict
 from dateutil.parser import isoparse
 import datetime
-from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.github_repository_data import GithubRepositoryData
