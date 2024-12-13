@@ -7,12 +7,12 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from typing import Dict
-from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
-from ...models.user_tabs_config import UserTabsConfig
-from ...models.validation_error_response import ValidationErrorResponse
+from ...models.base_error_response import BaseErrorResponse
 from ...models.ui_status_response import UIStatusResponse
+from typing import Dict
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.user_tabs_config import UserTabsConfig
 
 
 def _get_kwargs(

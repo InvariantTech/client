@@ -9,9 +9,9 @@ from ... import errors
 
 from typing import Dict
 from ...models.register_organization_request_body import RegisterOrganizationRequestBody
-from ...models.validation_error_response import ValidationErrorResponse
 from typing import cast
 from ...models.base_error_response import BaseErrorResponse
+from ...models.validation_error_response import ValidationErrorResponse
 
 
 def _get_kwargs(

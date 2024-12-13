@@ -20,20 +20,17 @@ class OIDCLoginMethod:
         type (Literal['oidc']):
         organization_uuid (str):
         integration_uuid (str):
-        principal_id (str):
     """
 
     type: Literal["oidc"]
     organization_uuid: str
     integration_uuid: str
-    principal_id: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         type = self.type
         organization_uuid = self.organization_uuid
         integration_uuid = self.integration_uuid
-        principal_id = self.principal_id
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -42,7 +39,6 @@ class OIDCLoginMethod:
                 "type": type,
                 "organization_uuid": organization_uuid,
                 "integration_uuid": integration_uuid,
-                "principal_id": principal_id,
             }
         )
 
@@ -57,13 +53,10 @@ class OIDCLoginMethod:
 
         integration_uuid = d.pop("integration_uuid")
 
-        principal_id = d.pop("principal_id")
-
         oidc_login_method = cls(
             type=type,
             organization_uuid=organization_uuid,
             integration_uuid=integration_uuid,
-            principal_id=principal_id,
         )
 
         oidc_login_method.additional_properties = d

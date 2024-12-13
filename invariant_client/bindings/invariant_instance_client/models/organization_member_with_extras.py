@@ -7,13 +7,13 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
 from typing import cast, Union
+from typing import Dict
 from typing import cast
 
 if TYPE_CHECKING:
+    from ..models.login_config_public import LoginConfigPublic
     from ..models.user import User
-    from ..models.login_public import LoginPublic
 
 
 T = TypeVar("T", bound="OrganizationMemberWithExtras")
@@ -24,21 +24,21 @@ class OrganizationMemberWithExtras:
     """
     Attributes:
         user (User):
-        login (Union['LoginPublic', None]):
+        login (Union['LoginConfigPublic', None]):
     """
 
     user: "User"
-    login: Union["LoginPublic", None]
+    login: Union["LoginConfigPublic", None]
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.login_public import LoginPublic
+        from ..models.login_config_public import LoginConfigPublic
 
         user = self.user.to_dict()
 
         login: Union[Dict[str, Any], None]
 
-        if isinstance(self.login, LoginPublic):
+        if isinstance(self.login, LoginConfigPublic):
             login = self.login.to_dict()
 
         else:
@@ -57,24 +57,24 @@ class OrganizationMemberWithExtras:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.login_config_public import LoginConfigPublic
         from ..models.user import User
-        from ..models.login_public import LoginPublic
 
         d = src_dict.copy()
         user = User.from_dict(d.pop("user"))
 
-        def _parse_login(data: object) -> Union["LoginPublic", None]:
+        def _parse_login(data: object) -> Union["LoginConfigPublic", None]:
             if data is None:
                 return data
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                login_type_0 = LoginPublic.from_dict(data)
+                login_type_0 = LoginConfigPublic.from_dict(data)
 
                 return login_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union["LoginPublic", None], data)
+            return cast(Union["LoginConfigPublic", None], data)
 
         login = _parse_login(d.pop("login"))
 

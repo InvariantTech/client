@@ -7,14 +7,14 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
-from typing import Literal
-from typing import Union
 from typing import List
+from typing import Union
+from typing import Literal
+from typing import Dict
 
 if TYPE_CHECKING:
-    from ..models.basic_auth_login_method import BasicAuthLoginMethod
     from ..models.public import Public
+    from ..models.basic_auth_login_method import BasicAuthLoginMethod
 
 
 T = TypeVar("T", bound="AuthnChallenge")
@@ -62,8 +62,8 @@ class AuthnChallenge:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.basic_auth_login_method import BasicAuthLoginMethod
         from ..models.public import Public
+        from ..models.basic_auth_login_method import BasicAuthLoginMethod
 
         d = src_dict.copy()
         type = d.pop("type")

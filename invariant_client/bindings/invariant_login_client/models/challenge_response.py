@@ -8,21 +8,21 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Dict
-from ..types import UNSET, Unset
-from typing import Literal
 from typing import cast, Union
 from typing import cast
 from typing import Union
+from ..types import UNSET, Unset
+from typing import Literal
+from typing import Dict
 
 if TYPE_CHECKING:
-    from ..models.authn_challenge import AuthnChallenge
-    from ..models.setup_code_challenge import SetupCodeChallenge
-    from ..models.start_challenge import StartChallenge
-    from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-    from ..models.validate_email_challenge import ValidateEmailChallenge
-    from ..models.set_password_challenge import SetPasswordChallenge
     from ..models.new_login_challenge import NewLoginChallenge
+    from ..models.setup_code_challenge import SetupCodeChallenge
+    from ..models.validate_email_challenge import ValidateEmailChallenge
+    from ..models.authn_challenge import AuthnChallenge
+    from ..models.set_password_challenge import SetPasswordChallenge
+    from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
+    from ..models.start_challenge import StartChallenge
 
 
 T = TypeVar("T", bound="ChallengeResponse")
@@ -60,12 +60,12 @@ class ChallengeResponse:
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.authn_challenge import AuthnChallenge
-        from ..models.setup_code_challenge import SetupCodeChallenge
-        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-        from ..models.validate_email_challenge import ValidateEmailChallenge
-        from ..models.set_password_challenge import SetPasswordChallenge
         from ..models.new_login_challenge import NewLoginChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
+        from ..models.authn_challenge import AuthnChallenge
+        from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
 
         status = self.status
         type = self.type
@@ -128,13 +128,13 @@ class ChallengeResponse:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.authn_challenge import AuthnChallenge
-        from ..models.setup_code_challenge import SetupCodeChallenge
-        from ..models.start_challenge import StartChallenge
-        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-        from ..models.validate_email_challenge import ValidateEmailChallenge
-        from ..models.set_password_challenge import SetPasswordChallenge
         from ..models.new_login_challenge import NewLoginChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
+        from ..models.authn_challenge import AuthnChallenge
+        from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
+        from ..models.start_challenge import StartChallenge
 
         d = src_dict.copy()
         status = d.pop("status")

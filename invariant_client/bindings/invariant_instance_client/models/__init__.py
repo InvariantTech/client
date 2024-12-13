@@ -19,11 +19,12 @@ from .create_integration_request_github_app_installation import (
 from .create_integration_request_github_app_installation_data import (
     CreateIntegrationRequestGithubAppInstallationData,
 )
+from .create_managed_user_request import CreateManagedUserRequest
 from .create_member_response import CreateMemberResponse
-from .create_member_user_request import CreateMemberUserRequest
 from .create_monitor_target_request import CreateMonitorTargetRequest
 from .create_network_request import CreateNetworkRequest
 from .create_notification_group_request import CreateNotificationGroupRequest
+from .create_security_integration_request import CreateSecurityIntegrationRequest
 from .create_token_request import CreateTokenRequest
 from .external_status_data_integration import ExternalStatusDataIntegration
 from .external_status_integration import ExternalStatusIntegration
@@ -56,9 +57,16 @@ from .list_networks_response import ListNetworksResponse
 from .list_notification_groups_response import ListNotificationGroupsResponse
 from .list_report_tasks_response import ListReportTasksResponse
 from .list_reports_response import ListReportsResponse
-from .login_metadata_public import LoginMetadataPublic
-from .login_public import LoginPublic
+from .login_config_metadata_public import LoginConfigMetadataPublic
+from .login_config_public import LoginConfigPublic
 from .metadata import Metadata
+from .modify_allow_inbound_invitations_request import (
+    ModifyAllowInboundInvitationsRequest,
+)
+from .modify_allow_outbound_invitations_request import (
+    ModifyAllowOutboundInvitationsRequest,
+)
+from .modify_default_login_methods_request import ModifyDefaultLoginMethodsRequest
 from .modify_user_request import ModifyUserRequest
 from .monitor_target import MonitorTarget
 from .monitor_target_metadata import MonitorTargetMetadata
@@ -68,6 +76,8 @@ from .new_login_challenge import NewLoginChallenge
 from .notification_group import NotificationGroup
 from .notification_group_metadata import NotificationGroupMetadata
 from .oidc_login_method import OIDCLoginMethod
+from .oidc_principal import OIDCPrincipal
+from .oidc_security_integration_metadata import OIDCSecurityIntegrationMetadata
 from .organization import Organization
 from .organization_member_with_extras import OrganizationMemberWithExtras
 from .password_reset_pin_challenge import PasswordResetPINChallenge
@@ -81,6 +91,9 @@ from .report_task import ReportTask
 from .report_text_summary_request import ReportTextSummaryRequest
 from .report_text_summary_response import ReportTextSummaryResponse
 from .repository import Repository
+from .security_integration import SecurityIntegration
+from .security_policy_metadata import SecurityPolicyMetadata
+from .security_settings_response import SecuritySettingsResponse
 from .set_password_challenge import SetPasswordChallenge
 from .setup_code_challenge import SetupCodeChallenge
 from .snapshot_report_data import SnapshotReportData
@@ -113,11 +126,12 @@ __all__ = (
     "ConsoleRequestOptions",
     "CreateIntegrationRequestGithubAppInstallation",
     "CreateIntegrationRequestGithubAppInstallationData",
+    "CreateManagedUserRequest",
     "CreateMemberResponse",
-    "CreateMemberUserRequest",
     "CreateMonitorTargetRequest",
     "CreateNetworkRequest",
     "CreateNotificationGroupRequest",
+    "CreateSecurityIntegrationRequest",
     "CreateTokenRequest",
     "ExternalStatusDataIntegration",
     "ExternalStatusIntegration",
@@ -144,9 +158,12 @@ __all__ = (
     "ListNotificationGroupsResponse",
     "ListReportsResponse",
     "ListReportTasksResponse",
-    "LoginMetadataPublic",
-    "LoginPublic",
+    "LoginConfigMetadataPublic",
+    "LoginConfigPublic",
     "Metadata",
+    "ModifyAllowInboundInvitationsRequest",
+    "ModifyAllowOutboundInvitationsRequest",
+    "ModifyDefaultLoginMethodsRequest",
     "ModifyUserRequest",
     "MonitorTarget",
     "MonitorTargetMetadata",
@@ -156,6 +173,8 @@ __all__ = (
     "NotificationGroup",
     "NotificationGroupMetadata",
     "OIDCLoginMethod",
+    "OIDCPrincipal",
+    "OIDCSecurityIntegrationMetadata",
     "Organization",
     "OrganizationMemberWithExtras",
     "PasswordResetPINChallenge",
@@ -169,6 +188,9 @@ __all__ = (
     "ReportTextSummaryRequest",
     "ReportTextSummaryResponse",
     "Repository",
+    "SecurityIntegration",
+    "SecurityPolicyMetadata",
+    "SecuritySettingsResponse",
     "SetPasswordChallenge",
     "SetupCodeChallenge",
     "SnapshotReportData",

@@ -16,8 +16,10 @@
 # The following modifications were made from the original file:
 # 1. Retrieved from https://github.com/batfish/pybatfish/blob/e23829854c70446b4e68a3f8ef2a25410daad167/pybatfish/util.py
 # 2. All code except function zip_dir, its imports, and constant _MIN_ZIP_TIMESTAMP was excluded
+# 3. Add a bytes_limit parameter
 
 import os
+import pathlib
 import tempfile
 from typing import IO
 import zipfile
@@ -27,7 +29,7 @@ import zipfile
 _MIN_ZIP_TIMESTAMP = 315561600.0
 
 
-def zip_dir(dir_path: str, out_file: str | IO):
+def zip_dir(dir_path: str, out_file: str | IO, bytes_limit: int = 0):
     """
     ZIP a specified directory and write it to the given output file path.
 
@@ -36,6 +38,7 @@ def zip_dir(dir_path: str, out_file: str | IO):
     :param out_file: path to the resulting zipfile
     :type out_file: str
     """
+    bytes_read = 0
     with zipfile.ZipFile(out_file, "w", zipfile.ZIP_DEFLATED) as zipWriter:
         rel_root = os.path.abspath(os.path.join(dir_path, os.path.pardir))
 
@@ -51,8 +54,18 @@ def zip_dir(dir_path: str, out_file: str | IO):
                     with tempfile.NamedTemporaryFile("w+b") as temp_file, open(
                         filename, "rb"
                     ) as file_src:
-                        temp_file.write(file_src.read())
+                        file_bytes = file_src.read()
+                        if bytes_limit != 0:
+                            bytes_read += len(file_bytes)
+                            if bytes_read >= bytes_limit:
+                                raise ValueError(f"Directory too large. {bytes_limit} byte limit exceeded for directory {pathlib.Path(dir_path).absolute()} .")
+                        temp_file.write(file_bytes)
                         temp_file.flush()
                         zipWriter.write(temp_file.name, arcname)
                 else:
+                    if bytes_limit != 0:
+                        st = os.stat(filename)
+                        bytes_read += st.st_size
+                        if bytes_read >= bytes_limit:
+                            raise ValueError(f"Directory too large. {bytes_limit} byte limit exceeded for directory {pathlib.Path(dir_path).absolute()} .")
                     zipWriter.write(filename, arcname)

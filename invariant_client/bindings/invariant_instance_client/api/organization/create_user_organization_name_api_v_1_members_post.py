@@ -7,25 +7,25 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from typing import Dict
-from ...models.base_error_response import BaseErrorResponse
-from ...models.challenge_response import ChallengeResponse
+from ...models.invite_response import InviteResponse
+from ...models.create_managed_user_request import CreateManagedUserRequest
 from ...models.create_member_response import CreateMemberResponse
-from ...models.create_member_user_request import CreateMemberUserRequest
+from ...models.challenge_response import ChallengeResponse
 from ...models.invite_user_request import InviteUserRequest
 from typing import Union
+from ...models.base_error_response import BaseErrorResponse
+from typing import Dict
 from ...models.validation_error_response import ValidationErrorResponse
-from ...models.invite_response import InviteResponse
 
 
 def _get_kwargs(
     organization_name: str,
     *,
-    json_body: Union["CreateMemberUserRequest", "InviteUserRequest"],
+    json_body: Union["CreateManagedUserRequest", "InviteUserRequest"],
 ) -> Dict[str, Any]:
     json_json_body: Dict[str, Any]
 
-    if isinstance(json_body, CreateMemberUserRequest):
+    if isinstance(json_body, CreateManagedUserRequest):
         json_json_body = json_body.to_dict()
 
     else:
@@ -120,7 +120,7 @@ def sync_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union["CreateMemberUserRequest", "InviteUserRequest"],
+    json_body: Union["CreateManagedUserRequest", "InviteUserRequest"],
 ) -> Response[
     Union[
         BaseErrorResponse,
@@ -133,7 +133,7 @@ def sync_detailed(
 
     Args:
         organization_name (str):
-        json_body (Union['CreateMemberUserRequest', 'InviteUserRequest']):
+        json_body (Union['CreateManagedUserRequest', 'InviteUserRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -159,7 +159,7 @@ def sync(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union["CreateMemberUserRequest", "InviteUserRequest"],
+    json_body: Union["CreateManagedUserRequest", "InviteUserRequest"],
 ) -> Optional[
     Union[
         BaseErrorResponse,
@@ -172,7 +172,7 @@ def sync(
 
     Args:
         organization_name (str):
-        json_body (Union['CreateMemberUserRequest', 'InviteUserRequest']):
+        json_body (Union['CreateManagedUserRequest', 'InviteUserRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -193,7 +193,7 @@ async def asyncio_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union["CreateMemberUserRequest", "InviteUserRequest"],
+    json_body: Union["CreateManagedUserRequest", "InviteUserRequest"],
 ) -> Response[
     Union[
         BaseErrorResponse,
@@ -206,7 +206,7 @@ async def asyncio_detailed(
 
     Args:
         organization_name (str):
-        json_body (Union['CreateMemberUserRequest', 'InviteUserRequest']):
+        json_body (Union['CreateManagedUserRequest', 'InviteUserRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -230,7 +230,7 @@ async def asyncio(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union["CreateMemberUserRequest", "InviteUserRequest"],
+    json_body: Union["CreateManagedUserRequest", "InviteUserRequest"],
 ) -> Optional[
     Union[
         BaseErrorResponse,
@@ -243,7 +243,7 @@ async def asyncio(
 
     Args:
         organization_name (str):
-        json_body (Union['CreateMemberUserRequest', 'InviteUserRequest']):
+        json_body (Union['CreateManagedUserRequest', 'InviteUserRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

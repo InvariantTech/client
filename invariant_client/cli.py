@@ -7,6 +7,7 @@ import logging
 import logging.config
 import os
 import pathlib
+import platform
 import ssl
 import stat
 import sys
@@ -354,13 +355,24 @@ def EntryPoint_inner(args, command, format, debug):
             with open(target, "rb") as f:
                 bytes = io.BytesIO(f.read())
         elif pathlib.Path(target).is_dir():
+            if not pathlib.Path(target, 'configs').is_dir() and not pathlib.Path(target, 'aws_configs').is_dir():
+                print(f"Invalid directory. Expected subdirectories 'configs' or 'aws_configs' to be present. See https://docs.invariant.tech/Reference/Snapshots for instructions.", file=sys.stderr)
+                exit(1)
+            home_dir = ''
+            if platform.system() == 'Windows':
+                home_dir = pathlib.Path(os.environ['HOMEDRIVE'],os.environ['HOMEPATH'])
+            else:
+                home_dir = os.environ['HOME']
+            if pathlib.Path(target).absolute() == pathlib.Path(home_dir).absolute():
+                print("Upload aborted. Cowardly refusing to upload your home directory.")
+                exit(1)
             bytes = io.BytesIO()
-            zip_util.zip_dir(target, bytes)  # Write a zip file into 'bytes'
+            BYTES_LIMIT = 40000000
+            zip_util.zip_dir(target, bytes, BYTES_LIMIT)  # Write a zip file into 'bytes'
         else:
             print("Unacceptable target", file=sys.stderr)
             print(str(target), file=sys.stderr)
             exit(1)
-
         compare_to = getattr(args, 'compare_to')
         try:
             exec_uuid = retry_call(

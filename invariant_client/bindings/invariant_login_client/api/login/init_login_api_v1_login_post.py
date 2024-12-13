@@ -7,21 +7,23 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from typing import Dict
-from ...models.validation_request import ValidationRequest
-from ...models.challenge_response import ChallengeResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from ...models.reset_pin_request import ResetPINRequest
-from ...models.email_password_login_request import EmailPasswordLoginRequest
-from ...models.new_password_request import NewPasswordRequest
-from ...models.init_login_request import InitLoginRequest
-from typing import cast, Union
-from ...models.create_login_request import CreateLoginRequest
-from typing import cast
-from ...models.setup_code_request import SetupCodeRequest
-from ...models.reset_request import ResetRequest
-from ...models.init_login_invitation_request import InitLoginInvitationRequest
 from ...models.base_error_response import BaseErrorResponse
+from typing import Dict
+from typing import cast, Union
+from ...models.challenge_response import ChallengeResponse
+from ...models.init_login_request import InitLoginRequest
+from ...models.new_password_request import NewPasswordRequest
+from typing import cast
+from ...models.open_id_login_request import OpenIDLoginRequest
+from ...models.init_login_invitation_request import InitLoginInvitationRequest
+from ...models.reset_request import ResetRequest
+from ...models.init_login_setup_link_request import InitLoginSetupLinkRequest
+from ...models.validation_request import ValidationRequest
+from ...models.setup_code_request import SetupCodeRequest
+from ...models.email_password_login_request import EmailPasswordLoginRequest
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.create_login_request import CreateLoginRequest
+from ...models.reset_pin_request import ResetPINRequest
 
 
 def _get_kwargs(
@@ -31,7 +33,9 @@ def _get_kwargs(
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
         "InitLoginRequest",
+        "InitLoginSetupLinkRequest",
         "NewPasswordRequest",
+        "OpenIDLoginRequest",
         "ResetPINRequest",
         "ResetRequest",
         "SetupCodeRequest",
@@ -49,10 +53,16 @@ def _get_kwargs(
     elif isinstance(json_body, InitLoginInvitationRequest):
         json_json_body = json_body.to_dict()
 
+    elif isinstance(json_body, InitLoginSetupLinkRequest):
+        json_json_body = json_body.to_dict()
+
     elif isinstance(json_body, CreateLoginRequest):
         json_json_body = json_body.to_dict()
 
     elif isinstance(json_body, EmailPasswordLoginRequest):
+        json_json_body = json_body.to_dict()
+
+    elif isinstance(json_body, OpenIDLoginRequest):
         json_json_body = json_body.to_dict()
 
     elif isinstance(json_body, ResetRequest):
@@ -121,7 +131,9 @@ def sync_detailed(
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
         "InitLoginRequest",
+        "InitLoginSetupLinkRequest",
         "NewPasswordRequest",
+        "OpenIDLoginRequest",
         "ResetPINRequest",
         "ResetRequest",
         "SetupCodeRequest",
@@ -211,8 +223,9 @@ def sync_detailed(
 
     Args:
         json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
-            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
-            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
+            'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
+            'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -241,7 +254,9 @@ def sync(
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
         "InitLoginRequest",
+        "InitLoginSetupLinkRequest",
         "NewPasswordRequest",
+        "OpenIDLoginRequest",
         "ResetPINRequest",
         "ResetRequest",
         "SetupCodeRequest",
@@ -331,8 +346,9 @@ def sync(
 
     Args:
         json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
-            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
-            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
+            'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
+            'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -356,7 +372,9 @@ async def asyncio_detailed(
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
         "InitLoginRequest",
+        "InitLoginSetupLinkRequest",
         "NewPasswordRequest",
+        "OpenIDLoginRequest",
         "ResetPINRequest",
         "ResetRequest",
         "SetupCodeRequest",
@@ -446,8 +464,9 @@ async def asyncio_detailed(
 
     Args:
         json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
-            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
-            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
+            'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
+            'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -474,7 +493,9 @@ async def asyncio(
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
         "InitLoginRequest",
+        "InitLoginSetupLinkRequest",
         "NewPasswordRequest",
+        "OpenIDLoginRequest",
         "ResetPINRequest",
         "ResetRequest",
         "SetupCodeRequest",
@@ -564,8 +585,9 @@ async def asyncio(
 
     Args:
         json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
-            'InitLoginInvitationRequest', 'InitLoginRequest', 'NewPasswordRequest', 'ResetPINRequest',
-            'ResetRequest', 'SetupCodeRequest', 'ValidationRequest']):
+            'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
+            'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
+            'SetupCodeRequest', 'ValidationRequest']):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

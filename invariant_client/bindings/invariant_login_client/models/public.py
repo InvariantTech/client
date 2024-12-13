@@ -18,23 +18,23 @@ class Public:
     """
     Attributes:
         type (Literal['oidc']):
-        redirect_url (str):
+        name (str):
     """
 
     type: Literal["oidc"]
-    redirect_url: str
+    name: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         type = self.type
-        redirect_url = self.redirect_url
+        name = self.name
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "type": type,
-                "redirect_url": redirect_url,
+                "name": name,
             }
         )
 
@@ -45,11 +45,11 @@ class Public:
         d = src_dict.copy()
         type = d.pop("type")
 
-        redirect_url = d.pop("redirect_url")
+        name = d.pop("name")
 
         public = cls(
             type=type,
-            redirect_url=redirect_url,
+            name=name,
         )
 
         public.additional_properties = d

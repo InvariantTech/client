@@ -8,9 +8,9 @@ from attrs import field as _attrs_field
 
 
 from typing import Dict
+from typing import cast, List
 from typing import Literal
 from typing import cast
-from typing import cast, List
 
 if TYPE_CHECKING:
     from ..models.github_branch import GithubBranch

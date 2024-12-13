@@ -7,10 +7,10 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
 import datetime
-from dateutil.parser import isoparse
 from typing import Union
+from dateutil.parser import isoparse
+from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.snapshot_report_data import SnapshotReportData

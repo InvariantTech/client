@@ -7,12 +7,12 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import Dict
 from typing import List
+from typing import Dict
 
 if TYPE_CHECKING:
-    from ..models.integration import Integration
     from ..models.repository import Repository
+    from ..models.integration import Integration
     from ..models.external_status_integration import ExternalStatusIntegration
 
 
@@ -58,8 +58,8 @@ class IntegrationWithStatus:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.integration import Integration
         from ..models.repository import Repository
+        from ..models.integration import Integration
         from ..models.external_status_integration import ExternalStatusIntegration
 
         d = src_dict.copy()

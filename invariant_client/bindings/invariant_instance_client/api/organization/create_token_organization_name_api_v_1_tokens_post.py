@@ -7,11 +7,11 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from typing import Dict
-from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
-from typing import cast
 from ...models.create_token_request import CreateTokenRequest
+from typing import cast
+from ...models.base_error_response import BaseErrorResponse
+from typing import Dict
 from ...models.validation_error_response import ValidationErrorResponse
 
 
