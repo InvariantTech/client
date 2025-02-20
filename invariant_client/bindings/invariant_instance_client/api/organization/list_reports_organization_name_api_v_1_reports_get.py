@@ -8,13 +8,13 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.challenge_response import ChallengeResponse
+from typing import Union
+from ...models.validation_error_response import ValidationErrorResponse
+from typing import Dict
 from ...models.list_reports_response import ListReportsResponse
-from typing import Union
-from typing import Union
 from ...types import UNSET, Unset
 from ...models.base_error_response import BaseErrorResponse
-from typing import Dict
-from ...models.validation_error_response import ValidationErrorResponse
+from typing import Union
 
 
 def _get_kwargs(

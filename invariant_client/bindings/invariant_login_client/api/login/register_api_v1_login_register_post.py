@@ -7,11 +7,11 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from typing import Dict
-from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 from typing import cast
 from ...models.base_error_response import BaseErrorResponse
+from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 from ...models.validation_error_response import ValidationErrorResponse
+from typing import Dict
 
 
 def _get_kwargs(

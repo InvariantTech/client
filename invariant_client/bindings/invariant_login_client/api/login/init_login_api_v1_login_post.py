@@ -7,23 +7,23 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.base_error_response import BaseErrorResponse
-from typing import Dict
-from typing import cast, Union
-from ...models.challenge_response import ChallengeResponse
-from ...models.init_login_request import InitLoginRequest
-from ...models.new_password_request import NewPasswordRequest
-from typing import cast
-from ...models.open_id_login_request import OpenIDLoginRequest
-from ...models.init_login_invitation_request import InitLoginInvitationRequest
 from ...models.reset_request import ResetRequest
-from ...models.init_login_setup_link_request import InitLoginSetupLinkRequest
 from ...models.validation_request import ValidationRequest
-from ...models.setup_code_request import SetupCodeRequest
-from ...models.email_password_login_request import EmailPasswordLoginRequest
-from ...models.validation_error_response import ValidationErrorResponse
-from ...models.create_login_request import CreateLoginRequest
+from typing import cast, Union
+from typing import cast
+from ...models.new_password_request import NewPasswordRequest
 from ...models.reset_pin_request import ResetPINRequest
+from ...models.open_id_login_request import OpenIDLoginRequest
+from ...models.base_error_response import BaseErrorResponse
+from ...models.create_login_request import CreateLoginRequest
+from ...models.init_login_setup_link_request import InitLoginSetupLinkRequest
+from ...models.init_login_request import InitLoginRequest
+from typing import Dict
+from ...models.init_login_invitation_request import InitLoginInvitationRequest
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.email_password_login_request import EmailPasswordLoginRequest
+from ...models.challenge_response import ChallengeResponse
+from ...models.setup_code_request import SetupCodeRequest
 
 
 def _get_kwargs(

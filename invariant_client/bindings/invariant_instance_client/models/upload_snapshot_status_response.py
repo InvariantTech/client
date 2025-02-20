@@ -6,6 +6,12 @@ from typing import List
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..types import UNSET, Unset
+
+from typing import Union
+from typing import cast, Union
+from ..types import UNSET, Unset
+
 
 T = TypeVar("T", bound="UploadSnapshotStatusResponse")
 
@@ -16,15 +22,23 @@ class UploadSnapshotStatusResponse:
     Attributes:
         is_running (bool):
         terminated (bool):
+        retry_after_seconds (Union[None, Unset, int]):  Default: 1.
     """
 
     is_running: bool
     terminated: bool
+    retry_after_seconds: Union[None, Unset, int] = 1
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         is_running = self.is_running
         terminated = self.terminated
+        retry_after_seconds: Union[None, Unset, int]
+        if isinstance(self.retry_after_seconds, Unset):
+            retry_after_seconds = UNSET
+
+        else:
+            retry_after_seconds = self.retry_after_seconds
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -34,6 +48,8 @@ class UploadSnapshotStatusResponse:
                 "terminated": terminated,
             }
         )
+        if retry_after_seconds is not UNSET:
+            field_dict["retry_after_seconds"] = retry_after_seconds
 
         return field_dict
 
@@ -44,9 +60,21 @@ class UploadSnapshotStatusResponse:
 
         terminated = d.pop("terminated")
 
+        def _parse_retry_after_seconds(data: object) -> Union[None, Unset, int]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, int], data)
+
+        retry_after_seconds = _parse_retry_after_seconds(
+            d.pop("retry_after_seconds", UNSET)
+        )
+
         upload_snapshot_status_response = cls(
             is_running=is_running,
             terminated=terminated,
+            retry_after_seconds=retry_after_seconds,
         )
 
         upload_snapshot_status_response.additional_properties = d

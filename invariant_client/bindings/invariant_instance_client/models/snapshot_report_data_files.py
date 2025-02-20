@@ -7,9 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import cast, Union
-from typing import Dict
 from typing import cast
+from typing import Dict
+from typing import cast, Union
 
 if TYPE_CHECKING:
     from ..models.file_index import FileIndex

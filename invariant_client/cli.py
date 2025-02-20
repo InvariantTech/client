@@ -8,6 +8,7 @@ import logging.config
 import os
 import pathlib
 import platform
+import random
 import ssl
 import stat
 import sys
@@ -15,7 +16,7 @@ import time
 import uuid
 
 from attrs import asdict
-from retry.api import retry_call
+import backoff
 from rich import print_json
 
 from invariant_client import auth, display, zip_util
@@ -23,6 +24,9 @@ from invariant_client import pysdk
 from invariant_client.bindings.invariant_instance_client.models.snapshot_report_data import SnapshotReportData
 from invariant_client.display import OutputFormat
 from invariant_client.version import VersionClient
+
+
+logger = logging.getLogger(__name__)
 
 
 CREDS_FILE_PATH = pathlib.Path.cwd()
@@ -33,8 +37,14 @@ except RuntimeError:
 finally:
     CREDS_FILE_PATH = CREDS_FILE_PATH.joinpath('.invariant_creds')
 
+
 class UploadTerminationError(Exception):
     """An exception that is raised when a snapshot upload is terminated."""
+
+    def __init__(self, *args, retry_after: int):
+        super().__init__(self, *args)
+        self.retry_after = retry_after
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -160,6 +170,13 @@ def parse_args():
         '--snapshot',
         dest='snapshot_name',
         help='The snapshot to examine. If unset, environment variable INVARIANT_SNAPSHOT is used.'
+    )
+
+    command_run.add_argument(
+        '--no-upload-limit',
+        dest='no_upload_limit',
+        action='store_true',
+        help='Disable the 40MB upload limit for snapshots.',
     )
 
     # command_solution.add_argument(
@@ -368,6 +385,8 @@ def EntryPoint_inner(args, command, format, debug):
                 exit(1)
             bytes = io.BytesIO()
             BYTES_LIMIT = 40000000
+            if getattr(args, 'no_upload_limit', False):
+                BYTES_LIMIT = 0
             zip_util.zip_dir(target, bytes, BYTES_LIMIT)  # Write a zip file into 'bytes'
         else:
             print("Unacceptable target", file=sys.stderr)
@@ -375,13 +394,7 @@ def EntryPoint_inner(args, command, format, debug):
             exit(1)
         compare_to = getattr(args, 'compare_to')
         try:
-            exec_uuid = retry_call(
-                upload_snapshot,
-                fargs=[sdk, bytes, compare_to, network, role, format],
-                exceptions=UploadTerminationError,
-                tries=3,
-                delay=2,
-                backoff=2)
+            exec_uuid = upload_snapshot(sdk, bytes, compare_to, network, role, format)
         except KeyboardInterrupt as e:
             print("Exiting...", file=sys.stderr)
             exit(1)
@@ -571,6 +584,17 @@ def EntryPoint_inner(args, command, format, debug):
         print(f"Unknown command {command}", file=sys.stderr)
 
 
+DEFAULT_RETRY_SECONDS = 3
+
+
+@backoff.on_exception(
+        backoff.runtime,
+        UploadTerminationError,
+        value=lambda e: e.retry_after + random.uniform(0, e.retry_after),
+        jitter=None,
+        logger=None,
+        on_backoff=lambda _: logger.warning('Upload was remotely terminated, retrying...'),
+        max_tries=3)
 def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, network: str, role: str, format: OutputFormat) -> str:
     if format == OutputFormat.TABULATE:
         print("Uploading snapshot...")
@@ -588,10 +612,10 @@ def upload_snapshot(sdk: pysdk.Invariant, bytes: io.BytesIO, compare_to: str, ne
     while datetime.datetime.now() < end_time:
         response = sdk.upload_is_running(exec_uuid)
         if response.terminated:
-            raise UploadTerminationError(f"Upload was terminated")
+            raise UploadTerminationError(f"Upload was remotely terminated, try again later", retry_after=response.retry_after_seconds or DEFAULT_RETRY_SECONDS)
         if not response.is_running:
             break
-        
+
         # TODO send some RetryAfter header to control this
         # TODO separately, exponential back-off on error
         time.sleep(4)

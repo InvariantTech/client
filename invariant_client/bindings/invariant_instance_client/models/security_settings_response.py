@@ -7,14 +7,14 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from typing import cast
 from typing import cast, Union
 from typing import cast, List
 from typing import Dict
-from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.security_integration import SecurityIntegration
     from ..models.security_policy_metadata import SecurityPolicyMetadata
+    from ..models.security_integration import SecurityIntegration
 
 
 T = TypeVar("T", bound="SecuritySettingsResponse")
@@ -67,8 +67,8 @@ class SecuritySettingsResponse:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.security_integration import SecurityIntegration
         from ..models.security_policy_metadata import SecurityPolicyMetadata
+        from ..models.security_integration import SecurityIntegration
 
         d = src_dict.copy()
         domain_reservations = cast(List[str], d.pop("domain_reservations"))

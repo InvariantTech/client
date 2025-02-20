@@ -8,19 +8,19 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import cast, List
-from ..types import UNSET, Unset
-from typing import cast
-import datetime
-from typing import cast, Union
 from typing import Union
+from typing import cast, Union
 from dateutil.parser import isoparse
 from typing import Dict
+from typing import cast
+from typing import cast, List
+import datetime
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.oidc_login_method import OIDCLoginMethod
-    from ..models.oidc_principal import OIDCPrincipal
     from ..models.basic_auth_login_method import BasicAuthLoginMethod
+    from ..models.oidc_principal import OIDCPrincipal
 
 
 T = TypeVar("T", bound="LoginConfigMetadataPublic")
@@ -178,8 +178,8 @@ class LoginConfigMetadataPublic:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.oidc_login_method import OIDCLoginMethod
-        from ..models.oidc_principal import OIDCPrincipal
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
+        from ..models.oidc_principal import OIDCPrincipal
 
         d = src_dict.copy()
         email_validated = d.pop("email_validated")

@@ -7,10 +7,10 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
-from typing import List
-from typing import Literal
 from typing import Union
 from typing import Dict
+from typing import List
+from typing import Literal
 
 if TYPE_CHECKING:
     from ..models.oidc_login_method import OIDCLoginMethod

@@ -7,18 +7,21 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
+from ...models.base_error_response import BaseErrorResponse
 from ...models.validation_error_response import ValidationErrorResponse
 from typing import cast
 from typing import Dict
-from ...models.base_error_response import BaseErrorResponse
 
 
 def _get_kwargs(
     *,
     state: str,
+    code: str,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
     params["state"] = state
+
+    params["code"] = code
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -64,12 +67,14 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     state: str,
+    code: str,
 ) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Retrieve the OpenID token using the OIDC PKCE state code. May issue a login cookie and create a user
     session.
 
     Args:
         state (str):
+        code (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -81,6 +86,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         state=state,
+        code=code,
     )
 
     response = client.get_httpx_client().request(
@@ -94,12 +100,14 @@ def sync(
     *,
     client: AuthenticatedClient,
     state: str,
+    code: str,
 ) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Retrieve the OpenID token using the OIDC PKCE state code. May issue a login cookie and create a user
     session.
 
     Args:
         state (str):
+        code (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -112,6 +120,7 @@ def sync(
     return sync_detailed(
         client=client,
         state=state,
+        code=code,
     ).parsed
 
 
@@ -119,12 +128,14 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     state: str,
+    code: str,
 ) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Retrieve the OpenID token using the OIDC PKCE state code. May issue a login cookie and create a user
     session.
 
     Args:
         state (str):
+        code (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -136,6 +147,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         state=state,
+        code=code,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -147,12 +159,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     state: str,
+    code: str,
 ) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Retrieve the OpenID token using the OIDC PKCE state code. May issue a login cookie and create a user
     session.
 
     Args:
         state (str):
+        code (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -166,5 +180,6 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             state=state,
+            code=code,
         )
     ).parsed

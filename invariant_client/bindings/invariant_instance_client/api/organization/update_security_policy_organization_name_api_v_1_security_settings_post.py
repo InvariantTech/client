@@ -8,20 +8,20 @@ from ...types import Response
 from ... import errors
 
 from ...models.challenge_response import ChallengeResponse
-from typing import cast
-from ...models.modify_allow_inbound_invitations_request import (
-    ModifyAllowInboundInvitationsRequest,
-)
 from typing import cast, Union
-from ...models.modify_default_login_methods_request import (
-    ModifyDefaultLoginMethodsRequest,
-)
-from ...models.base_error_response import BaseErrorResponse
 from ...models.modify_allow_outbound_invitations_request import (
     ModifyAllowOutboundInvitationsRequest,
 )
-from typing import Dict
+from ...models.modify_default_login_methods_request import (
+    ModifyDefaultLoginMethodsRequest,
+)
 from ...models.validation_error_response import ValidationErrorResponse
+from typing import Dict
+from ...models.modify_allow_inbound_invitations_request import (
+    ModifyAllowInboundInvitationsRequest,
+)
+from typing import cast
+from ...models.base_error_response import BaseErrorResponse
 
 
 def _get_kwargs(
