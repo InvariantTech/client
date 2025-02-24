@@ -21,6 +21,7 @@ from rich import print_json
 
 from invariant_client import auth, display, zip_util
 from invariant_client import pysdk
+from invariant_client.aws_pruner_integration import use_aws_pruner
 from invariant_client.bindings.invariant_instance_client.models.snapshot_report_data import SnapshotReportData
 from invariant_client.display import OutputFormat
 from invariant_client.version import VersionClient
@@ -146,6 +147,27 @@ def parse_args():
         '--role',
         dest='role',
         help='The network role being evaluated, e.g. "live", "intended".',
+    )
+
+    # AWS Pruner:
+    # The pruner will run if invariant/aws_pruner.yaml exists in the snapshot directory.
+    # The user can disable the pruner with --no-aws-pruner or enabled: False in the config.
+    # The user can set --aws-pruner-preview=<dir> to write the pruned snapshot to a directory. It can be combined with --no-aws-pruner or enabled: False .
+    # The pruner will write the pruned snapshot to a tempdir and not modify the original.
+    command_run.add_argument(
+        '--no-aws-pruner',
+        dest='no_aws_pruner',
+        action='store_true',
+        help='Do not use the AWS pruner.'
+    )
+
+    command_run.add_argument(
+        '--aws-pruner-debug-out',
+        nargs='?',
+        dest='aws_pruner_output_directory',
+        const='./aws_pruner_debug',  # Value when --aws-pruner-debug-out is present but has no value
+        default=None,  # Value when --aws-pruner-debug-out is NOT present
+        help='Specify a directory to write the pruned snapshot for preview purposes. Default is ./aws_pruner_debug/ . Performs a dry-run if --no-aws-pruner is set or the pruner is disabled in aws_pruner.yaml .'
     )
 
     command_snapshots.add_argument(
@@ -393,6 +415,12 @@ def EntryPoint_inner(args, command, format, debug):
             print(str(target), file=sys.stderr)
             exit(1)
         compare_to = getattr(args, 'compare_to')
+
+        # Optionally process the snapshot using the pruner
+        if getattr(args, 'aws_pruner_output_directory') or not getattr(args, 'no_aws_pruner'):
+            pruner_debug_target = pathlib.Path(target, getattr(args, 'aws_pruner_output_directory')) if getattr(args, 'aws_pruner_output_directory') else None
+            bytes = use_aws_pruner(bytes, getattr(args, 'no_aws_pruner'), pruner_debug_target)
+
         try:
             exec_uuid = upload_snapshot(sdk, bytes, compare_to, network, role, format)
         except KeyboardInterrupt as e:
