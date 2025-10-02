@@ -1,15 +1,11 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import Any, TypeVar
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
 from dateutil.parser import isoparse
-import datetime
-
 
 T = TypeVar("T", bound="ReportTask")
 
@@ -18,38 +14,44 @@ T = TypeVar("T", bound="ReportTask")
 class ReportTask:
     """
     Attributes:
-        uuid (str):
-        organization_uuid (str):
+        uuid (UUID):
+        organization_uuid (UUID):
         created_at (datetime.datetime):
         urn (str):
-        type (str):
+        type_ (str):
         initiator_urn (str):
         worker_pod (str):
         was_killed (bool):
     """
 
-    uuid: str
-    organization_uuid: str
+    uuid: UUID
+    organization_uuid: UUID
     created_at: datetime.datetime
     urn: str
-    type: str
+    type_: str
     initiator_urn: str
     worker_pod: str
     was_killed: bool
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
-        organization_uuid = self.organization_uuid
+    def to_dict(self) -> dict[str, Any]:
+        uuid = str(self.uuid)
+
+        organization_uuid = str(self.organization_uuid)
+
         created_at = self.created_at.isoformat()
 
         urn = self.urn
-        type = self.type
+
+        type_ = self.type_
+
         initiator_urn = self.initiator_urn
+
         worker_pod = self.worker_pod
+
         was_killed = self.was_killed
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -57,7 +59,7 @@ class ReportTask:
                 "organization_uuid": organization_uuid,
                 "created_at": created_at,
                 "urn": urn,
-                "type": type,
+                "type": type_,
                 "initiator_urn": initiator_urn,
                 "worker_pod": worker_pod,
                 "was_killed": was_killed,
@@ -67,17 +69,17 @@ class ReportTask:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
         created_at = isoparse(d.pop("created_at"))
 
         urn = d.pop("urn")
 
-        type = d.pop("type")
+        type_ = d.pop("type")
 
         initiator_urn = d.pop("initiator_urn")
 
@@ -90,7 +92,7 @@ class ReportTask:
             organization_uuid=organization_uuid,
             created_at=created_at,
             urn=urn,
-            type=type,
+            type_=type_,
             initiator_urn=initiator_urn,
             worker_pod=worker_pod,
             was_killed=was_killed,
@@ -100,7 +102,7 @@ class ReportTask:
         return report_task
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

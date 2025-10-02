@@ -1,15 +1,8 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import cast
-from typing import cast, Union
-from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
@@ -35,35 +28,32 @@ class TabInfo:
     override_name: Union[None, str]
     parameters: Union["TabInfoParametersType0", None]
     state: Union["TabInfoStateType0", None]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
         from ..models.tab_info_state_type_0 import TabInfoStateType0
 
         urn = self.urn
-        active = self.active
-        override_name: Union[None, str]
 
+        active = self.active
+
+        override_name: Union[None, str]
         override_name = self.override_name
 
-        parameters: Union[Dict[str, Any], None]
-
+        parameters: Union[None, dict[str, Any]]
         if isinstance(self.parameters, TabInfoParametersType0):
             parameters = self.parameters.to_dict()
-
         else:
             parameters = self.parameters
 
-        state: Union[Dict[str, Any], None]
-
+        state: Union[None, dict[str, Any]]
         if isinstance(self.state, TabInfoStateType0):
             state = self.state.to_dict()
-
         else:
             state = self.state
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -78,11 +68,11 @@ class TabInfo:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.tab_info_parameters_type_0 import TabInfoParametersType0
         from ..models.tab_info_state_type_0 import TabInfoStateType0
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         urn = d.pop("urn")
 
         active = d.pop("active")
@@ -136,7 +126,7 @@ class TabInfo:
         return tab_info
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

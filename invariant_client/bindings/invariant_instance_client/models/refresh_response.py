@@ -1,16 +1,16 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
-from typing import Literal, Union
-
 
 T = TypeVar("T", bound="RefreshResponse")
 
@@ -21,23 +21,25 @@ class RefreshResponse:
     Attributes:
         access_token (str):
         status (Union[Literal[200], Unset]):  Default: 200.
-        type (Union[Literal['urn:invariant:responses:refresh_response'], Unset]):  Default:
+        type_ (Union[Literal['urn:invariant:responses:refresh_response'], Unset]):  Default:
             'urn:invariant:responses:refresh_response'.
     """
 
     access_token: str
     status: Union[Literal[200], Unset] = 200
-    type: Union[
-        Literal["urn:invariant:responses:refresh_response"], Unset
-    ] = "urn:invariant:responses:refresh_response"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    type_: Union[Literal["urn:invariant:responses:refresh_response"], Unset] = (
+        "urn:invariant:responses:refresh_response"
+    )
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         access_token = self.access_token
-        status = self.status
-        type = self.type
 
-        field_dict: Dict[str, Any] = {}
+        status = self.status
+
+        type_ = self.type_
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -46,31 +48,42 @@ class RefreshResponse:
         )
         if status is not UNSET:
             field_dict["status"] = status
-        if type is not UNSET:
-            field_dict["type"] = type
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         access_token = d.pop("access_token")
 
-        status = d.pop("status", UNSET)
+        status = cast(Union[Literal[200], Unset], d.pop("status", UNSET))
+        if status != 200 and not isinstance(status, Unset):
+            raise ValueError(f"status must match const 200, got '{status}'")
 
-        type = d.pop("type", UNSET)
+        type_ = cast(
+            Union[Literal["urn:invariant:responses:refresh_response"], Unset],
+            d.pop("type", UNSET),
+        )
+        if type_ != "urn:invariant:responses:refresh_response" and not isinstance(
+            type_, Unset
+        ):
+            raise ValueError(
+                f"type must match const 'urn:invariant:responses:refresh_response', got '{type_}'"
+            )
 
         refresh_response = cls(
             access_token=access_token,
             status=status,
-            type=type,
+            type_=type_,
         )
 
         refresh_response.additional_properties = d
         return refresh_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

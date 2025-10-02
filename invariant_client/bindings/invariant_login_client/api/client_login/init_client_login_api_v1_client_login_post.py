@@ -1,25 +1,25 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.base_error_response import BaseErrorResponse
 from ...models.create_client_login_session_response import (
     CreateClientLoginSessionResponse,
 )
-from ...models.base_error_response import BaseErrorResponse
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
+from ...types import Response
 
 
-def _get_kwargs() -> Dict[str, Any]:
-    return {
+def _get_kwargs() -> dict[str, Any]:
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/client-login",
     }
+
+    return _kwargs
 
 
 def _parse_response(
@@ -27,15 +27,15 @@ def _parse_response(
 ) -> Optional[
     Union[BaseErrorResponse, CreateClientLoginSessionResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.CREATED:
+    if response.status_code == 201:
         response_201 = CreateClientLoginSessionResponse.from_dict(response.json())
 
         return response_201
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
+    if response.status_code == 500:
         response_500 = BaseErrorResponse.from_dict(response.json())
 
         return response_500

@@ -1,14 +1,8 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import cast, List
-
 
 T = TypeVar("T", bound="ValidationErrorResponsePart")
 
@@ -17,54 +11,55 @@ T = TypeVar("T", bound="ValidationErrorResponsePart")
 class ValidationErrorResponsePart:
     """
     Attributes:
-        loc (List[str]):
+        loc (list[str]):
         msg (str):
-        type (str):
+        type_ (str):
     """
 
-    loc: List[str]
+    loc: list[str]
     msg: str
-    type: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    type_: str
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         loc = self.loc
 
         msg = self.msg
-        type = self.type
 
-        field_dict: Dict[str, Any] = {}
+        type_ = self.type_
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "loc": loc,
                 "msg": msg,
-                "type": type,
+                "type": type_,
             }
         )
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        loc = cast(List[str], d.pop("loc"))
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        loc = cast(list[str], d.pop("loc"))
 
         msg = d.pop("msg")
 
-        type = d.pop("type")
+        type_ = d.pop("type")
 
         validation_error_response_part = cls(
             loc=loc,
             msg=msg,
-            type=type,
+            type_=type_,
         )
 
         validation_error_response_part.additional_properties = d
         return validation_error_response_part
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

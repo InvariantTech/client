@@ -1,17 +1,10 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="BaseErrorResponse")
 
@@ -22,40 +15,41 @@ class BaseErrorResponse:
 
     Attributes:
         status (int):
-        type (Union[None, str]):
+        type_ (Union[None, str]):
         title (str):
         detail (str):
         instance (Union[None, Unset, str]):
     """
 
     status: int
-    type: Union[None, str]
+    type_: Union[None, str]
     title: str
     detail: str
     instance: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         status = self.status
-        type: Union[None, str]
 
-        type = self.type
+        type_: Union[None, str]
+        type_ = self.type_
 
         title = self.title
+
         detail = self.detail
+
         instance: Union[None, Unset, str]
         if isinstance(self.instance, Unset):
             instance = UNSET
-
         else:
             instance = self.instance
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "status": status,
-                "type": type,
+                "type": type_,
                 "title": title,
                 "detail": detail,
             }
@@ -66,16 +60,16 @@ class BaseErrorResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         status = d.pop("status")
 
-        def _parse_type(data: object) -> Union[None, str]:
+        def _parse_type_(data: object) -> Union[None, str]:
             if data is None:
                 return data
             return cast(Union[None, str], data)
 
-        type = _parse_type(d.pop("type"))
+        type_ = _parse_type_(d.pop("type"))
 
         title = d.pop("title")
 
@@ -92,7 +86,7 @@ class BaseErrorResponse:
 
         base_error_response = cls(
             status=status,
-            type=type,
+            type_=type_,
             title=title,
             detail=detail,
             instance=instance,
@@ -102,7 +96,7 @@ class BaseErrorResponse:
         return base_error_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,34 +1,39 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from ...models.challenge_response import ChallengeResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
 from ...models.ui_status_response import UIStatusResponse
 from ...models.user_tabs_config import UserTabsConfig
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
     *,
-    json_body: UserTabsConfig,
-) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    body: UserTabsConfig,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/{organization_name}/api/v1/ui".format(
             organization_name=organization_name,
         ),
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -38,19 +43,19 @@ def _parse_response(
         BaseErrorResponse, ChallengeResponse, UIStatusResponse, ValidationErrorResponse
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = UIStatusResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -79,7 +84,7 @@ def sync_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: UserTabsConfig,
+    body: UserTabsConfig,
 ) -> Response[
     Union[
         BaseErrorResponse, ChallengeResponse, UIStatusResponse, ValidationErrorResponse
@@ -87,9 +92,11 @@ def sync_detailed(
 ]:
     """Set UI state
 
+     Modify current session UI state.
+
     Args:
         organization_name (str):
-        json_body (UserTabsConfig):
+        body (UserTabsConfig):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -101,7 +108,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -115,7 +122,7 @@ def sync(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: UserTabsConfig,
+    body: UserTabsConfig,
 ) -> Optional[
     Union[
         BaseErrorResponse, ChallengeResponse, UIStatusResponse, ValidationErrorResponse
@@ -123,9 +130,11 @@ def sync(
 ]:
     """Set UI state
 
+     Modify current session UI state.
+
     Args:
         organization_name (str):
-        json_body (UserTabsConfig):
+        body (UserTabsConfig):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -138,7 +147,7 @@ def sync(
     return sync_detailed(
         organization_name=organization_name,
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
@@ -146,7 +155,7 @@ async def asyncio_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: UserTabsConfig,
+    body: UserTabsConfig,
 ) -> Response[
     Union[
         BaseErrorResponse, ChallengeResponse, UIStatusResponse, ValidationErrorResponse
@@ -154,9 +163,11 @@ async def asyncio_detailed(
 ]:
     """Set UI state
 
+     Modify current session UI state.
+
     Args:
         organization_name (str):
-        json_body (UserTabsConfig):
+        body (UserTabsConfig):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -168,7 +179,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -180,7 +191,7 @@ async def asyncio(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: UserTabsConfig,
+    body: UserTabsConfig,
 ) -> Optional[
     Union[
         BaseErrorResponse, ChallengeResponse, UIStatusResponse, ValidationErrorResponse
@@ -188,9 +199,11 @@ async def asyncio(
 ]:
     """Set UI state
 
+     Modify current session UI state.
+
     Args:
         organization_name (str):
-        json_body (UserTabsConfig):
+        body (UserTabsConfig):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -204,6 +217,6 @@ async def asyncio(
         await asyncio_detailed(
             organization_name=organization_name,
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

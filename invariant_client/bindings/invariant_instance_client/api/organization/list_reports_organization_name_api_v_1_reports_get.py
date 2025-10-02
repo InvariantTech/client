@@ -1,20 +1,15 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
 from ... import errors
-
-from ...models.challenge_response import ChallengeResponse
-from typing import Union
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from ...models.list_reports_response import ListReportsResponse
-from ...types import UNSET, Unset
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
-from typing import Union
+from ...models.challenge_response import ChallengeResponse
+from ...models.list_reports_response import ListReportsResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
@@ -23,44 +18,41 @@ def _get_kwargs(
     filter_session: Union[None, Unset, int] = 0,
     filter_net: Union[None, Unset, str] = UNSET,
     limit: Union[None, Unset, int] = 0,
-) -> Dict[str, Any]:
-    params: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    params: dict[str, Any] = {}
+
     json_filter_session: Union[None, Unset, int]
     if isinstance(filter_session, Unset):
         json_filter_session = UNSET
-
     else:
         json_filter_session = filter_session
-
     params["filter_session"] = json_filter_session
 
     json_filter_net: Union[None, Unset, str]
     if isinstance(filter_net, Unset):
         json_filter_net = UNSET
-
     else:
         json_filter_net = filter_net
-
     params["filter_net"] = json_filter_net
 
     json_limit: Union[None, Unset, int]
     if isinstance(limit, Unset):
         json_limit = UNSET
-
     else:
         json_limit = limit
-
     params["limit"] = json_limit
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/{organization_name}/api/v1/reports/".format(
             organization_name=organization_name,
         ),
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(
@@ -73,19 +65,19 @@ def _parse_response(
         ValidationErrorResponse,
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = ListReportsResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -128,14 +120,17 @@ def sync_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization. Note that filter_session is not compatible with other
-    filters.
+    """List reports
+
+     Reports are the results of evaluating a snapshot or testing a rule. This API lists reports. Each
+    report contains a summary listing the result files for this report, plus an extras section
+    condensing that information into user-friendly key-value properties.
 
     Args:
         organization_name (str):
-        filter_session (Union[None, Unset, int]):
+        filter_session (Union[None, Unset, int]):  Default: 0.
         filter_net (Union[None, Unset, str]):
-        limit (Union[None, Unset, int]):
+        limit (Union[None, Unset, int]):  Default: 0.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -174,14 +169,17 @@ def sync(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization. Note that filter_session is not compatible with other
-    filters.
+    """List reports
+
+     Reports are the results of evaluating a snapshot or testing a rule. This API lists reports. Each
+    report contains a summary listing the result files for this report, plus an extras section
+    condensing that information into user-friendly key-value properties.
 
     Args:
         organization_name (str):
-        filter_session (Union[None, Unset, int]):
+        filter_session (Union[None, Unset, int]):  Default: 0.
         filter_net (Union[None, Unset, str]):
-        limit (Union[None, Unset, int]):
+        limit (Union[None, Unset, int]):  Default: 0.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -215,14 +213,17 @@ async def asyncio_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization. Note that filter_session is not compatible with other
-    filters.
+    """List reports
+
+     Reports are the results of evaluating a snapshot or testing a rule. This API lists reports. Each
+    report contains a summary listing the result files for this report, plus an extras section
+    condensing that information into user-friendly key-value properties.
 
     Args:
         organization_name (str):
-        filter_session (Union[None, Unset, int]):
+        filter_session (Union[None, Unset, int]):  Default: 0.
         filter_net (Union[None, Unset, str]):
-        limit (Union[None, Unset, int]):
+        limit (Union[None, Unset, int]):  Default: 0.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -259,14 +260,17 @@ async def asyncio(
         ValidationErrorResponse,
     ]
 ]:
-    """Lists all reports for an organization. Note that filter_session is not compatible with other
-    filters.
+    """List reports
+
+     Reports are the results of evaluating a snapshot or testing a rule. This API lists reports. Each
+    report contains a summary listing the result files for this report, plus an extras section
+    condensing that information into user-friendly key-value properties.
 
     Args:
         organization_name (str):
-        filter_session (Union[None, Unset, int]):
+        filter_session (Union[None, Unset, int]):  Default: 0.
         filter_net (Union[None, Unset, str]):
-        limit (Union[None, Unset, int]):
+        limit (Union[None, Unset, int]):  Default: 0.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

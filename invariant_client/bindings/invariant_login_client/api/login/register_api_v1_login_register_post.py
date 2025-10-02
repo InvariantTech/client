@@ -1,55 +1,59 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from typing import cast
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
 from ...models.register_organization_request_body import RegisterOrganizationRequestBody
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
+from ...types import Response
 
 
 def _get_kwargs(
     *,
-    json_body: RegisterOrganizationRequestBody,
-) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    body: RegisterOrganizationRequestBody,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/login/register",
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.BAD_REQUEST:
+    if response.status_code == 400:
         response_400 = BaseErrorResponse.from_dict(response.json())
 
         return response_400
-    if response.status_code == HTTPStatus.FORBIDDEN:
+    if response.status_code == 403:
         response_403 = BaseErrorResponse.from_dict(response.json())
 
         return response_403
-    if response.status_code == HTTPStatus.CONFLICT:
+    if response.status_code == 409:
         response_409 = BaseErrorResponse.from_dict(response.json())
 
         return response_409
-    if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
+    if response.status_code == 500:
         response_500 = BaseErrorResponse.from_dict(response.json())
 
         return response_500
@@ -73,13 +77,12 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    json_body: RegisterOrganizationRequestBody,
+    body: RegisterOrganizationRequestBody,
 ) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Register a new organization
 
     Args:
-        json_body (RegisterOrganizationRequestBody): Request body used to register a new
-            organization.
+        body (RegisterOrganizationRequestBody): Request body used to register a new organization.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -90,7 +93,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -103,13 +106,12 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-    json_body: RegisterOrganizationRequestBody,
+    body: RegisterOrganizationRequestBody,
 ) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Register a new organization
 
     Args:
-        json_body (RegisterOrganizationRequestBody): Request body used to register a new
-            organization.
+        body (RegisterOrganizationRequestBody): Request body used to register a new organization.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -121,20 +123,19 @@ def sync(
 
     return sync_detailed(
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    json_body: RegisterOrganizationRequestBody,
+    body: RegisterOrganizationRequestBody,
 ) -> Response[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Register a new organization
 
     Args:
-        json_body (RegisterOrganizationRequestBody): Request body used to register a new
-            organization.
+        body (RegisterOrganizationRequestBody): Request body used to register a new organization.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -145,7 +146,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -156,13 +157,12 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-    json_body: RegisterOrganizationRequestBody,
+    body: RegisterOrganizationRequestBody,
 ) -> Optional[Union[Any, BaseErrorResponse, ValidationErrorResponse]]:
     """Register a new organization
 
     Args:
-        json_body (RegisterOrganizationRequestBody): Request body used to register a new
-            organization.
+        body (RegisterOrganizationRequestBody): Request body used to register a new organization.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -175,6 +175,6 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

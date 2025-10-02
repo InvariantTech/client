@@ -1,14 +1,8 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Dict
-from typing import List
 
 if TYPE_CHECKING:
     from ..models.tab_info import TabInfo
@@ -21,20 +15,19 @@ T = TypeVar("T", bound="UserTabsConfig")
 class UserTabsConfig:
     """
     Attributes:
-        tabs (List['TabInfo']):
+        tabs (list['TabInfo']):
     """
 
-    tabs: List["TabInfo"]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    tabs: list["TabInfo"]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         tabs = []
         for tabs_item_data in self.tabs:
             tabs_item = tabs_item_data.to_dict()
-
             tabs.append(tabs_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -45,10 +38,10 @@ class UserTabsConfig:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.tab_info import TabInfo
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         tabs = []
         _tabs = d.pop("tabs")
         for tabs_item_data in _tabs:
@@ -64,7 +57,7 @@ class UserTabsConfig:
         return user_tabs_config
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,14 +1,13 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Literal
-
 
 T = TypeVar("T", bound="CreateLoginRequest")
 
@@ -18,29 +17,32 @@ class CreateLoginRequest:
     """This request creates a new login from an invite link. It does not require any credential.
 
     Attributes:
-        type (Literal['new_login']):
+        type_ (Literal['new_login']):
         email (str):
         password (str):
         ilink (str):
     """
 
-    type: Literal["new_login"]
+    type_: Literal["new_login"]
     email: str
     password: str
     ilink: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        type = self.type
+    def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
+
         email = self.email
+
         password = self.password
+
         ilink = self.ilink
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "email": email,
                 "password": password,
                 "ilink": ilink,
@@ -50,9 +52,11 @@ class CreateLoginRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        type = d.pop("type")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        type_ = cast(Literal["new_login"], d.pop("type"))
+        if type_ != "new_login":
+            raise ValueError(f"type must match const 'new_login', got '{type_}'")
 
         email = d.pop("email")
 
@@ -61,7 +65,7 @@ class CreateLoginRequest:
         ilink = d.pop("ilink")
 
         create_login_request = cls(
-            type=type,
+            type_=type_,
             email=email,
             password=password,
             ilink=ilink,
@@ -71,7 +75,7 @@ class CreateLoginRequest:
         return create_login_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

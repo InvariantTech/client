@@ -1,64 +1,61 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
 from ... import errors
-
-from ...models.challenge_response import ChallengeResponse
-from typing import cast, Union
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from typing import cast
-from ...models.upload_snapshot_response import UploadSnapshotResponse
-from ...types import UNSET, Unset
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
 from ...models.body_upload_snapshot_organization_name_api_v1_uploadsnapshot_post import (
     BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
 )
-from typing import Union
+from ...models.challenge_response import ChallengeResponse
+from ...models.upload_snapshot_response import UploadSnapshotResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     organization_name: str,
     *,
-    multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    body: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
     network: Union[None, Unset, str] = UNSET,
     role: Union[None, Unset, str] = UNSET,
-) -> Dict[str, Any]:
-    params: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+
+    params: dict[str, Any] = {}
+
     json_network: Union[None, Unset, str]
     if isinstance(network, Unset):
         json_network = UNSET
-
     else:
         json_network = network
-
     params["network"] = json_network
 
     json_role: Union[None, Unset, str]
     if isinstance(role, Unset):
         json_role = UNSET
-
     else:
         json_role = role
-
     params["role"] = json_role
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    multipart_multipart_data = multipart_data.to_multipart()
-
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/{organization_name}/api/v1/uploadsnapshot/".format(
             organization_name=organization_name,
         ),
-        "files": multipart_multipart_data,
         "params": params,
     }
+
+    _body = body.to_multipart()
+
+    _kwargs["files"] = _body
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -72,23 +69,23 @@ def _parse_response(
         ValidationErrorResponse,
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = UploadSnapshotResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
-    if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
+    if response.status_code == 413:
         response_413 = cast(Any, None)
         return response_413
     if client.raise_on_unexpected_status:
@@ -120,7 +117,7 @@ def sync_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    body: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
     network: Union[None, Unset, str] = UNSET,
     role: Union[None, Unset, str] = UNSET,
 ) -> Response[
@@ -132,13 +129,15 @@ def sync_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Upload a network snapshot.
+    """Upload a snapshot
+
+     Create a snapshot by direct upload. This triggers snapshot evaluation and rule processing.
 
     Args:
         organization_name (str):
         network (Union[None, Unset, str]):
         role (Union[None, Unset, str]):
-        multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
+        body (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -150,7 +149,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        multipart_data=multipart_data,
+        body=body,
         network=network,
         role=role,
     )
@@ -166,7 +165,7 @@ def sync(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    body: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
     network: Union[None, Unset, str] = UNSET,
     role: Union[None, Unset, str] = UNSET,
 ) -> Optional[
@@ -178,13 +177,15 @@ def sync(
         ValidationErrorResponse,
     ]
 ]:
-    """Upload a network snapshot.
+    """Upload a snapshot
+
+     Create a snapshot by direct upload. This triggers snapshot evaluation and rule processing.
 
     Args:
         organization_name (str):
         network (Union[None, Unset, str]):
         role (Union[None, Unset, str]):
-        multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
+        body (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -197,7 +198,7 @@ def sync(
     return sync_detailed(
         organization_name=organization_name,
         client=client,
-        multipart_data=multipart_data,
+        body=body,
         network=network,
         role=role,
     ).parsed
@@ -207,7 +208,7 @@ async def asyncio_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    body: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
     network: Union[None, Unset, str] = UNSET,
     role: Union[None, Unset, str] = UNSET,
 ) -> Response[
@@ -219,13 +220,15 @@ async def asyncio_detailed(
         ValidationErrorResponse,
     ]
 ]:
-    """Upload a network snapshot.
+    """Upload a snapshot
+
+     Create a snapshot by direct upload. This triggers snapshot evaluation and rule processing.
 
     Args:
         organization_name (str):
         network (Union[None, Unset, str]):
         role (Union[None, Unset, str]):
-        multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
+        body (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -237,7 +240,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        multipart_data=multipart_data,
+        body=body,
         network=network,
         role=role,
     )
@@ -251,7 +254,7 @@ async def asyncio(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    multipart_data: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
+    body: BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost,
     network: Union[None, Unset, str] = UNSET,
     role: Union[None, Unset, str] = UNSET,
 ) -> Optional[
@@ -263,13 +266,15 @@ async def asyncio(
         ValidationErrorResponse,
     ]
 ]:
-    """Upload a network snapshot.
+    """Upload a snapshot
+
+     Create a snapshot by direct upload. This triggers snapshot evaluation and rule processing.
 
     Args:
         organization_name (str):
         network (Union[None, Unset, str]):
         role (Union[None, Unset, str]):
-        multipart_data (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
+        body (BodyUploadSnapshotOrganizationNameApiV1UploadsnapshotPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -283,7 +288,7 @@ async def asyncio(
         await asyncio_detailed(
             organization_name=organization_name,
             client=client,
-            multipart_data=multipart_data,
+            body=body,
             network=network,
             role=role,
         )

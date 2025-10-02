@@ -1,16 +1,16 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Literal, Union
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="CreateClientLoginSessionResponse")
 
@@ -24,7 +24,7 @@ class CreateClientLoginSessionResponse:
         url (str):
         uuid (str):
         token (str):
-        type (Union[Literal['urn:invariant:responses:init_client_login_response'], Unset]):  Default:
+        type_ (Union[Literal['urn:invariant:responses:init_client_login_response'], Unset]):  Default:
             'urn:invariant:responses:init_client_login_response'.
     """
 
@@ -33,20 +33,25 @@ class CreateClientLoginSessionResponse:
     url: str
     uuid: str
     token: str
-    type: Union[
+    type_: Union[
         Literal["urn:invariant:responses:init_client_login_response"], Unset
     ] = "urn:invariant:responses:init_client_login_response"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         status = self.status
-        pin = self.pin
-        url = self.url
-        uuid = self.uuid
-        token = self.token
-        type = self.type
 
-        field_dict: Dict[str, Any] = {}
+        pin = self.pin
+
+        url = self.url
+
+        uuid = self.uuid
+
+        token = self.token
+
+        type_ = self.type_
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -57,14 +62,14 @@ class CreateClientLoginSessionResponse:
                 "token": token,
             }
         )
-        if type is not UNSET:
-            field_dict["type"] = type
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         status = d.pop("status")
 
         pin = d.pop("pin")
@@ -75,7 +80,17 @@ class CreateClientLoginSessionResponse:
 
         token = d.pop("token")
 
-        type = d.pop("type", UNSET)
+        type_ = cast(
+            Union[Literal["urn:invariant:responses:init_client_login_response"], Unset],
+            d.pop("type", UNSET),
+        )
+        if (
+            type_ != "urn:invariant:responses:init_client_login_response"
+            and not isinstance(type_, Unset)
+        ):
+            raise ValueError(
+                f"type must match const 'urn:invariant:responses:init_client_login_response', got '{type_}'"
+            )
 
         create_client_login_session_response = cls(
             status=status,
@@ -83,14 +98,14 @@ class CreateClientLoginSessionResponse:
             url=url,
             uuid=uuid,
             token=token,
-            type=type,
+            type_=type_,
         )
 
         create_client_login_session_response.additional_properties = d
         return create_client_login_session_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

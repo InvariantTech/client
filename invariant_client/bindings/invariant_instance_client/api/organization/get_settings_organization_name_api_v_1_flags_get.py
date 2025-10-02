@@ -1,29 +1,28 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from ...models.challenge_response import ChallengeResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from ...models.flags_response import FlagsResponse
-from typing import cast
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from ...models.flags_response import FlagsResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
-) -> Dict[str, Any]:
-    return {
+) -> dict[str, Any]:
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/{organization_name}/api/v1/flags".format(
             organization_name=organization_name,
         ),
     }
+
+    return _kwargs
 
 
 def _parse_response(
@@ -37,22 +36,22 @@ def _parse_response(
         ValidationErrorResponse,
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = FlagsResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.NOT_MODIFIED:
+    if response.status_code == 304:
         response_304 = cast(Any, None)
         return response_304
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404

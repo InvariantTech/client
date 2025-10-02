@@ -1,24 +1,22 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
+from uuid import UUID
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from typing import cast
-from ...models.base_error_response import BaseErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
-    monitor_target_uuid: str,
-) -> Dict[str, Any]:
-    return {
+    monitor_target_uuid: UUID,
+) -> dict[str, Any]:
+    _kwargs: dict[str, Any] = {
         "method": "delete",
         "url": "/{organization_name}/api/v1/monitor_targets/{monitor_target_uuid}".format(
             organization_name=organization_name,
@@ -26,24 +24,26 @@ def _get_kwargs(
         ),
     }
 
+    return _kwargs
+
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -68,17 +68,19 @@ def _build_response(
 
 def sync_detailed(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Delete a MonitorTarget
+    """Delete Repository Monitors
+
+     Delete a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
+        monitor_target_uuid (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -102,17 +104,19 @@ def sync_detailed(
 
 def sync(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Delete a MonitorTarget
+    """Delete Repository Monitors
+
+     Delete a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
+        monitor_target_uuid (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -131,17 +135,19 @@ def sync(
 
 async def asyncio_detailed(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Delete a MonitorTarget
+    """Delete Repository Monitors
+
+     Delete a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
+        monitor_target_uuid (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -163,17 +169,19 @@ async def asyncio_detailed(
 
 async def asyncio(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Delete a MonitorTarget
+    """Delete Repository Monitors
+
+     Delete a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
+        monitor_target_uuid (UUID):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

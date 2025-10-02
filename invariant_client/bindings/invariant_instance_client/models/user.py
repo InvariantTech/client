@@ -1,19 +1,12 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
 from dateutil.parser import isoparse
-from typing import Dict
-from typing import cast
-import datetime
+
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -27,9 +20,9 @@ T = TypeVar("T", bound="User")
 class User:
     """
     Attributes:
-        uuid (str):
-        organization_uuid (str):
-        login_uuid (Union[None, str]):
+        uuid (UUID):
+        organization_uuid (UUID):
+        login_uuid (Union[None, UUID]):
         email (str):
         metadata (UserMetadata):
         is_active (bool):
@@ -37,42 +30,44 @@ class User:
         deleted_at (Union[None, Unset, datetime.datetime]):
     """
 
-    uuid: str
-    organization_uuid: str
-    login_uuid: Union[None, str]
+    uuid: UUID
+    organization_uuid: UUID
+    login_uuid: Union[None, UUID]
     email: str
     metadata: "UserMetadata"
     is_active: bool
     created_at: datetime.datetime
     deleted_at: Union[None, Unset, datetime.datetime] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
-        organization_uuid = self.organization_uuid
+    def to_dict(self) -> dict[str, Any]:
+        uuid = str(self.uuid)
+
+        organization_uuid = str(self.organization_uuid)
+
         login_uuid: Union[None, str]
-
-        login_uuid = self.login_uuid
+        if isinstance(self.login_uuid, UUID):
+            login_uuid = str(self.login_uuid)
+        else:
+            login_uuid = self.login_uuid
 
         email = self.email
+
         metadata = self.metadata.to_dict()
 
         is_active = self.is_active
+
         created_at = self.created_at.isoformat()
 
         deleted_at: Union[None, Unset, str]
         if isinstance(self.deleted_at, Unset):
             deleted_at = UNSET
-
         elif isinstance(self.deleted_at, datetime.datetime):
-            deleted_at = UNSET
-            if not isinstance(self.deleted_at, Unset):
-                deleted_at = self.deleted_at.isoformat()
-
+            deleted_at = self.deleted_at.isoformat()
         else:
             deleted_at = self.deleted_at
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -91,18 +86,26 @@ class User:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.user_metadata import UserMetadata
 
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
-        def _parse_login_uuid(data: object) -> Union[None, str]:
+        def _parse_login_uuid(data: object) -> Union[None, UUID]:
             if data is None:
                 return data
-            return cast(Union[None, str], data)
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                login_uuid_type_0 = UUID(data)
+
+                return login_uuid_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[None, UUID], data)
 
         login_uuid = _parse_login_uuid(d.pop("login_uuid"))
 
@@ -122,12 +125,7 @@ class User:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                _deleted_at_type_0 = data
-                deleted_at_type_0: Union[Unset, datetime.datetime]
-                if isinstance(_deleted_at_type_0, Unset):
-                    deleted_at_type_0 = UNSET
-                else:
-                    deleted_at_type_0 = isoparse(_deleted_at_type_0)
+                deleted_at_type_0 = isoparse(data)
 
                 return deleted_at_type_0
             except:  # noqa: E722
@@ -151,7 +149,7 @@ class User:
         return user
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

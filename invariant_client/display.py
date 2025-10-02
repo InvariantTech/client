@@ -9,15 +9,7 @@ import pandas
 from rich import print_json
 from tabulate import tabulate
 from invariant_client.bindings.invariant_instance_client.models.get_report_summary_response import GetReportSummaryResponse
-
-
-class OutputFormat(enum.Enum):
-    TABULATE = enum.auto()
-    JSON = enum.auto()
-    TSV = enum.auto()
-    FAST_JSON = enum.auto()
-    CONDENSED = enum.auto()
-    # etc
+from invariant_client.pysdk import OutputFormat
 
 
 def snapshot_status(response: GetReportSummaryResponse):

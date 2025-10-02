@@ -1,28 +1,28 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from ...models.challenge_response import ChallengeResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
+from ...client import AuthenticatedClient, Client
 from ...models.api_token_response import APITokenResponse
 from ...models.base_error_response import BaseErrorResponse
+from ...models.challenge_response import ChallengeResponse
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
-) -> Dict[str, Any]:
-    return {
+) -> dict[str, Any]:
+    _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/{organization_name}/api/v1/tokens".format(
+        "url": "/{organization_name}/api/v1/tokens/".format(
             organization_name=organization_name,
         ),
     }
+
+    return _kwargs
 
 
 def _parse_response(
@@ -32,19 +32,19 @@ def _parse_response(
         APITokenResponse, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = APITokenResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -78,7 +78,7 @@ def sync_detailed(
         APITokenResponse, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse
     ]
 ]:
-    """List API tokens
+    """List API Tokens
 
     Args:
         organization_name (str):
@@ -111,7 +111,7 @@ def sync(
         APITokenResponse, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse
     ]
 ]:
-    """List API tokens
+    """List API Tokens
 
     Args:
         organization_name (str):
@@ -139,7 +139,7 @@ async def asyncio_detailed(
         APITokenResponse, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse
     ]
 ]:
-    """List API tokens
+    """List API Tokens
 
     Args:
         organization_name (str):
@@ -170,7 +170,7 @@ async def asyncio(
         APITokenResponse, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse
     ]
 ]:
-    """List API tokens
+    """List API Tokens
 
     Args:
         organization_name (str):

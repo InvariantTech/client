@@ -1,44 +1,49 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.challenge_response import ChallengeResponse
 from ...models.consume_invite_request import ConsumeInviteRequest
 from ...models.consume_invite_response import ConsumeInviteResponse
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from ...models.challenge_response import ChallengeResponse
+from ...types import Response
 
 
 def _get_kwargs(
     *,
-    json_body: ConsumeInviteRequest,
-) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    body: ConsumeInviteRequest,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/login/consume_invitation",
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[Union[ChallengeResponse, ConsumeInviteResponse, ValidationErrorResponse]]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = ConsumeInviteResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
@@ -62,7 +67,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: ConsumeInviteRequest,
+    body: ConsumeInviteRequest,
 ) -> Response[Union[ChallengeResponse, ConsumeInviteResponse, ValidationErrorResponse]]:
     """Consume an invitation link.
 
@@ -70,7 +75,7 @@ def sync_detailed(
     may constrain the current login from joining external accounts.
 
     Args:
-        json_body (ConsumeInviteRequest):
+        body (ConsumeInviteRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -81,7 +86,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -94,7 +99,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    json_body: ConsumeInviteRequest,
+    body: ConsumeInviteRequest,
 ) -> Optional[Union[ChallengeResponse, ConsumeInviteResponse, ValidationErrorResponse]]:
     """Consume an invitation link.
 
@@ -102,7 +107,7 @@ def sync(
     may constrain the current login from joining external accounts.
 
     Args:
-        json_body (ConsumeInviteRequest):
+        body (ConsumeInviteRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -114,14 +119,14 @@ def sync(
 
     return sync_detailed(
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: ConsumeInviteRequest,
+    body: ConsumeInviteRequest,
 ) -> Response[Union[ChallengeResponse, ConsumeInviteResponse, ValidationErrorResponse]]:
     """Consume an invitation link.
 
@@ -129,7 +134,7 @@ async def asyncio_detailed(
     may constrain the current login from joining external accounts.
 
     Args:
-        json_body (ConsumeInviteRequest):
+        body (ConsumeInviteRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -140,7 +145,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -151,7 +156,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    json_body: ConsumeInviteRequest,
+    body: ConsumeInviteRequest,
 ) -> Optional[Union[ChallengeResponse, ConsumeInviteResponse, ValidationErrorResponse]]:
     """Consume an invitation link.
 
@@ -159,7 +164,7 @@ async def asyncio(
     may constrain the current login from joining external accounts.
 
     Args:
-        json_body (ConsumeInviteRequest):
+        body (ConsumeInviteRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -172,6 +177,6 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

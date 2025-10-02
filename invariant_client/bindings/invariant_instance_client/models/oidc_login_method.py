@@ -1,14 +1,14 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Literal
-
 
 T = TypeVar("T", bound="OIDCLoginMethod")
 
@@ -17,26 +17,28 @@ T = TypeVar("T", bound="OIDCLoginMethod")
 class OIDCLoginMethod:
     """
     Attributes:
-        type (Literal['oidc']):
-        organization_uuid (str):
-        integration_uuid (str):
+        type_ (Literal['oidc']):
+        organization_uuid (UUID):
+        integration_uuid (UUID):
     """
 
-    type: Literal["oidc"]
-    organization_uuid: str
-    integration_uuid: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    type_: Literal["oidc"]
+    organization_uuid: UUID
+    integration_uuid: UUID
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        type = self.type
-        organization_uuid = self.organization_uuid
-        integration_uuid = self.integration_uuid
+    def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
 
-        field_dict: Dict[str, Any] = {}
+        organization_uuid = str(self.organization_uuid)
+
+        integration_uuid = str(self.integration_uuid)
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "organization_uuid": organization_uuid,
                 "integration_uuid": integration_uuid,
             }
@@ -45,16 +47,18 @@ class OIDCLoginMethod:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        type = d.pop("type")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        type_ = cast(Literal["oidc"], d.pop("type"))
+        if type_ != "oidc":
+            raise ValueError(f"type must match const 'oidc', got '{type_}'")
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
-        integration_uuid = d.pop("integration_uuid")
+        integration_uuid = UUID(d.pop("integration_uuid"))
 
         oidc_login_method = cls(
-            type=type,
+            type_=type_,
             organization_uuid=organization_uuid,
             integration_uuid=integration_uuid,
         )
@@ -63,7 +67,7 @@ class OIDCLoginMethod:
         return oidc_login_method
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,22 +1,17 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import Dict
-
 if TYPE_CHECKING:
+    from ..models.get_report_summary_response_status import (
+        GetReportSummaryResponseStatus,
+    )
     from ..models.get_report_summary_response_summary import (
         GetReportSummaryResponseSummary,
     )
     from ..models.report import Report
-    from ..models.get_report_summary_response_status import (
-        GetReportSummaryResponseStatus,
-    )
 
 
 T = TypeVar("T", bound="GetReportSummaryResponse")
@@ -34,16 +29,16 @@ class GetReportSummaryResponse:
     report: "Report"
     summary: "GetReportSummaryResponseSummary"
     status: "GetReportSummaryResponseStatus"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         report = self.report.to_dict()
 
         summary = self.summary.to_dict()
 
         status = self.status.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -56,16 +51,16 @@ class GetReportSummaryResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.get_report_summary_response_status import (
+            GetReportSummaryResponseStatus,
+        )
         from ..models.get_report_summary_response_summary import (
             GetReportSummaryResponseSummary,
         )
         from ..models.report import Report
-        from ..models.get_report_summary_response_status import (
-            GetReportSummaryResponseStatus,
-        )
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         report = Report.from_dict(d.pop("report"))
 
         summary = GetReportSummaryResponseSummary.from_dict(d.pop("summary"))
@@ -82,7 +77,7 @@ class GetReportSummaryResponse:
         return get_report_summary_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

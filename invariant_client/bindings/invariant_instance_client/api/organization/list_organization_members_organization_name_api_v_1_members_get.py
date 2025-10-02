@@ -1,29 +1,28 @@
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
 from ...models.organization_member_with_extras import OrganizationMemberWithExtras
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from ...models.base_error_response import BaseErrorResponse
-from typing import List
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
-) -> Dict[str, Any]:
-    return {
+) -> dict[str, Any]:
+    _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/{organization_name}/api/v1/members".format(
+        "url": "/{organization_name}/api/v1/members/".format(
             organization_name=organization_name,
         ),
     }
+
+    return _kwargs
 
 
 def _parse_response(
@@ -32,11 +31,11 @@ def _parse_response(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in _response_200:
@@ -47,15 +46,15 @@ def _parse_response(
             response_200.append(response_200_item)
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -71,8 +70,8 @@ def _build_response(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
     return Response(
@@ -91,11 +90,13 @@ def sync_detailed(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
-    """List Organization members
+    """List users
+
+     List all members of the organization. This includes both managed users and invited users.
 
     Args:
         organization_name (str):
@@ -105,7 +106,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, List['OrganizationMemberWithExtras'], ValidationErrorResponse]]
+        Response[Union[BaseErrorResponse, ChallengeResponse, ValidationErrorResponse, list['OrganizationMemberWithExtras']]]
     """
 
     kwargs = _get_kwargs(
@@ -127,11 +128,13 @@ def sync(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
-    """List Organization members
+    """List users
+
+     List all members of the organization. This includes both managed users and invited users.
 
     Args:
         organization_name (str):
@@ -141,7 +144,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, List['OrganizationMemberWithExtras'], ValidationErrorResponse]
+        Union[BaseErrorResponse, ChallengeResponse, ValidationErrorResponse, list['OrganizationMemberWithExtras']]
     """
 
     return sync_detailed(
@@ -158,11 +161,13 @@ async def asyncio_detailed(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
-    """List Organization members
+    """List users
+
+     List all members of the organization. This includes both managed users and invited users.
 
     Args:
         organization_name (str):
@@ -172,7 +177,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[BaseErrorResponse, ChallengeResponse, List['OrganizationMemberWithExtras'], ValidationErrorResponse]]
+        Response[Union[BaseErrorResponse, ChallengeResponse, ValidationErrorResponse, list['OrganizationMemberWithExtras']]]
     """
 
     kwargs = _get_kwargs(
@@ -192,11 +197,13 @@ async def asyncio(
     Union[
         BaseErrorResponse,
         ChallengeResponse,
-        List["OrganizationMemberWithExtras"],
         ValidationErrorResponse,
+        list["OrganizationMemberWithExtras"],
     ]
 ]:
-    """List Organization members
+    """List users
+
+     List all members of the organization. This includes both managed users and invited users.
 
     Args:
         organization_name (str):
@@ -206,7 +213,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[BaseErrorResponse, ChallengeResponse, List['OrganizationMemberWithExtras'], ValidationErrorResponse]
+        Union[BaseErrorResponse, ChallengeResponse, ValidationErrorResponse, list['OrganizationMemberWithExtras']]
     """
 
     return (

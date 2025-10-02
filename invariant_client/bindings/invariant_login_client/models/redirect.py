@@ -1,14 +1,14 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Literal
-
 
 T = TypeVar("T", bound="Redirect")
 
@@ -17,29 +17,32 @@ T = TypeVar("T", bound="Redirect")
 class Redirect:
     """
     Attributes:
-        type (Literal['oidc']):
+        type_ (Literal['oidc']):
         name (str):
         redirect_url (str):
-        integration_uuid (str):
+        integration_uuid (UUID):
     """
 
-    type: Literal["oidc"]
+    type_: Literal["oidc"]
     name: str
     redirect_url: str
-    integration_uuid: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    integration_uuid: UUID
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        type = self.type
+    def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
+
         name = self.name
-        redirect_url = self.redirect_url
-        integration_uuid = self.integration_uuid
 
-        field_dict: Dict[str, Any] = {}
+        redirect_url = self.redirect_url
+
+        integration_uuid = str(self.integration_uuid)
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "name": name,
                 "redirect_url": redirect_url,
                 "integration_uuid": integration_uuid,
@@ -49,18 +52,20 @@ class Redirect:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        type = d.pop("type")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        type_ = cast(Literal["oidc"], d.pop("type"))
+        if type_ != "oidc":
+            raise ValueError(f"type must match const 'oidc', got '{type_}'")
 
         name = d.pop("name")
 
         redirect_url = d.pop("redirect_url")
 
-        integration_uuid = d.pop("integration_uuid")
+        integration_uuid = UUID(d.pop("integration_uuid"))
 
         redirect = cls(
-            type=type,
+            type_=type_,
             name=name,
             redirect_url=redirect_url,
             integration_uuid=integration_uuid,
@@ -70,7 +75,7 @@ class Redirect:
         return redirect
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

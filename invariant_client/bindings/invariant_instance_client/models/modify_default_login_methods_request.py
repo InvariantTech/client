@@ -1,20 +1,19 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import Union
-from typing import Dict
-from typing import List
-from typing import Literal
-
 if TYPE_CHECKING:
-    from ..models.oidc_login_method import OIDCLoginMethod
     from ..models.basic_auth_login_method import BasicAuthLoginMethod
+    from ..models.oidc_login_method import OIDCLoginMethod
 
 
 T = TypeVar("T", bound="ModifyDefaultLoginMethodsRequest")
@@ -25,30 +24,29 @@ class ModifyDefaultLoginMethodsRequest:
     """
     Attributes:
         policy_key (Literal['default_allowed_methods']):
-        value (List[Union['BasicAuthLoginMethod', 'OIDCLoginMethod']]):
+        value (list[Union['BasicAuthLoginMethod', 'OIDCLoginMethod']]):
     """
 
     policy_key: Literal["default_allowed_methods"]
-    value: List[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    value: list[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
 
         policy_key = self.policy_key
+
         value = []
         for value_item_data in self.value:
-            value_item: Dict[str, Any]
-
+            value_item: dict[str, Any]
             if isinstance(value_item_data, BasicAuthLoginMethod):
                 value_item = value_item_data.to_dict()
-
             else:
                 value_item = value_item_data.to_dict()
 
             value.append(value_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -60,12 +58,16 @@ class ModifyDefaultLoginMethodsRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.oidc_login_method import OIDCLoginMethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
+        from ..models.oidc_login_method import OIDCLoginMethod
 
-        d = src_dict.copy()
-        policy_key = d.pop("policy_key")
+        d = dict(src_dict)
+        policy_key = cast(Literal["default_allowed_methods"], d.pop("policy_key"))
+        if policy_key != "default_allowed_methods":
+            raise ValueError(
+                f"policy_key must match const 'default_allowed_methods', got '{policy_key}'"
+            )
 
         value = []
         _value = d.pop("value")
@@ -101,7 +103,7 @@ class ModifyDefaultLoginMethodsRequest:
         return modify_default_login_methods_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

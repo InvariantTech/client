@@ -1,20 +1,14 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import cast
-from typing import cast, Union
-from typing import Dict
-
 if TYPE_CHECKING:
     from ..models.organization import Organization
-    from ..models.user_tabs_config import UserTabsConfig
+    from ..models.ui_status_response_permissions import UIStatusResponsePermissions
     from ..models.user import User
+    from ..models.user_tabs_config import UserTabsConfig
 
 
 T = TypeVar("T", bound="UIStatusResponse")
@@ -26,35 +20,38 @@ class UIStatusResponse:
     Attributes:
         user (User):
         organization (Organization): The internal model inside the database.
+        permissions (UIStatusResponsePermissions):
         tabs (Union['UserTabsConfig', None]):
     """
 
     user: "User"
     organization: "Organization"
+    permissions: "UIStatusResponsePermissions"
     tabs: Union["UserTabsConfig", None]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.user_tabs_config import UserTabsConfig
 
         user = self.user.to_dict()
 
         organization = self.organization.to_dict()
 
-        tabs: Union[Dict[str, Any], None]
+        permissions = self.permissions.to_dict()
 
+        tabs: Union[None, dict[str, Any]]
         if isinstance(self.tabs, UserTabsConfig):
             tabs = self.tabs.to_dict()
-
         else:
             tabs = self.tabs
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "user": user,
                 "organization": organization,
+                "permissions": permissions,
                 "tabs": tabs,
             }
         )
@@ -62,15 +59,18 @@ class UIStatusResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.organization import Organization
-        from ..models.user_tabs_config import UserTabsConfig
+        from ..models.ui_status_response_permissions import UIStatusResponsePermissions
         from ..models.user import User
+        from ..models.user_tabs_config import UserTabsConfig
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         user = User.from_dict(d.pop("user"))
 
         organization = Organization.from_dict(d.pop("organization"))
+
+        permissions = UIStatusResponsePermissions.from_dict(d.pop("permissions"))
 
         def _parse_tabs(data: object) -> Union["UserTabsConfig", None]:
             if data is None:
@@ -90,6 +90,7 @@ class UIStatusResponse:
         ui_status_response = cls(
             user=user,
             organization=organization,
+            permissions=permissions,
             tabs=tabs,
         )
 
@@ -97,7 +98,7 @@ class UIStatusResponse:
         return ui_status_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,19 +1,18 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Dict
 from dateutil.parser import isoparse
-import datetime
 
 if TYPE_CHECKING:
     from ..models.integration_data_github_app_installation import (
         IntegrationDataGithubAppInstallation,
+    )
+    from ..models.integration_data_slack_app_installation import (
+        IntegrationDataSlackAppInstallation,
     )
 
 
@@ -24,29 +23,42 @@ T = TypeVar("T", bound="Integration")
 class Integration:
     """
     Attributes:
-        uuid (str):
-        organization_uuid (str):
-        data (IntegrationDataGithubAppInstallation):
+        uuid (UUID):
+        organization_uuid (UUID):
+        data (Union['IntegrationDataGithubAppInstallation', 'IntegrationDataSlackAppInstallation']):
         is_active (bool):
         created_at (datetime.datetime):
     """
 
-    uuid: str
-    organization_uuid: str
-    data: "IntegrationDataGithubAppInstallation"
+    uuid: UUID
+    organization_uuid: UUID
+    data: Union[
+        "IntegrationDataGithubAppInstallation", "IntegrationDataSlackAppInstallation"
+    ]
     is_active: bool
     created_at: datetime.datetime
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
-        organization_uuid = self.organization_uuid
-        data = self.data.to_dict()
+    def to_dict(self) -> dict[str, Any]:
+        from ..models.integration_data_github_app_installation import (
+            IntegrationDataGithubAppInstallation,
+        )
+
+        uuid = str(self.uuid)
+
+        organization_uuid = str(self.organization_uuid)
+
+        data: dict[str, Any]
+        if isinstance(self.data, IntegrationDataGithubAppInstallation):
+            data = self.data.to_dict()
+        else:
+            data = self.data.to_dict()
 
         is_active = self.is_active
+
         created_at = self.created_at.isoformat()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -61,17 +73,40 @@ class Integration:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.integration_data_github_app_installation import (
             IntegrationDataGithubAppInstallation,
         )
+        from ..models.integration_data_slack_app_installation import (
+            IntegrationDataSlackAppInstallation,
+        )
 
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
-        data = IntegrationDataGithubAppInstallation.from_dict(d.pop("data"))
+        def _parse_data(
+            data: object,
+        ) -> Union[
+            "IntegrationDataGithubAppInstallation",
+            "IntegrationDataSlackAppInstallation",
+        ]:
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                data_type_0 = IntegrationDataGithubAppInstallation.from_dict(data)
+
+                return data_type_0
+            except:  # noqa: E722
+                pass
+            if not isinstance(data, dict):
+                raise TypeError()
+            data_type_1 = IntegrationDataSlackAppInstallation.from_dict(data)
+
+            return data_type_1
+
+        data = _parse_data(d.pop("data"))
 
         is_active = d.pop("is_active")
 
@@ -89,7 +124,7 @@ class Integration:
         return integration
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

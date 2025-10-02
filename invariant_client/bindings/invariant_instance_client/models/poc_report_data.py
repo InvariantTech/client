@@ -1,11 +1,9 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
 
 T = TypeVar("T", bound="POCReportData")
 
@@ -14,34 +12,40 @@ T = TypeVar("T", bound="POCReportData")
 class POCReportData:
     """
     Attributes:
-        issues (str):
-        edges (str):
-        routers (str):
-        nodes (str):
-        external_ports (str):
-        rule_findings (str):
-        connect_to (str):
+        issues (UUID):
+        edges (UUID):
+        routers (UUID):
+        nodes (UUID):
+        external_ports (UUID):
+        rule_findings (UUID):
+        connect_to (UUID):
     """
 
-    issues: str
-    edges: str
-    routers: str
-    nodes: str
-    external_ports: str
-    rule_findings: str
-    connect_to: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    issues: UUID
+    edges: UUID
+    routers: UUID
+    nodes: UUID
+    external_ports: UUID
+    rule_findings: UUID
+    connect_to: UUID
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        issues = self.issues
-        edges = self.edges
-        routers = self.routers
-        nodes = self.nodes
-        external_ports = self.external_ports
-        rule_findings = self.rule_findings
-        connect_to = self.connect_to
+    def to_dict(self) -> dict[str, Any]:
+        issues = str(self.issues)
 
-        field_dict: Dict[str, Any] = {}
+        edges = str(self.edges)
+
+        routers = str(self.routers)
+
+        nodes = str(self.nodes)
+
+        external_ports = str(self.external_ports)
+
+        rule_findings = str(self.rule_findings)
+
+        connect_to = str(self.connect_to)
+
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -58,21 +62,21 @@ class POCReportData:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        issues = d.pop("issues")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        issues = UUID(d.pop("issues"))
 
-        edges = d.pop("edges")
+        edges = UUID(d.pop("edges"))
 
-        routers = d.pop("routers")
+        routers = UUID(d.pop("routers"))
 
-        nodes = d.pop("nodes")
+        nodes = UUID(d.pop("nodes"))
 
-        external_ports = d.pop("external_ports")
+        external_ports = UUID(d.pop("external_ports"))
 
-        rule_findings = d.pop("rule_findings")
+        rule_findings = UUID(d.pop("rule_findings"))
 
-        connect_to = d.pop("connectTo")
+        connect_to = UUID(d.pop("connectTo"))
 
         poc_report_data = cls(
             issues=issues,
@@ -88,7 +92,7 @@ class POCReportData:
         return poc_report_data
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

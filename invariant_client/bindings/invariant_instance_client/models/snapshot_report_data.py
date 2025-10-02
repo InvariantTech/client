@@ -1,23 +1,16 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
-from typing import cast, Union
-from typing import Dict
-from typing import cast
-from ..types import UNSET, Unset
-
 if TYPE_CHECKING:
-    from ..models.snapshot_report_data_files import SnapshotReportDataFiles
     from ..models.comparison_reportdata import ComparisonReportdata
     from ..models.file_index import FileIndex
+    from ..models.snapshot_report_data_files import SnapshotReportDataFiles
 
 
 T = TypeVar("T", bound="SnapshotReportData")
@@ -28,76 +21,64 @@ class SnapshotReportData:
     """
     Attributes:
         files (SnapshotReportDataFiles):
-        summary (Union['FileIndex', str]):
-        status (Union['FileIndex', str]):
-        errors (Union['FileIndex', str]):
-        solutions (Union['FileIndex', None, Unset, str]):
+        summary (Union['FileIndex', UUID]):
+        status (Union['FileIndex', UUID]):
+        errors (Union['FileIndex', UUID]):
+        solutions (Union['FileIndex', None, UUID, Unset]):
         compare_to (Union['ComparisonReportdata', None, Unset]):
     """
 
     files: "SnapshotReportDataFiles"
-    summary: Union["FileIndex", str]
-    status: Union["FileIndex", str]
-    errors: Union["FileIndex", str]
-    solutions: Union["FileIndex", None, Unset, str] = UNSET
+    summary: Union["FileIndex", UUID]
+    status: Union["FileIndex", UUID]
+    errors: Union["FileIndex", UUID]
+    solutions: Union["FileIndex", None, UUID, Unset] = UNSET
     compare_to: Union["ComparisonReportdata", None, Unset] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.comparison_reportdata import ComparisonReportdata
         from ..models.file_index import FileIndex
 
         files = self.files.to_dict()
 
-        summary: Union[Dict[str, Any], str]
-
-        if isinstance(self.summary, FileIndex):
+        summary: Union[dict[str, Any], str]
+        if isinstance(self.summary, UUID):
+            summary = str(self.summary)
+        else:
             summary = self.summary.to_dict()
 
+        status: Union[dict[str, Any], str]
+        if isinstance(self.status, UUID):
+            status = str(self.status)
         else:
-            summary = self.summary
-
-        status: Union[Dict[str, Any], str]
-
-        if isinstance(self.status, FileIndex):
             status = self.status.to_dict()
 
+        errors: Union[dict[str, Any], str]
+        if isinstance(self.errors, UUID):
+            errors = str(self.errors)
         else:
-            status = self.status
-
-        errors: Union[Dict[str, Any], str]
-
-        if isinstance(self.errors, FileIndex):
             errors = self.errors.to_dict()
 
-        else:
-            errors = self.errors
-
-        solutions: Union[Dict[str, Any], None, Unset, str]
+        solutions: Union[None, Unset, dict[str, Any], str]
         if isinstance(self.solutions, Unset):
             solutions = UNSET
-
+        elif isinstance(self.solutions, UUID):
+            solutions = str(self.solutions)
         elif isinstance(self.solutions, FileIndex):
-            solutions = UNSET
-            if not isinstance(self.solutions, Unset):
-                solutions = self.solutions.to_dict()
-
+            solutions = self.solutions.to_dict()
         else:
             solutions = self.solutions
 
-        compare_to: Union[Dict[str, Any], None, Unset]
+        compare_to: Union[None, Unset, dict[str, Any]]
         if isinstance(self.compare_to, Unset):
             compare_to = UNSET
-
         elif isinstance(self.compare_to, ComparisonReportdata):
-            compare_to = UNSET
-            if not isinstance(self.compare_to, Unset):
-                compare_to = self.compare_to.to_dict()
-
+            compare_to = self.compare_to.to_dict()
         else:
             compare_to = self.compare_to
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -115,72 +96,87 @@ class SnapshotReportData:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.snapshot_report_data_files import SnapshotReportDataFiles
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.comparison_reportdata import ComparisonReportdata
         from ..models.file_index import FileIndex
+        from ..models.snapshot_report_data_files import SnapshotReportDataFiles
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         files = SnapshotReportDataFiles.from_dict(d.pop("files"))
 
-        def _parse_summary(data: object) -> Union["FileIndex", str]:
+        def _parse_summary(data: object) -> Union["FileIndex", UUID]:
             try:
-                if not isinstance(data, dict):
+                if not isinstance(data, str):
                     raise TypeError()
-                summary_type_1 = FileIndex.from_dict(data)
+                summary_type_0 = UUID(data)
 
-                return summary_type_1
+                return summary_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union["FileIndex", str], data)
+            if not isinstance(data, dict):
+                raise TypeError()
+            summary_type_1 = FileIndex.from_dict(data)
+
+            return summary_type_1
 
         summary = _parse_summary(d.pop("summary"))
 
-        def _parse_status(data: object) -> Union["FileIndex", str]:
+        def _parse_status(data: object) -> Union["FileIndex", UUID]:
             try:
-                if not isinstance(data, dict):
+                if not isinstance(data, str):
                     raise TypeError()
-                status_type_1 = FileIndex.from_dict(data)
+                status_type_0 = UUID(data)
 
-                return status_type_1
+                return status_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union["FileIndex", str], data)
+            if not isinstance(data, dict):
+                raise TypeError()
+            status_type_1 = FileIndex.from_dict(data)
+
+            return status_type_1
 
         status = _parse_status(d.pop("status"))
 
-        def _parse_errors(data: object) -> Union["FileIndex", str]:
+        def _parse_errors(data: object) -> Union["FileIndex", UUID]:
             try:
-                if not isinstance(data, dict):
+                if not isinstance(data, str):
                     raise TypeError()
-                errors_type_1 = FileIndex.from_dict(data)
+                errors_type_0 = UUID(data)
 
-                return errors_type_1
+                return errors_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union["FileIndex", str], data)
+            if not isinstance(data, dict):
+                raise TypeError()
+            errors_type_1 = FileIndex.from_dict(data)
+
+            return errors_type_1
 
         errors = _parse_errors(d.pop("errors"))
 
-        def _parse_solutions(data: object) -> Union["FileIndex", None, Unset, str]:
+        def _parse_solutions(data: object) -> Union["FileIndex", None, UUID, Unset]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                solutions_type_0 = UUID(data)
+
+                return solutions_type_0
+            except:  # noqa: E722
+                pass
+            try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                _solutions_type_1 = data
-                solutions_type_1: Union[Unset, FileIndex]
-                if isinstance(_solutions_type_1, Unset):
-                    solutions_type_1 = UNSET
-                else:
-                    solutions_type_1 = FileIndex.from_dict(_solutions_type_1)
+                solutions_type_1 = FileIndex.from_dict(data)
 
                 return solutions_type_1
             except:  # noqa: E722
                 pass
-            return cast(Union["FileIndex", None, Unset, str], data)
+            return cast(Union["FileIndex", None, UUID, Unset], data)
 
         solutions = _parse_solutions(d.pop("solutions", UNSET))
 
@@ -194,14 +190,7 @@ class SnapshotReportData:
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                _compare_to_type_0 = data
-                compare_to_type_0: Union[Unset, ComparisonReportdata]
-                if isinstance(_compare_to_type_0, Unset):
-                    compare_to_type_0 = UNSET
-                else:
-                    compare_to_type_0 = ComparisonReportdata.from_dict(
-                        _compare_to_type_0
-                    )
+                compare_to_type_0 = ComparisonReportdata.from_dict(data)
 
                 return compare_to_type_0
             except:  # noqa: E722
@@ -223,7 +212,7 @@ class SnapshotReportData:
         return snapshot_report_data
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,14 +1,13 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Literal
-
 
 T = TypeVar("T", bound="ModifyAllowOutboundInvitationsRequest")
 
@@ -23,13 +22,14 @@ class ModifyAllowOutboundInvitationsRequest:
 
     policy_key: Literal["allow_outbound_invitations"]
     value: bool
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         policy_key = self.policy_key
+
         value = self.value
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -41,9 +41,13 @@ class ModifyAllowOutboundInvitationsRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        policy_key = d.pop("policy_key")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        policy_key = cast(Literal["allow_outbound_invitations"], d.pop("policy_key"))
+        if policy_key != "allow_outbound_invitations":
+            raise ValueError(
+                f"policy_key must match const 'allow_outbound_invitations', got '{policy_key}'"
+            )
 
         value = d.pop("value")
 
@@ -56,7 +60,7 @@ class ModifyAllowOutboundInvitationsRequest:
         return modify_allow_outbound_invitations_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

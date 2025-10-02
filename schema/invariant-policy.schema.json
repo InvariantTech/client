@@ -1,142 +1,264 @@
 {
-    "properties": {
-        "access-policy": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "additionalProperties": true,
-                "properties": {
-                    "name": { "$ref": "#/$defs/token" },
-                    "comment": {
-                        "type": "string"
-                    },
-                    "owner": {
-                        "type": "string"
-                    },
-                    "enforce": {
-                        "type": "boolean"
-                    },
-                    "rules": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "allOf": [
-                                { "$ref": "#/$defs/flow" }
-                            ],
-                            "properties": {
-                                "type": {
-                                    "type": "string"
-                                },
-                                "within": {
-                                    "type": "array",
-                                    "items": { "$ref": "#/$defs/flow" }
-                                },
-                                "deny-all-except": {
-                                    "type": "object",
-                                    "additionalProperties": true,
-                                    "properties": {
-                                        "critical-flows": {
-                                            "type": "boolean"
-                                        },
-                                        "flows": {
-                                            "type": "array",
-                                            "items": { "$ref": "#/$defs/flow" }
-                                        }
-                                    }
-                                }
-                            },
-                            "required": ["type"]
-                        }
-                    },
-                    "ingress-network": {
-                        "oneOf": [
-                            { "$ref": "#/$defs/string-separated-list" },
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "destination-address": { "$ref": "#/$defs/string-separated-list" },
-                                    "destination-exclude": { "$ref": "#/$defs/string-separated-list" },
-                                    "destination-node": { "$ref": "#/$defs/string-separated-list" }
-                                }
-                            }
-                        ]
-                    },
-                    "egress-network": {
-                        "oneOf": [
-                            { "$ref": "#/$defs/string-separated-list" },
-                            {
-                                "type": "object",
-                                "additionalProperties": true,
-                                "properties": {
-                                    "source-address": { "$ref": "#/$defs/string-separated-list" },
-                                    "source-exclude": { "$ref": "#/$defs/string-separated-list" },
-                                    "source-interface": { "$ref": "#/$defs/string-separated-list" },
-                                    "enter-interface": { "$ref": "#/$defs/string-separated-list" }
-                                }
-                            }
-                        ]
-                    }            
-                },
-                "required": ["name"]
-            }
-        }
-    },
-    "$defs": {
-        "token": {
-            "description": "An identifier name. Identifier names must be composed only of a-z, A-Z, 0-9, _ , - .",
+  "$id": "urn:invariant:schemas:definitions:1.0.1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Invariant Access Policy File Schema",
+  "description": "Schema for Invariant access policy files. Policies define rules about which traffic flows must or must not be deliverable in your network. Each field is extensively documented for clarity.",
+  "type": "object",
+  "properties": {
+    "access-policy": {
+      "type": "array",
+      "description": "List of access policy objects. Each policy groups related rules that target the same ingress or egress network. All rules in a given policy must match its direction (ingress or egress).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/$defs/token",
+            "description": "A unique identifier for this policy. Only characters -, _, A-Z, a-z, 0-9 are allowed. Used as a handle for reporting and reference."
+          },
+          "comment": {
             "type": "string",
-            "pattern": "^[-_a-zA-Z0-9]+$"
-        },
-        "string-separated-list": {
-            "description": "A string containing space-separated items or a list of items.",
+            "description": "Free-form comment describing the intent, context, or external references for this policy. Helpful for tracking ownership and rationale."
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner or responsible team for this policy, e.g. a team email. Teams are preferred over individuals for long-term maintainability."
+          },
+          "enforce": {
+            "type": "boolean",
+            "description": "Whether this policy is enforced. If false, violations are reported separately and do not cause overall failure. Use for developing or staging new policies."
+          },
+          "rules": {
+            "type": "array",
+            "description": "List of rule objects. Each rule defines a testable statement about network connectivity (e.g., flows that must always work or must never be allowed). All rules in this list must match the direction of the policy.",
+            "items": { "$ref": "#/$defs/rule" }
+          },
+          "ingress-network": {
+            "description": "Defines the target (destination) network for ingress policies. Only one of ingress-network or egress-network may be present in a given policy. Can be an object specifying fields or a shorthand string/list (equivalent to destination-address).",
             "oneOf": [
-                {
-                    "type": "string"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
+              { "$ref": "#/$defs/ingress-network" },
+              { "$ref": "#/$defs/string-separated-list" }
             ]
-        },
-        "string-separated-int-list": {
-            "description": "A number, string containing space-separated numbers, or a list of numbers.",
+          },
+          "egress-network": {
+            "description": "Defines the source network for egress policies. Only one of ingress-network or egress-network may be present in a given policy. Can be an object specifying fields or a shorthand string/list (equivalent to source-address).",
             "oneOf": [
-                { "$ref": "#/$defs/string-separated-list" },
-                {
-                    "type": "number"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                }
+              { "$ref": "#/$defs/egress-network" },
+              { "$ref": "#/$defs/string-separated-list" }
             ]
+          }
         },
-        "flow": {
-            "type": "object",
-            "additionalProperties": true,
-            "properties": {
-                "comment": {
-                    "type": "string"
-                },
-                "source-address": { "$ref": "#/$defs/string-separated-list" },
-                "source-exclude": { "$ref": "#/$defs/string-separated-list" },
-                "source-port": { "$ref": "#/$defs/string-separated-list" },
-                "source-interface": { "$ref": "#/$defs/string-separated-list" },
-                "enter-interface": { "$ref": "#/$defs/string-separated-list" },
-                "destination-address": { "$ref": "#/$defs/string-separated-list" },
-                "destination-exclude": { "$ref": "#/$defs/string-separated-list" },
-                "destination-port": { "$ref": "#/$defs/string-separated-list" },
-                "protocol": { "$ref": "#/$defs/string-separated-list" },
-                "icmp-type": { "$ref": "#/$defs/string-separated-int-list" },
-                "icmp-code": { "$ref": "#/$defs/string-separated-int-list" }
-            }
-        }
+        "required": ["name"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "token": {
+      "type": "string",
+      "description": "An identifier name for policies or rules. Only a-z, A-Z, 0-9, '-', or '_' are allowed.",
+      "pattern": "^[-_a-zA-Z0-9]+$"
     },
-    "$id": "urn:invariant:schemas:definitions:1.0.0",
-    "$schema": "http://json-schema.org/draft-07/schema#"
+    "string-separated-list": {
+      "description": "Either a string containing space-separated values or an explicit YAML list. Used for addresses, ports, node names, etc.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    "string-separated-int-list": {
+      "description": "Either a single number, a string of space-separated numbers, or a list of numbers. Used for ICMP types and codes.",
+      "oneOf": [
+        { "$ref": "#/$defs/string-separated-list" },
+        { "type": "number" },
+        {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      ]
+    },
+    "ingress-network": {
+      "type": "object",
+      "description": "Defines the destination network(s) for an ingress policy.",
+      "properties": {
+        "destination-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Required. Specifies the set of possible destination IP addresses, network names, or host identifiers for the flow or policy. This field is used in two ways:\n1. Packet Matching: It controls which destination addresses are considered valid for matching the traffic flow in the rule.\n2. End Location Selection: It determines which nodes or interfaces in the network model are considered as possible destinations for analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `destination-address: DMZ` will both restrict flows to target the DMZ network and cause Invariant to search for all viable endpoints associated with DMZ.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `destination-exclude` to subtract addresses or locations from `destination-address`."
+        },
+        "destination-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Destination addresses to exclude from the destination-address set. This further restricts both the set of possible endpoints for analysis and the packet destination addresses considered."
+        },
+        "destination-node": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit destination nodes or devices. If specified, disables automatic endpoint inference from addresses and directly sets possible endpoints for analysis. This can be used to focus the rule on specific hardware or virtual nodes even when the address space is broad."
+        }
+      },
+      "additionalProperties": false
+    },
+    "egress-network": {
+      "type": "object",
+      "description": "Defines the source network(s) for an egress policy.",
+      "properties": {
+        "source-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Required. Specifies the set of possible source IP addresses, network names, or host identifiers for the flow or policy. This field is used in two ways:\n1. Packet Matching: It controls which source addresses are considered valid for matching the traffic flow in the rule.\n2. Start Location Selection: It determines which nodes or interfaces in the network model are considered as possible origination points ('start locations') for the analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `source-address: BASTION` will both restrict flows to originate from the BASTION network and cause Invariant to search for all viable starting locations associated with BASTION.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `source-exclude` to subtract addresses or locations from `source-address`."
+        },
+        "source-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Source addresses to exclude from the source-address set. This further restricts both the set of possible start locations for analysis and the packet source addresses considered."
+        },
+        "source-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit source interfaces or device locations. If specified, disables automatic start location inference from addresses and directly sets candidate start locations for analysis. This is useful for rules that should only consider flows originating on certain device interfaces."
+        },
+        "enter-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for interfaces where traffic enters the network. If specified, disables automatic start location inference from addresses and directly sets candidate entry points for analysis. This is useful for scenarios where only specific points of ingress should be considered."
+        }
+      },
+      "additionalProperties": false
+    },
+    "flow": {
+      "type": "object",
+      "description": "Describes a network traffic flow. Used as a matching object in rules and exceptions. All fields are optional, but at least one should be specified for meaningful matching.",
+      "properties": {
+        "comment": {
+          "type": "string",
+          "description": "Optional comment about this flow. Can clarify context, intent, or rationale for this flow matcher."
+        },
+        "source-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Specifies the set of possible source IP addresses, network names, or host identifiers for the flow. This field is used in two ways:\n1. Packet Matching: It controls which source addresses are considered valid for matching the traffic flow in the rule.\n2. Start Location Selection: It determines which nodes or interfaces in the network model are considered as possible origination points ('start locations') for the analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `source-address: BASTION` will both restrict flows to originate from the BASTION network and cause Invariant to search for all viable starting locations associated with BASTION.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `source-exclude` to subtract addresses or locations from `source-address`."
+        },
+        "source-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Source addresses to exclude from source-address. This further restricts both the set of possible start locations for analysis and the packet source addresses considered."
+        },
+        "source-port": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Source port(s) or service name(s). Used for protocol and port matching in the flow. Supports both port numbers (e.g., 443) and service names (e.g., HTTPS) if defined."
+        },
+        "source-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit source interfaces or device locations. If specified, disables automatic start location inference from addresses and directly sets candidate start locations for analysis."
+        },
+        "enter-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for interfaces where traffic enters the network. If specified, disables automatic start location inference from addresses and directly sets candidate entry points for analysis."
+        },
+        "destination-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Specifies the set of possible destination IP addresses, network names, or host identifiers for the flow. This field is used in two ways:\n1. Packet Matching: It controls which destination addresses are considered valid for matching the traffic flow in the rule.\n2. End Location Selection: It determines which nodes or interfaces in the network model are considered as possible destinations for analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `destination-address: DMZ` will both restrict flows to target the DMZ network and cause Invariant to search for all viable endpoints associated with DMZ.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `destination-exclude` to subtract addresses or locations from `destination-address`."
+        },
+        "destination-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Destination addresses to exclude from destination-address. This further restricts both the set of possible endpoints for analysis and the packet destination addresses considered."
+        },
+        "destination-port": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Destination port(s) or service name(s). Used for protocol and port matching in the flow. Supports both port numbers (e.g., 80) and service names (e.g., HTTP) if defined."
+        },
+        "destination-node": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit destination nodes or devices. If specified, disables automatic endpoint inference from addresses and directly sets possible endpoints for analysis."
+        },
+        "protocol": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Transport protocol(s), e.g., TCP, UDP. Must match the protocol(s) being checked. Used for both matching and analysis."
+        },
+        "icmp-type": {
+          "$ref": "#/$defs/string-separated-int-list",
+          "description": "ICMP type(s), as integer(s). Used for ICMP flow matching. Can be a single value, space-separated string, or list."
+        },
+        "icmp-code": {
+          "$ref": "#/$defs/string-separated-int-list",
+          "description": "ICMP code(s), as integer(s). Used for ICMP flow matching. Can be a single value, space-separated string, or list."
+        }
+      },
+      "additionalProperties": false
+    },
+    "deny-all-except": {
+      "type": "object",
+      "description": "Specifies explicit exceptions to a deny-all rule. Either specify critical-flows (allow only critical flows) or a list of allowed flows.",
+      "properties": {
+        "critical-flows": { "type": "boolean", "description": "If true, only critical flows are allowed as exceptions." },
+        "flows": {
+          "type": "array",
+          "description": "List of flows that are explicitly allowed as exceptions.",
+          "items": { "$ref": "#/$defs/flow" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "rule": {
+      "type": "object",
+      "description": "A testable statement about desired or forbidden network behavior. Rule type must match the policy direction (ingress or egress).",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The rule type. Must match the direction of the policy. Allowed values include: ingress-critical-flow, egress-critical-flow, ingress-deny, egress-deny, ingress-deny-others, egress-deny-others."
+        },
+        "within": {
+          "type": "array",
+          "description": "Scope for deny-others rules: list of flows defining the space in which the rule applies. Each flow can describe constraints on addresses, ports, or protocols; see flow schema for details.",
+          "items": { "$ref": "#/$defs/flow" }
+        },
+        "deny-all-except": { "$ref": "#/$defs/deny-all-except" },
+        "comment": { "type": "string", "description": "Optional comment about this rule. Can clarify context, intent, or rationale." },
+        "source-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Specifies the set of possible source IP addresses, network names, or host identifiers for the flow. This field is used in two ways:\n1. Packet Matching: It controls which source addresses are considered valid for matching the traffic flow in the rule.\n2. Start Location Selection: It determines which nodes or interfaces in the network model are considered as possible origination points ('start locations') for the analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `source-address: BASTION` will both restrict flows to originate from the BASTION network and cause Invariant to search for all viable starting locations associated with BASTION.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `source-exclude` to subtract addresses or locations from `source-address`."
+        },
+        "source-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Source addresses to exclude from source-address. This further restricts both the set of possible start locations for analysis and the packet source addresses considered."
+        },
+        "source-port": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Source port(s) or service name(s). Used for protocol and port matching in the flow."
+        },
+        "source-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit source interfaces or device locations. If specified, disables automatic start location inference from addresses and directly sets candidate start locations for analysis."
+        },
+        "enter-interface": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for interfaces where traffic enters the network. If specified, disables automatic start location inference from addresses and directly sets candidate entry points for analysis."
+        },
+        "destination-address": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Specifies the set of possible destination IP addresses, network names, or host identifiers for the flow. This field is used in two ways:\n1. Packet Matching: It controls which destination addresses are considered valid for matching the traffic flow in the rule.\n2. End Location Selection: It determines which nodes or interfaces in the network model are considered as possible destinations for analysis. If a network name is used, it is resolved to all corresponding interfaces or device locations in the model.\n\nFor example, setting `destination-address: DMZ` will both restrict flows to target the DMZ network and cause Invariant to search for all viable endpoints associated with DMZ.\n\nUse space-separated values or a YAML list for multiple addresses or names. You can also specify exclusions using `destination-exclude` to subtract addresses or locations from `destination-address`."
+        },
+        "destination-exclude": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Destination addresses to exclude from destination-address. This further restricts both the set of possible endpoints for analysis and the packet destination addresses considered."
+        },
+        "destination-port": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Destination port(s) or service name(s). Used for protocol and port matching in the flow."
+        },
+        "destination-node": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Names or selectors for explicit destination nodes or devices. If specified, disables automatic endpoint inference from addresses and directly sets possible endpoints for analysis."
+        },
+        "protocol": {
+          "$ref": "#/$defs/string-separated-list",
+          "description": "Transport protocol(s), e.g., TCP, UDP. Must match the protocol(s) being checked. Used for both matching and analysis."
+        },
+        "icmp-type": {
+          "$ref": "#/$defs/string-separated-int-list",
+          "description": "ICMP type(s), as integer(s). Used for ICMP flow matching. Can be a single value, space-separated string, or list."
+        },
+        "icmp-code": {
+          "$ref": "#/$defs/string-separated-int-list",
+          "description": "ICMP code(s), as integer(s). Used for ICMP flow matching. Can be a single value, space-separated string, or list."
+        }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    }
+  }
 }

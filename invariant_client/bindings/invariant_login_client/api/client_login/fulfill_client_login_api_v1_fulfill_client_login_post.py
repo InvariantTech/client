@@ -1,31 +1,35 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from typing import cast
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
-from ...models.validation_error_response import ValidationErrorResponse
-from ...models.fulfill_client_login_request import FulfillClientLoginRequest
-from typing import Dict
 from ...models.challenge_response import ChallengeResponse
+from ...models.fulfill_client_login_request import FulfillClientLoginRequest
+from ...models.validation_error_response import ValidationErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     *,
-    json_body: FulfillClientLoginRequest,
-) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    body: FulfillClientLoginRequest,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/fulfill_client_login",
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -33,22 +37,22 @@ def _parse_response(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.FORBIDDEN:
+    if response.status_code == 403:
         response_403 = BaseErrorResponse.from_dict(response.json())
 
         return response_403
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -74,7 +78,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: FulfillClientLoginRequest,
+    body: FulfillClientLoginRequest,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
@@ -83,7 +87,7 @@ def sync_detailed(
      Resolve a client login session to a specific access token + org using a refresh token.
 
     Args:
-        json_body (FulfillClientLoginRequest):
+        body (FulfillClientLoginRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -94,7 +98,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -107,7 +111,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    json_body: FulfillClientLoginRequest,
+    body: FulfillClientLoginRequest,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
@@ -116,7 +120,7 @@ def sync(
      Resolve a client login session to a specific access token + org using a refresh token.
 
     Args:
-        json_body (FulfillClientLoginRequest):
+        body (FulfillClientLoginRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -128,14 +132,14 @@ def sync(
 
     return sync_detailed(
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: FulfillClientLoginRequest,
+    body: FulfillClientLoginRequest,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
@@ -144,7 +148,7 @@ async def asyncio_detailed(
      Resolve a client login session to a specific access token + org using a refresh token.
 
     Args:
-        json_body (FulfillClientLoginRequest):
+        body (FulfillClientLoginRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -155,7 +159,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -166,7 +170,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    json_body: FulfillClientLoginRequest,
+    body: FulfillClientLoginRequest,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
@@ -175,7 +179,7 @@ async def asyncio(
      Resolve a client login session to a specific access token + org using a refresh token.
 
     Args:
-        json_body (FulfillClientLoginRequest):
+        body (FulfillClientLoginRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -188,6 +192,6 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

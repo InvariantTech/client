@@ -1,19 +1,12 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
 from dateutil.parser import isoparse
-from typing import Dict
-from typing import cast
-import datetime
+
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -27,26 +20,29 @@ T = TypeVar("T", bound="APIToken")
 class APIToken:
     """
     Attributes:
-        uuid (str):
-        organization_uuid (str):
-        user_uuid (str):
+        uuid (UUID):
+        organization_uuid (UUID):
+        user_uuid (UUID):
         metadata (APITokenMetadata):
         created_at (datetime.datetime):
         deleted_at (Union[None, Unset, datetime.datetime]):
     """
 
-    uuid: str
-    organization_uuid: str
-    user_uuid: str
+    uuid: UUID
+    organization_uuid: UUID
+    user_uuid: UUID
     metadata: "APITokenMetadata"
     created_at: datetime.datetime
     deleted_at: Union[None, Unset, datetime.datetime] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
-        organization_uuid = self.organization_uuid
-        user_uuid = self.user_uuid
+    def to_dict(self) -> dict[str, Any]:
+        uuid = str(self.uuid)
+
+        organization_uuid = str(self.organization_uuid)
+
+        user_uuid = str(self.user_uuid)
+
         metadata = self.metadata.to_dict()
 
         created_at = self.created_at.isoformat()
@@ -54,16 +50,12 @@ class APIToken:
         deleted_at: Union[None, Unset, str]
         if isinstance(self.deleted_at, Unset):
             deleted_at = UNSET
-
         elif isinstance(self.deleted_at, datetime.datetime):
-            deleted_at = UNSET
-            if not isinstance(self.deleted_at, Unset):
-                deleted_at = self.deleted_at.isoformat()
-
+            deleted_at = self.deleted_at.isoformat()
         else:
             deleted_at = self.deleted_at
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -80,15 +72,15 @@ class APIToken:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.api_token_metadata import APITokenMetadata
 
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
-        user_uuid = d.pop("user_uuid")
+        user_uuid = UUID(d.pop("user_uuid"))
 
         metadata = APITokenMetadata.from_dict(d.pop("metadata"))
 
@@ -102,12 +94,7 @@ class APIToken:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                _deleted_at_type_0 = data
-                deleted_at_type_0: Union[Unset, datetime.datetime]
-                if isinstance(_deleted_at_type_0, Unset):
-                    deleted_at_type_0 = UNSET
-                else:
-                    deleted_at_type_0 = isoparse(_deleted_at_type_0)
+                deleted_at_type_0 = isoparse(data)
 
                 return deleted_at_type_0
             except:  # noqa: E722
@@ -129,7 +116,7 @@ class APIToken:
         return api_token
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

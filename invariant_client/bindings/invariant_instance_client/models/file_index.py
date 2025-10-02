@@ -1,18 +1,11 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-from typing import cast, List
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="FileIndex")
 
@@ -21,25 +14,29 @@ T = TypeVar("T", bound="FileIndex")
 class FileIndex:
     """
     Attributes:
-        all_files (List[str]):
-        volume (Union[None, Unset, str]):
+        all_files (list[UUID]):
+        volume (Union[None, UUID, Unset]):
     """
 
-    all_files: List[str]
-    volume: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    all_files: list[UUID]
+    volume: Union[None, UUID, Unset] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        all_files = self.all_files
+    def to_dict(self) -> dict[str, Any]:
+        all_files = []
+        for all_files_item_data in self.all_files:
+            all_files_item = str(all_files_item_data)
+            all_files.append(all_files_item)
 
         volume: Union[None, Unset, str]
         if isinstance(self.volume, Unset):
             volume = UNSET
-
+        elif isinstance(self.volume, UUID):
+            volume = str(self.volume)
         else:
             volume = self.volume
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -52,16 +49,29 @@ class FileIndex:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        all_files = cast(List[str], d.pop("all_files"))
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        all_files = []
+        _all_files = d.pop("all_files")
+        for all_files_item_data in _all_files:
+            all_files_item = UUID(all_files_item_data)
 
-        def _parse_volume(data: object) -> Union[None, Unset, str]:
+            all_files.append(all_files_item)
+
+        def _parse_volume(data: object) -> Union[None, UUID, Unset]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                volume_type_0 = UUID(data)
+
+                return volume_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[None, UUID, Unset], data)
 
         volume = _parse_volume(d.pop("volume", UNSET))
 
@@ -74,7 +84,7 @@ class FileIndex:
         return file_index
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

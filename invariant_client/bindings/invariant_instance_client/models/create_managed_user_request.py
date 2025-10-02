@@ -1,24 +1,21 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
-from typing import cast, Union
-from typing import Dict
-from typing import cast
-from typing import cast, List
-from ..types import UNSET, Unset
-from typing import Literal
-
 if TYPE_CHECKING:
-    from ..models.oidc_login_method import OIDCLoginMethod
     from ..models.basic_auth_login_method import BasicAuthLoginMethod
+    from ..models.oidc_login_method import OIDCLoginMethod
 
 
 T = TypeVar("T", bound="CreateManagedUserRequest")
@@ -28,66 +25,63 @@ T = TypeVar("T", bound="CreateManagedUserRequest")
 class CreateManagedUserRequest:
     """
     Attributes:
-        type (Literal['managed']):
+        type_ (Literal['managed']):
         email (str):
-        allowed_methods (Union[List[Union['BasicAuthLoginMethod', 'OIDCLoginMethod']], None, Unset]):
-        send_invite (Union[Unset, bool]):
-        use_setup_code (Union[Unset, bool]):
-        is_superuser (Union[Unset, bool]):
+        allowed_methods (Union[None, Unset, list[Union['BasicAuthLoginMethod', 'OIDCLoginMethod']]]):
+        send_invite (Union[Unset, bool]):  Default: False.
+        use_setup_code (Union[Unset, bool]):  Default: False.
+        is_superuser (Union[Unset, bool]):  Default: False.
     """
 
-    type: Literal["managed"]
+    type_: Literal["managed"]
     email: str
     allowed_methods: Union[
-        List[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]], None, Unset
+        None, Unset, list[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]]
     ] = UNSET
     send_invite: Union[Unset, bool] = False
     use_setup_code: Union[Unset, bool] = False
     is_superuser: Union[Unset, bool] = False
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
 
-        type = self.type
+        type_ = self.type_
+
         email = self.email
-        allowed_methods: Union[List[Dict[str, Any]], None, Unset]
+
+        allowed_methods: Union[None, Unset, list[dict[str, Any]]]
         if isinstance(self.allowed_methods, Unset):
             allowed_methods = UNSET
-
         elif isinstance(self.allowed_methods, list):
-            allowed_methods = UNSET
-            if not isinstance(self.allowed_methods, Unset):
-                allowed_methods = []
-                for allowed_methods_type_0_item_data in self.allowed_methods:
-                    allowed_methods_type_0_item: Dict[str, Any]
+            allowed_methods = []
+            for allowed_methods_type_0_item_data in self.allowed_methods:
+                allowed_methods_type_0_item: dict[str, Any]
+                if isinstance(allowed_methods_type_0_item_data, BasicAuthLoginMethod):
+                    allowed_methods_type_0_item = (
+                        allowed_methods_type_0_item_data.to_dict()
+                    )
+                else:
+                    allowed_methods_type_0_item = (
+                        allowed_methods_type_0_item_data.to_dict()
+                    )
 
-                    if isinstance(
-                        allowed_methods_type_0_item_data, BasicAuthLoginMethod
-                    ):
-                        allowed_methods_type_0_item = (
-                            allowed_methods_type_0_item_data.to_dict()
-                        )
-
-                    else:
-                        allowed_methods_type_0_item = (
-                            allowed_methods_type_0_item_data.to_dict()
-                        )
-
-                    allowed_methods.append(allowed_methods_type_0_item)
+                allowed_methods.append(allowed_methods_type_0_item)
 
         else:
             allowed_methods = self.allowed_methods
 
         send_invite = self.send_invite
+
         use_setup_code = self.use_setup_code
+
         is_superuser = self.is_superuser
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "email": email,
             }
         )
@@ -103,18 +97,20 @@ class CreateManagedUserRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.oidc_login_method import OIDCLoginMethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
+        from ..models.oidc_login_method import OIDCLoginMethod
 
-        d = src_dict.copy()
-        type = d.pop("type")
+        d = dict(src_dict)
+        type_ = cast(Literal["managed"], d.pop("type"))
+        if type_ != "managed":
+            raise ValueError(f"type must match const 'managed', got '{type_}'")
 
         email = d.pop("email")
 
         def _parse_allowed_methods(
             data: object,
-        ) -> Union[List[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]], None, Unset]:
+        ) -> Union[None, Unset, list[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]]]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -122,9 +118,9 @@ class CreateManagedUserRequest:
             try:
                 if not isinstance(data, list):
                     raise TypeError()
-                allowed_methods_type_0 = UNSET
+                allowed_methods_type_0 = []
                 _allowed_methods_type_0 = data
-                for allowed_methods_type_0_item_data in _allowed_methods_type_0 or []:
+                for allowed_methods_type_0_item_data in _allowed_methods_type_0:
 
                     def _parse_allowed_methods_type_0_item(
                         data: object,
@@ -158,7 +154,7 @@ class CreateManagedUserRequest:
                 pass
             return cast(
                 Union[
-                    List[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]], None, Unset
+                    None, Unset, list[Union["BasicAuthLoginMethod", "OIDCLoginMethod"]]
                 ],
                 data,
             )
@@ -172,7 +168,7 @@ class CreateManagedUserRequest:
         is_superuser = d.pop("is_superuser", UNSET)
 
         create_managed_user_request = cls(
-            type=type,
+            type_=type_,
             email=email,
             allowed_methods=allowed_methods,
             send_invite=send_invite,
@@ -184,7 +180,7 @@ class CreateManagedUserRequest:
         return create_managed_user_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

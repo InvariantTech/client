@@ -1,11 +1,9 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
 
 T = TypeVar("T", bound="OIDCPrincipal")
 
@@ -14,22 +12,24 @@ T = TypeVar("T", bound="OIDCPrincipal")
 class OIDCPrincipal:
     """
     Attributes:
-        organization_uuid (str):
-        integration_uuid (str):
+        organization_uuid (UUID):
+        integration_uuid (UUID):
         principal_id (str):
     """
 
-    organization_uuid: str
-    integration_uuid: str
+    organization_uuid: UUID
+    integration_uuid: UUID
     principal_id: str
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        organization_uuid = self.organization_uuid
-        integration_uuid = self.integration_uuid
+    def to_dict(self) -> dict[str, Any]:
+        organization_uuid = str(self.organization_uuid)
+
+        integration_uuid = str(self.integration_uuid)
+
         principal_id = self.principal_id
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -42,11 +42,11 @@ class OIDCPrincipal:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        organization_uuid = d.pop("organization_uuid")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
-        integration_uuid = d.pop("integration_uuid")
+        integration_uuid = UUID(d.pop("integration_uuid"))
 
         principal_id = d.pop("principal_id")
 
@@ -60,7 +60,7 @@ class OIDCPrincipal:
         return oidc_principal
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

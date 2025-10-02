@@ -1,17 +1,10 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="MonitorTargetMetadata")
 
@@ -32,39 +25,36 @@ class MonitorTargetMetadata:
     repository_url: Union[None, Unset, str] = UNSET
     monitor_path: Union[None, Unset, str] = UNSET
     network_name: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         name = self.name
+
         comment: Union[None, Unset, str]
         if isinstance(self.comment, Unset):
             comment = UNSET
-
         else:
             comment = self.comment
 
         repository_url: Union[None, Unset, str]
         if isinstance(self.repository_url, Unset):
             repository_url = UNSET
-
         else:
             repository_url = self.repository_url
 
         monitor_path: Union[None, Unset, str]
         if isinstance(self.monitor_path, Unset):
             monitor_path = UNSET
-
         else:
             monitor_path = self.monitor_path
 
         network_name: Union[None, Unset, str]
         if isinstance(self.network_name, Unset):
             network_name = UNSET
-
         else:
             network_name = self.network_name
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -83,8 +73,8 @@ class MonitorTargetMetadata:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         name = d.pop("name")
 
         def _parse_comment(data: object) -> Union[None, Unset, str]:
@@ -135,7 +125,7 @@ class MonitorTargetMetadata:
         return monitor_target_metadata
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

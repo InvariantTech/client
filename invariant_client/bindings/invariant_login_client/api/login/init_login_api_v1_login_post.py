@@ -1,34 +1,30 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
-from ...models.reset_request import ResetRequest
-from ...models.validation_request import ValidationRequest
-from typing import cast, Union
-from typing import cast
-from ...models.new_password_request import NewPasswordRequest
-from ...models.reset_pin_request import ResetPINRequest
-from ...models.open_id_login_request import OpenIDLoginRequest
+from ...client import AuthenticatedClient, Client
 from ...models.base_error_response import BaseErrorResponse
-from ...models.create_login_request import CreateLoginRequest
-from ...models.init_login_setup_link_request import InitLoginSetupLinkRequest
-from ...models.init_login_request import InitLoginRequest
-from typing import Dict
-from ...models.init_login_invitation_request import InitLoginInvitationRequest
-from ...models.validation_error_response import ValidationErrorResponse
-from ...models.email_password_login_request import EmailPasswordLoginRequest
 from ...models.challenge_response import ChallengeResponse
+from ...models.create_login_request import CreateLoginRequest
+from ...models.email_password_login_request import EmailPasswordLoginRequest
+from ...models.init_login_invitation_request import InitLoginInvitationRequest
+from ...models.init_login_request import InitLoginRequest
+from ...models.init_login_setup_link_request import InitLoginSetupLinkRequest
+from ...models.new_password_request import NewPasswordRequest
+from ...models.open_id_login_request import OpenIDLoginRequest
+from ...models.reset_pin_request import ResetPINRequest
+from ...models.reset_request import ResetRequest
 from ...models.setup_code_request import SetupCodeRequest
+from ...models.validation_error_response import ValidationErrorResponse
+from ...models.validation_request import ValidationRequest
+from ...types import Response
 
 
 def _get_kwargs(
     *,
-    json_body: Union[
+    body: Union[
         "CreateLoginRequest",
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
@@ -41,47 +37,43 @@ def _get_kwargs(
         "SetupCodeRequest",
         "ValidationRequest",
     ],
-) -> Dict[str, Any]:
-    json_json_body: Dict[str, Any]
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    if isinstance(json_body, InitLoginRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, SetupCodeRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, InitLoginInvitationRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, InitLoginSetupLinkRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, CreateLoginRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, EmailPasswordLoginRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, OpenIDLoginRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, ResetRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, ResetPINRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, NewPasswordRequest):
-        json_json_body = json_body.to_dict()
-
-    else:
-        json_json_body = json_body.to_dict()
-
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/login/",
-        "json": json_json_body,
     }
+
+    _body: dict[str, Any]
+    if isinstance(body, InitLoginRequest):
+        _body = body.to_dict()
+    elif isinstance(body, SetupCodeRequest):
+        _body = body.to_dict()
+    elif isinstance(body, InitLoginInvitationRequest):
+        _body = body.to_dict()
+    elif isinstance(body, InitLoginSetupLinkRequest):
+        _body = body.to_dict()
+    elif isinstance(body, CreateLoginRequest):
+        _body = body.to_dict()
+    elif isinstance(body, EmailPasswordLoginRequest):
+        _body = body.to_dict()
+    elif isinstance(body, OpenIDLoginRequest):
+        _body = body.to_dict()
+    elif isinstance(body, ResetRequest):
+        _body = body.to_dict()
+    elif isinstance(body, ResetPINRequest):
+        _body = body.to_dict()
+    elif isinstance(body, NewPasswordRequest):
+        _body = body.to_dict()
+    else:
+        _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -89,18 +81,18 @@ def _parse_response(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -126,7 +118,7 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "CreateLoginRequest",
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
@@ -222,7 +214,7 @@ def sync_detailed(
     -   Log out /logout .
 
     Args:
-        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+        body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
             'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
             'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
             'SetupCodeRequest', 'ValidationRequest']):
@@ -236,7 +228,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -249,7 +241,7 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "CreateLoginRequest",
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
@@ -345,7 +337,7 @@ def sync(
     -   Log out /logout .
 
     Args:
-        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+        body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
             'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
             'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
             'SetupCodeRequest', 'ValidationRequest']):
@@ -360,14 +352,14 @@ def sync(
 
     return sync_detailed(
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "CreateLoginRequest",
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
@@ -463,7 +455,7 @@ async def asyncio_detailed(
     -   Log out /logout .
 
     Args:
-        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+        body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
             'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
             'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
             'SetupCodeRequest', 'ValidationRequest']):
@@ -477,7 +469,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -488,7 +480,7 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "CreateLoginRequest",
         "EmailPasswordLoginRequest",
         "InitLoginInvitationRequest",
@@ -584,7 +576,7 @@ async def asyncio(
     -   Log out /logout .
 
     Args:
-        json_body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
+        body (Union['CreateLoginRequest', 'EmailPasswordLoginRequest',
             'InitLoginInvitationRequest', 'InitLoginRequest', 'InitLoginSetupLinkRequest',
             'NewPasswordRequest', 'OpenIDLoginRequest', 'ResetPINRequest', 'ResetRequest',
             'SetupCodeRequest', 'ValidationRequest']):
@@ -600,6 +592,6 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

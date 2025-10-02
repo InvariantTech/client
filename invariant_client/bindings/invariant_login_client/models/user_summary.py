@@ -1,17 +1,13 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import Dict
-
 if TYPE_CHECKING:
-    from ..models.organization_summary import OrganizationSummary
     from ..models.login_summary import LoginSummary
+    from ..models.organization_summary import OrganizationSummary
 
 
 T = TypeVar("T", bound="UserSummary")
@@ -21,7 +17,7 @@ T = TypeVar("T", bound="UserSummary")
 class UserSummary:
     """
     Attributes:
-        uuid (str):
+        uuid (UUID):
         organization (OrganizationSummary):
         login (LoginSummary):
         email (str):
@@ -29,25 +25,28 @@ class UserSummary:
         is_superuser (bool):
     """
 
-    uuid: str
+    uuid: UUID
     organization: "OrganizationSummary"
     login: "LoginSummary"
     email: str
     is_active: bool
     is_superuser: bool
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
+    def to_dict(self) -> dict[str, Any]:
+        uuid = str(self.uuid)
+
         organization = self.organization.to_dict()
 
         login = self.login.to_dict()
 
         email = self.email
+
         is_active = self.is_active
+
         is_superuser = self.is_superuser
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -63,12 +62,12 @@ class UserSummary:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.organization_summary import OrganizationSummary
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.login_summary import LoginSummary
+        from ..models.organization_summary import OrganizationSummary
 
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
         organization = OrganizationSummary.from_dict(d.pop("organization"))
 
@@ -93,7 +92,7 @@ class UserSummary:
         return user_summary
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

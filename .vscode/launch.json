@@ -1,0 +1,121 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Invariant CLI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "invariant_client",
+            "args": [
+                "${input:invariantCommand}"
+            ],
+            "env": {
+                "INVARIANT_DOMAIN": "https://invariant.test/"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": true,
+        },
+        {
+            "name": "Debug Invariant CLI (with format)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "invariant_client",
+            "args": [
+                "${input:invariantCommand}",
+                "${input:format}"
+            ],
+            "env": {
+                "INVARIANT_DOMAIN": "https://invariant.test/"
+            },
+            "console": "integratedTerminal",
+            "justMyCode": true,
+        },
+        {
+            "name": "Debug Invariant CLI (run)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "invariant_client",
+            "args": [
+                "${input:invariantCommand}"
+            ],
+            "env": {
+                "INVARIANT_DOMAIN": "https://invariant.test/"
+            },
+            "cwd": "${workspaceFolder}/../${input:snapshotPath}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+        },
+        {
+            "name": "Debug Invariant CLI (try_rule)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "invariant_client",
+            "args": [
+                "try-rule",
+                "--network", "default",
+                "--rule-file", "${workspaceFolder}/../${input:ruleFile}",
+                "--rule", "${input:ruleSelector}"
+            ],
+            "env": {
+                "INVARIANT_DOMAIN": "https://invariant.test/"
+            },
+            "cwd": "${workspaceFolder}/../${input:snapshotPath}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+        },
+    ],
+    "inputs": [
+        {
+            "id": "invariantCommand",
+            "type": "pickString",
+            "description": "Enter the Invariant command (e.g., version, run, show)",
+            "options": [
+                "login",
+                "run",
+                "try_rule",
+                "snapshots",
+                "version",
+                "--help",
+            ],
+            "default": "--help"
+        },
+        {
+            "id": "snapshotPath",
+            "type": "pickString",
+            "description": "Enter the target snapshot",
+            "options": [
+                "demo/public/enterprise",
+                "demo/private/enterprise_quick",
+            ],
+            "default": "demo/private/enterprise_quick"
+        },
+        {
+            "id": "ruleFile",
+            "type": "pickString",
+            "description": "Enter the target rule file",
+            "options": [
+                "demo/private/enterprise_quick/invariant/policies/cloud.yaml",
+            ],
+            "default": "demo/private/enterprise_quick/invariant/policies/cloud.yaml"
+        },
+        {
+            "id": "ruleSelector",
+            "type": "promptString",
+            "description": "Enter the target rule selector",
+            "default": "cloud-access-policy[0]"
+        },
+        {
+            "id": "format",
+            "type": "pickString",
+            "description": "Select an output format",
+            "options": [
+                "--json",
+                "--fast-json",
+                "--tsv",
+                "--condensed"
+            ],
+            "default": "--json"
+        }
+
+    ]
+}

@@ -1,4 +1,5 @@
-""" A client library for accessing Invariant Login """
+"""A client library for accessing Invariant Login"""
+
 from .client import AuthenticatedClient, Client
 
 __all__ = (

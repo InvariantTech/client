@@ -1,4 +1,4 @@
-""" Contains all the data models used in inputs/outputs """
+"""Contains all the data models used in inputs/outputs"""
 
 from .authn_challenge import AuthnChallenge
 from .base_error_response import BaseErrorResponse

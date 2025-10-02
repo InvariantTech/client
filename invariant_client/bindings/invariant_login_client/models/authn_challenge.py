@@ -1,20 +1,19 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import Union
-from typing import Literal
-from typing import Dict
-from typing import List
-
 if TYPE_CHECKING:
-    from ..models.public import Public
     from ..models.basic_auth_login_method import BasicAuthLoginMethod
+    from ..models.public import Public
 
 
 T = TypeVar("T", bound="AuthnChallenge")
@@ -25,35 +24,34 @@ class AuthnChallenge:
     """The user must provide a primary authentication credential.
 
     Attributes:
-        type (Literal['authn']):
-        allowed_methods (List[Union['BasicAuthLoginMethod', 'Public']]):
+        type_ (Literal['authn']):
+        allowed_methods (list[Union['BasicAuthLoginMethod', 'Public']]):
     """
 
-    type: Literal["authn"]
-    allowed_methods: List[Union["BasicAuthLoginMethod", "Public"]]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    type_: Literal["authn"]
+    allowed_methods: list[Union["BasicAuthLoginMethod", "Public"]]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
 
-        type = self.type
+        type_ = self.type_
+
         allowed_methods = []
         for allowed_methods_item_data in self.allowed_methods:
-            allowed_methods_item: Dict[str, Any]
-
+            allowed_methods_item: dict[str, Any]
             if isinstance(allowed_methods_item_data, BasicAuthLoginMethod):
                 allowed_methods_item = allowed_methods_item_data.to_dict()
-
             else:
                 allowed_methods_item = allowed_methods_item_data.to_dict()
 
             allowed_methods.append(allowed_methods_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "allowed_methods": allowed_methods,
             }
         )
@@ -61,12 +59,14 @@ class AuthnChallenge:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.public import Public
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.basic_auth_login_method import BasicAuthLoginMethod
+        from ..models.public import Public
 
-        d = src_dict.copy()
-        type = d.pop("type")
+        d = dict(src_dict)
+        type_ = cast(Literal["authn"], d.pop("type"))
+        if type_ != "authn":
+            raise ValueError(f"type must match const 'authn', got '{type_}'")
 
         allowed_methods = []
         _allowed_methods = d.pop("allowed_methods")
@@ -96,7 +96,7 @@ class AuthnChallenge:
             allowed_methods.append(allowed_methods_item)
 
         authn_challenge = cls(
-            type=type,
+            type_=type_,
             allowed_methods=allowed_methods,
         )
 
@@ -104,7 +104,7 @@ class AuthnChallenge:
         return authn_challenge
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,20 +1,12 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
-from typing import cast
-from typing import cast, Union
-from typing import cast, List
-from typing import Dict
-
 if TYPE_CHECKING:
-    from ..models.security_policy_metadata import SecurityPolicyMetadata
     from ..models.security_integration import SecurityIntegration
+    from ..models.security_policy_metadata import SecurityPolicyMetadata
 
 
 T = TypeVar("T", bound="SecuritySettingsResponse")
@@ -24,17 +16,17 @@ T = TypeVar("T", bound="SecuritySettingsResponse")
 class SecuritySettingsResponse:
     """
     Attributes:
-        domain_reservations (List[str]):
-        security_integrations (List['SecurityIntegration']):
+        domain_reservations (list[str]):
+        security_integrations (list['SecurityIntegration']):
         security_policy (Union['SecurityPolicyMetadata', None]):
     """
 
-    domain_reservations: List[str]
-    security_integrations: List["SecurityIntegration"]
+    domain_reservations: list[str]
+    security_integrations: list["SecurityIntegration"]
     security_policy: Union["SecurityPolicyMetadata", None]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.security_policy_metadata import SecurityPolicyMetadata
 
         domain_reservations = self.domain_reservations
@@ -42,18 +34,15 @@ class SecuritySettingsResponse:
         security_integrations = []
         for security_integrations_item_data in self.security_integrations:
             security_integrations_item = security_integrations_item_data.to_dict()
-
             security_integrations.append(security_integrations_item)
 
-        security_policy: Union[Dict[str, Any], None]
-
+        security_policy: Union[None, dict[str, Any]]
         if isinstance(self.security_policy, SecurityPolicyMetadata):
             security_policy = self.security_policy.to_dict()
-
         else:
             security_policy = self.security_policy
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -66,12 +55,12 @@ class SecuritySettingsResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.security_policy_metadata import SecurityPolicyMetadata
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.security_integration import SecurityIntegration
+        from ..models.security_policy_metadata import SecurityPolicyMetadata
 
-        d = src_dict.copy()
-        domain_reservations = cast(List[str], d.pop("domain_reservations"))
+        d = dict(src_dict)
+        domain_reservations = cast(list[str], d.pop("domain_reservations"))
 
         security_integrations = []
         _security_integrations = d.pop("security_integrations")
@@ -109,7 +98,7 @@ class SecuritySettingsResponse:
         return security_settings_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,14 +1,15 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
-from typing import cast, Union
+from ...models.modify_allow_inbound_invitations_request import (
+    ModifyAllowInboundInvitationsRequest,
+)
 from ...models.modify_allow_outbound_invitations_request import (
     ModifyAllowOutboundInvitationsRequest,
 )
@@ -16,41 +17,40 @@ from ...models.modify_default_login_methods_request import (
     ModifyDefaultLoginMethodsRequest,
 )
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from ...models.modify_allow_inbound_invitations_request import (
-    ModifyAllowInboundInvitationsRequest,
-)
-from typing import cast
-from ...models.base_error_response import BaseErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
     *,
-    json_body: Union[
+    body: Union[
         "ModifyAllowInboundInvitationsRequest",
         "ModifyAllowOutboundInvitationsRequest",
         "ModifyDefaultLoginMethodsRequest",
     ],
-) -> Dict[str, Any]:
-    json_json_body: Dict[str, Any]
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    if isinstance(json_body, ModifyAllowInboundInvitationsRequest):
-        json_json_body = json_body.to_dict()
-
-    elif isinstance(json_body, ModifyAllowOutboundInvitationsRequest):
-        json_json_body = json_body.to_dict()
-
-    else:
-        json_json_body = json_body.to_dict()
-
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/{organization_name}/api/v1/security-settings".format(
             organization_name=organization_name,
         ),
-        "json": json_json_body,
     }
+
+    _body: dict[str, Any]
+    if isinstance(body, ModifyAllowInboundInvitationsRequest):
+        _body = body.to_dict()
+    elif isinstance(body, ModifyAllowOutboundInvitationsRequest):
+        _body = body.to_dict()
+    else:
+        _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -58,22 +58,22 @@ def _parse_response(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.BAD_REQUEST:
+    if response.status_code == 400:
         response_400 = BaseErrorResponse.from_dict(response.json())
 
         return response_400
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -100,7 +100,7 @@ def sync_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "ModifyAllowInboundInvitationsRequest",
         "ModifyAllowOutboundInvitationsRequest",
         "ModifyDefaultLoginMethodsRequest",
@@ -108,11 +108,15 @@ def sync_detailed(
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Update security policy
+    """Modify security policy
+
+     Modify organization-level security settings. Possible setttings include whether external users can
+    be invited into this organization, whether certain login methods are permitted by default, and
+    whether users managed by this organization are permitted to participate in outside organizations.
 
     Args:
         organization_name (str):
-        json_body (Union['ModifyAllowInboundInvitationsRequest',
+        body (Union['ModifyAllowInboundInvitationsRequest',
             'ModifyAllowOutboundInvitationsRequest', 'ModifyDefaultLoginMethodsRequest']):
 
     Raises:
@@ -125,7 +129,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -139,7 +143,7 @@ def sync(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "ModifyAllowInboundInvitationsRequest",
         "ModifyAllowOutboundInvitationsRequest",
         "ModifyDefaultLoginMethodsRequest",
@@ -147,11 +151,15 @@ def sync(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Update security policy
+    """Modify security policy
+
+     Modify organization-level security settings. Possible setttings include whether external users can
+    be invited into this organization, whether certain login methods are permitted by default, and
+    whether users managed by this organization are permitted to participate in outside organizations.
 
     Args:
         organization_name (str):
-        json_body (Union['ModifyAllowInboundInvitationsRequest',
+        body (Union['ModifyAllowInboundInvitationsRequest',
             'ModifyAllowOutboundInvitationsRequest', 'ModifyDefaultLoginMethodsRequest']):
 
     Raises:
@@ -165,7 +173,7 @@ def sync(
     return sync_detailed(
         organization_name=organization_name,
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
@@ -173,7 +181,7 @@ async def asyncio_detailed(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "ModifyAllowInboundInvitationsRequest",
         "ModifyAllowOutboundInvitationsRequest",
         "ModifyDefaultLoginMethodsRequest",
@@ -181,11 +189,15 @@ async def asyncio_detailed(
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Update security policy
+    """Modify security policy
+
+     Modify organization-level security settings. Possible setttings include whether external users can
+    be invited into this organization, whether certain login methods are permitted by default, and
+    whether users managed by this organization are permitted to participate in outside organizations.
 
     Args:
         organization_name (str):
-        json_body (Union['ModifyAllowInboundInvitationsRequest',
+        body (Union['ModifyAllowInboundInvitationsRequest',
             'ModifyAllowOutboundInvitationsRequest', 'ModifyDefaultLoginMethodsRequest']):
 
     Raises:
@@ -198,7 +210,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         organization_name=organization_name,
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -210,7 +222,7 @@ async def asyncio(
     organization_name: str,
     *,
     client: AuthenticatedClient,
-    json_body: Union[
+    body: Union[
         "ModifyAllowInboundInvitationsRequest",
         "ModifyAllowOutboundInvitationsRequest",
         "ModifyDefaultLoginMethodsRequest",
@@ -218,11 +230,15 @@ async def asyncio(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Update security policy
+    """Modify security policy
+
+     Modify organization-level security settings. Possible setttings include whether external users can
+    be invited into this organization, whether certain login methods are permitted by default, and
+    whether users managed by this organization are permitted to participate in outside organizations.
 
     Args:
         organization_name (str):
-        json_body (Union['ModifyAllowInboundInvitationsRequest',
+        body (Union['ModifyAllowInboundInvitationsRequest',
             'ModifyAllowOutboundInvitationsRequest', 'ModifyDefaultLoginMethodsRequest']):
 
     Raises:
@@ -237,6 +253,6 @@ async def asyncio(
         await asyncio_detailed(
             organization_name=organization_name,
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

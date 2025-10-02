@@ -1,16 +1,15 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import cast
-from typing import Dict
-from typing import Literal
-from typing import cast, List
 
 if TYPE_CHECKING:
     from ..models.github_branch import GithubBranch
@@ -24,49 +23,52 @@ T = TypeVar("T", bound="GithubRepositoryData")
 class GithubRepositoryData:
     """
     Attributes:
-        integration_uuid (str):
-        type (Literal['github']):
+        integration_uuid (UUID):
+        type_ (Literal['github']):
         stub (bool):
         url (str):
         github_repo (GithubRepository):
-        branches (List['GithubBranch']):
-        sot_branch (List[str]):
-        sync_branches (List[str]):
+        branches (list['GithubBranch']):
+        sot_branch (list[str]):
+        sync_branches (list[str]):
     """
 
-    integration_uuid: str
-    type: Literal["github"]
+    integration_uuid: UUID
+    type_: Literal["github"]
     stub: bool
     url: str
     github_repo: "GithubRepository"
-    branches: List["GithubBranch"]
-    sot_branch: List[str]
-    sync_branches: List[str]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    branches: list["GithubBranch"]
+    sot_branch: list[str]
+    sync_branches: list[str]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        integration_uuid = self.integration_uuid
-        type = self.type
+    def to_dict(self) -> dict[str, Any]:
+        integration_uuid = str(self.integration_uuid)
+
+        type_ = self.type_
+
         stub = self.stub
+
         url = self.url
+
         github_repo = self.github_repo.to_dict()
 
         branches = []
         for branches_item_data in self.branches:
             branches_item = branches_item_data.to_dict()
-
             branches.append(branches_item)
 
         sot_branch = self.sot_branch
 
         sync_branches = self.sync_branches
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "integration_uuid": integration_uuid,
-                "type": type,
+                "type": type_,
                 "stub": stub,
                 "url": url,
                 "github_repo": github_repo,
@@ -79,14 +81,16 @@ class GithubRepositoryData:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.github_branch import GithubBranch
         from ..models.github_repository import GithubRepository
 
-        d = src_dict.copy()
-        integration_uuid = d.pop("integration_uuid")
+        d = dict(src_dict)
+        integration_uuid = UUID(d.pop("integration_uuid"))
 
-        type = d.pop("type")
+        type_ = cast(Literal["github"], d.pop("type"))
+        if type_ != "github":
+            raise ValueError(f"type must match const 'github', got '{type_}'")
 
         stub = d.pop("stub")
 
@@ -101,13 +105,13 @@ class GithubRepositoryData:
 
             branches.append(branches_item)
 
-        sot_branch = cast(List[str], d.pop("sot_branch"))
+        sot_branch = cast(list[str], d.pop("sot_branch"))
 
-        sync_branches = cast(List[str], d.pop("sync_branches"))
+        sync_branches = cast(list[str], d.pop("sync_branches"))
 
         github_repository_data = cls(
             integration_uuid=integration_uuid,
-            type=type,
+            type_=type_,
             stub=stub,
             url=url,
             github_repo=github_repo,
@@ -120,7 +124,7 @@ class GithubRepositoryData:
         return github_repository_data
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

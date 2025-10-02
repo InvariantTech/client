@@ -1,18 +1,16 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-from typing import Literal
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="CreateMemberResponse")
 
@@ -21,28 +19,28 @@ T = TypeVar("T", bound="CreateMemberResponse")
 class CreateMemberResponse:
     """
     Attributes:
-        type (Literal['member']):
+        type_ (Literal['member']):
         code (Union[None, Unset, str]):
     """
 
-    type: Literal["member"]
+    type_: Literal["member"]
     code: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        type = self.type
+    def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
+
         code: Union[None, Unset, str]
         if isinstance(self.code, Unset):
             code = UNSET
-
         else:
             code = self.code
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
             }
         )
         if code is not UNSET:
@@ -51,9 +49,11 @@ class CreateMemberResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        type = d.pop("type")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        type_ = cast(Literal["member"], d.pop("type"))
+        if type_ != "member":
+            raise ValueError(f"type must match const 'member', got '{type_}'")
 
         def _parse_code(data: object) -> Union[None, Unset, str]:
             if data is None:
@@ -65,7 +65,7 @@ class CreateMemberResponse:
         code = _parse_code(d.pop("code", UNSET))
 
         create_member_response = cls(
-            type=type,
+            type_=type_,
             code=code,
         )
 
@@ -73,7 +73,7 @@ class CreateMemberResponse:
         return create_member_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

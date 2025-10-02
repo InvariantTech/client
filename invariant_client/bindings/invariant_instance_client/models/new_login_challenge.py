@@ -1,14 +1,13 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Literal
-
 
 T = TypeVar("T", bound="NewLoginChallenge")
 
@@ -18,39 +17,41 @@ class NewLoginChallenge:
     """The user must complete self-service login registration.
 
     Attributes:
-        type (Literal['new_login']):
+        type_ (Literal['new_login']):
     """
 
-    type: Literal["new_login"]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    type_: Literal["new_login"]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        type = self.type
+    def to_dict(self) -> dict[str, Any]:
+        type_ = self.type_
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
             }
         )
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        type = d.pop("type")
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        type_ = cast(Literal["new_login"], d.pop("type"))
+        if type_ != "new_login":
+            raise ValueError(f"type must match const 'new_login', got '{type_}'")
 
         new_login_challenge = cls(
-            type=type,
+            type_=type_,
         )
 
         new_login_challenge.additional_properties = d
         return new_login_challenge
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

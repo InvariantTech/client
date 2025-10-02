@@ -1,0 +1,7 @@
+sources:
+  - kind: librenms
+    name: librenms-inventory
+    hostname: http://23.93.165.94:8889/
+    device_group: Backup
+    api_key: "env://LIBRE_NMS_API_KEY"
+    ssh_key: "env://SSH_KEY"

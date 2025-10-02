@@ -1,36 +1,41 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Optional, Union, cast
+from uuid import UUID
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response
 from ... import errors
-
+from ...client import AuthenticatedClient, Client
+from ...models.base_error_response import BaseErrorResponse
 from ...models.challenge_response import ChallengeResponse
 from ...models.create_monitor_target_request import CreateMonitorTargetRequest
 from ...models.validation_error_response import ValidationErrorResponse
-from typing import Dict
-from typing import cast
-from ...models.base_error_response import BaseErrorResponse
+from ...types import Response
 
 
 def _get_kwargs(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
-    json_body: CreateMonitorTargetRequest,
-) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    body: CreateMonitorTargetRequest,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/{organization_name}/api/v1/monitor_targets/{monitor_target_uuid}".format(
             organization_name=organization_name,
             monitor_target_uuid=monitor_target_uuid,
         ),
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -38,18 +43,18 @@ def _parse_response(
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
+    if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ValidationErrorResponse.from_dict(response.json())
 
         return response_422
-    if response.status_code == HTTPStatus.UNAUTHORIZED:
+    if response.status_code == 401:
         response_401 = ChallengeResponse.from_dict(response.json())
 
         return response_401
-    if response.status_code == HTTPStatus.NOT_FOUND:
+    if response.status_code == 404:
         response_404 = BaseErrorResponse.from_dict(response.json())
 
         return response_404
@@ -74,19 +79,21 @@ def _build_response(
 
 def sync_detailed(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
-    json_body: CreateMonitorTargetRequest,
+    body: CreateMonitorTargetRequest,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Modify a MonitorTarget
+    """Modify Repository Monitors
+
+     Modify a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
-        json_body (CreateMonitorTargetRequest):
+        monitor_target_uuid (UUID):
+        body (CreateMonitorTargetRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -99,7 +106,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         organization_name=organization_name,
         monitor_target_uuid=monitor_target_uuid,
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -111,19 +118,21 @@ def sync_detailed(
 
 def sync(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
-    json_body: CreateMonitorTargetRequest,
+    body: CreateMonitorTargetRequest,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Modify a MonitorTarget
+    """Modify Repository Monitors
+
+     Modify a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
-        json_body (CreateMonitorTargetRequest):
+        monitor_target_uuid (UUID):
+        body (CreateMonitorTargetRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -137,25 +146,27 @@ def sync(
         organization_name=organization_name,
         monitor_target_uuid=monitor_target_uuid,
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
-    json_body: CreateMonitorTargetRequest,
+    body: CreateMonitorTargetRequest,
 ) -> Response[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Modify a MonitorTarget
+    """Modify Repository Monitors
+
+     Modify a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
-        json_body (CreateMonitorTargetRequest):
+        monitor_target_uuid (UUID):
+        body (CreateMonitorTargetRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -168,7 +179,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         organization_name=organization_name,
         monitor_target_uuid=monitor_target_uuid,
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -178,19 +189,21 @@ async def asyncio_detailed(
 
 async def asyncio(
     organization_name: str,
-    monitor_target_uuid: str,
+    monitor_target_uuid: UUID,
     *,
     client: AuthenticatedClient,
-    json_body: CreateMonitorTargetRequest,
+    body: CreateMonitorTargetRequest,
 ) -> Optional[
     Union[Any, BaseErrorResponse, ChallengeResponse, ValidationErrorResponse]
 ]:
-    """Modify a MonitorTarget
+    """Modify Repository Monitors
+
+     Modify a repository monitor.
 
     Args:
         organization_name (str):
-        monitor_target_uuid (str):
-        json_body (CreateMonitorTargetRequest):
+        monitor_target_uuid (UUID):
+        body (CreateMonitorTargetRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -205,6 +218,6 @@ async def asyncio(
             organization_name=organization_name,
             monitor_target_uuid=monitor_target_uuid,
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

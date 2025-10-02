@@ -1,20 +1,17 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
-from typing import Union
-from typing import Literal
-from typing import cast
-from typing import cast, Union
-from typing import Dict
-from typing import cast, List
 
 if TYPE_CHECKING:
     from ..models.validation_error_response_part import ValidationErrorResponsePart
@@ -28,45 +25,47 @@ class ValidationErrorResponse:
     """
     Attributes:
         status (int):
-        type (Literal['urn:invariant:errors:validation']):
+        type_ (Literal['urn:invariant:errors:validation']):
         title (Literal['There was a problem with your request.']):
         detail (str):
-        validations (List['ValidationErrorResponsePart']):
+        validations (list['ValidationErrorResponsePart']):
         instance (Union[None, Unset, str]):
     """
 
     status: int
-    type: Literal["urn:invariant:errors:validation"]
+    type_: Literal["urn:invariant:errors:validation"]
     title: Literal["There was a problem with your request."]
     detail: str
-    validations: List["ValidationErrorResponsePart"]
+    validations: list["ValidationErrorResponsePart"]
     instance: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         status = self.status
-        type = self.type
+
+        type_ = self.type_
+
         title = self.title
+
         detail = self.detail
+
         validations = []
         for validations_item_data in self.validations:
             validations_item = validations_item_data.to_dict()
-
             validations.append(validations_item)
 
         instance: Union[None, Unset, str]
         if isinstance(self.instance, Unset):
             instance = UNSET
-
         else:
             instance = self.instance
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "status": status,
-                "type": type,
+                "type": type_,
                 "title": title,
                 "detail": detail,
                 "validations": validations,
@@ -78,15 +77,23 @@ class ValidationErrorResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.validation_error_response_part import ValidationErrorResponsePart
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         status = d.pop("status")
 
-        type = d.pop("type")
+        type_ = cast(Literal["urn:invariant:errors:validation"], d.pop("type"))
+        if type_ != "urn:invariant:errors:validation":
+            raise ValueError(
+                f"type must match const 'urn:invariant:errors:validation', got '{type_}'"
+            )
 
-        title = d.pop("title")
+        title = cast(Literal["There was a problem with your request."], d.pop("title"))
+        if title != "There was a problem with your request.":
+            raise ValueError(
+                f"title must match const 'There was a problem with your request.', got '{title}'"
+            )
 
         detail = d.pop("detail")
 
@@ -110,7 +117,7 @@ class ValidationErrorResponse:
 
         validation_error_response = cls(
             status=status,
-            type=type,
+            type_=type_,
             title=title,
             detail=detail,
             validations=validations,
@@ -121,7 +128,7 @@ class ValidationErrorResponse:
         return validation_error_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,17 +1,10 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="NetworkMetadata")
 
@@ -24,17 +17,16 @@ class NetworkMetadata:
     """
 
     comment: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         comment: Union[None, Unset, str]
         if isinstance(self.comment, Unset):
             comment = UNSET
-
         else:
             comment = self.comment
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if comment is not UNSET:
@@ -43,8 +35,8 @@ class NetworkMetadata:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
 
         def _parse_comment(data: object) -> Union[None, Unset, str]:
             if data is None:
@@ -63,7 +55,7 @@ class NetworkMetadata:
         return network_metadata
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

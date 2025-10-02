@@ -1,19 +1,19 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import cast, Union
 from dateutil.parser import isoparse
+
 from ..models.generic_state import GenericState
-from typing import Dict
-from typing import cast
-import datetime
-from typing import Literal
 
 if TYPE_CHECKING:
     from ..models.error_info import ErrorInfo
@@ -26,31 +26,30 @@ T = TypeVar("T", bound="ExternalStatusDataIntegration")
 class ExternalStatusDataIntegration:
     """
     Attributes:
-        type (Literal['integration']):
+        type_ (Literal['integration']):
         state (GenericState):
         error (Union['ErrorInfo', None]):
         last_used_at (datetime.datetime):
         modified_at (datetime.datetime):
     """
 
-    type: Literal["integration"]
+    type_: Literal["integration"]
     state: GenericState
     error: Union["ErrorInfo", None]
     last_used_at: datetime.datetime
     modified_at: datetime.datetime
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.error_info import ErrorInfo
 
-        type = self.type
+        type_ = self.type_
+
         state = self.state.value
 
-        error: Union[Dict[str, Any], None]
-
+        error: Union[None, dict[str, Any]]
         if isinstance(self.error, ErrorInfo):
             error = self.error.to_dict()
-
         else:
             error = self.error
 
@@ -58,11 +57,11 @@ class ExternalStatusDataIntegration:
 
         modified_at = self.modified_at.isoformat()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "type": type,
+                "type": type_,
                 "state": state,
                 "error": error,
                 "last_used_at": last_used_at,
@@ -73,11 +72,13 @@ class ExternalStatusDataIntegration:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.error_info import ErrorInfo
 
-        d = src_dict.copy()
-        type = d.pop("type")
+        d = dict(src_dict)
+        type_ = cast(Literal["integration"], d.pop("type"))
+        if type_ != "integration":
+            raise ValueError(f"type must match const 'integration', got '{type_}'")
 
         state = GenericState(d.pop("state"))
 
@@ -101,7 +102,7 @@ class ExternalStatusDataIntegration:
         modified_at = isoparse(d.pop("modified_at"))
 
         external_status_data_integration = cls(
-            type=type,
+            type_=type_,
             state=state,
             error=error,
             last_used_at=last_used_at,
@@ -112,7 +113,7 @@ class ExternalStatusDataIntegration:
         return external_status_data_integration
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

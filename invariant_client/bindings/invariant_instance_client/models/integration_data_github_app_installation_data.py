@@ -1,15 +1,9 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import cast
-from typing import Dict
-from typing import cast, List
 
 if TYPE_CHECKING:
     from ..models.integration_data_github_app_installation_data_extra import (
@@ -24,33 +18,36 @@ T = TypeVar("T", bound="IntegrationDataGithubAppInstallationData")
 class IntegrationDataGithubAppInstallationData:
     """
     Attributes:
-        user_creator (str):
+        user_creator (UUID):
         gh_creator (str):
         installation_id (str):
-        target_orgs (List[str]):
-        target_repos (List[str]):
+        target_orgs (list[str]):
+        target_repos (list[str]):
         extra (IntegrationDataGithubAppInstallationDataExtra):
     """
 
-    user_creator: str
+    user_creator: UUID
     gh_creator: str
     installation_id: str
-    target_orgs: List[str]
-    target_repos: List[str]
+    target_orgs: list[str]
+    target_repos: list[str]
     extra: "IntegrationDataGithubAppInstallationDataExtra"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        user_creator = self.user_creator
+    def to_dict(self) -> dict[str, Any]:
+        user_creator = str(self.user_creator)
+
         gh_creator = self.gh_creator
+
         installation_id = self.installation_id
+
         target_orgs = self.target_orgs
 
         target_repos = self.target_repos
 
         extra = self.extra.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -66,21 +63,21 @@ class IntegrationDataGithubAppInstallationData:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.integration_data_github_app_installation_data_extra import (
             IntegrationDataGithubAppInstallationDataExtra,
         )
 
-        d = src_dict.copy()
-        user_creator = d.pop("user_creator")
+        d = dict(src_dict)
+        user_creator = UUID(d.pop("user_creator"))
 
         gh_creator = d.pop("gh_creator")
 
         installation_id = d.pop("installation_id")
 
-        target_orgs = cast(List[str], d.pop("target_orgs"))
+        target_orgs = cast(list[str], d.pop("target_orgs"))
 
-        target_repos = cast(List[str], d.pop("target_repos"))
+        target_repos = cast(list[str], d.pop("target_repos"))
 
         extra = IntegrationDataGithubAppInstallationDataExtra.from_dict(d.pop("extra"))
 
@@ -97,7 +94,7 @@ class IntegrationDataGithubAppInstallationData:
         return integration_data_github_app_installation_data
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

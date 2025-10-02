@@ -1,18 +1,11 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import cast, Union
-from typing import Dict
-from ..types import UNSET, Unset
-from typing import cast
-from typing import Union
 
 if TYPE_CHECKING:
     from ..models.comparison_reportdata_files import ComparisonReportdataFiles
@@ -27,31 +20,29 @@ class ComparisonReportdata:
     """
     Attributes:
         files (ComparisonReportdataFiles):
-        solutions (Union['FileIndex', None, Unset, str]):
+        solutions (Union['FileIndex', None, UUID, Unset]):
     """
 
     files: "ComparisonReportdataFiles"
-    solutions: Union["FileIndex", None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    solutions: Union["FileIndex", None, UUID, Unset] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.file_index import FileIndex
 
         files = self.files.to_dict()
 
-        solutions: Union[Dict[str, Any], None, Unset, str]
+        solutions: Union[None, Unset, dict[str, Any], str]
         if isinstance(self.solutions, Unset):
             solutions = UNSET
-
+        elif isinstance(self.solutions, UUID):
+            solutions = str(self.solutions)
         elif isinstance(self.solutions, FileIndex):
-            solutions = UNSET
-            if not isinstance(self.solutions, Unset):
-                solutions = self.solutions.to_dict()
-
+            solutions = self.solutions.to_dict()
         else:
             solutions = self.solutions
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -64,32 +55,35 @@ class ComparisonReportdata:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.comparison_reportdata_files import ComparisonReportdataFiles
         from ..models.file_index import FileIndex
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         files = ComparisonReportdataFiles.from_dict(d.pop("files"))
 
-        def _parse_solutions(data: object) -> Union["FileIndex", None, Unset, str]:
+        def _parse_solutions(data: object) -> Union["FileIndex", None, UUID, Unset]:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
             try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                solutions_type_0 = UUID(data)
+
+                return solutions_type_0
+            except:  # noqa: E722
+                pass
+            try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                _solutions_type_1 = data
-                solutions_type_1: Union[Unset, FileIndex]
-                if isinstance(_solutions_type_1, Unset):
-                    solutions_type_1 = UNSET
-                else:
-                    solutions_type_1 = FileIndex.from_dict(_solutions_type_1)
+                solutions_type_1 = FileIndex.from_dict(data)
 
                 return solutions_type_1
             except:  # noqa: E722
                 pass
-            return cast(Union["FileIndex", None, Unset, str], data)
+            return cast(Union["FileIndex", None, UUID, Unset], data)
 
         solutions = _parse_solutions(d.pop("solutions", UNSET))
 
@@ -102,7 +96,7 @@ class ComparisonReportdata:
         return comparison_reportdata
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

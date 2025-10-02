@@ -1,28 +1,26 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
-from typing import Union
-from typing import cast, Union
-from typing import Dict
-from typing import cast
-from ..types import UNSET, Unset
-from typing import Literal
-
 if TYPE_CHECKING:
-    from ..models.setup_code_challenge import SetupCodeChallenge
-    from ..models.new_login_challenge import NewLoginChallenge
     from ..models.authn_challenge import AuthnChallenge
+    from ..models.new_login_challenge import NewLoginChallenge
     from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-    from ..models.validate_email_challenge import ValidateEmailChallenge
     from ..models.set_password_challenge import SetPasswordChallenge
+    from ..models.setup_code_challenge import SetupCodeChallenge
     from ..models.start_challenge import StartChallenge
+    from ..models.validate_email_challenge import ValidateEmailChallenge
 
 
 T = TypeVar("T", bound="ChallengeResponse")
@@ -33,7 +31,7 @@ class ChallengeResponse:
     """
     Attributes:
         status (int):
-        type (Literal['urn:invariant:errors:auth_challenge']):
+        type_ (Literal['urn:invariant:errors:auth_challenge']):
         title (str):
         detail (str):
         challenge (Union['AuthnChallenge', 'NewLoginChallenge', 'PasswordResetPINChallenge', 'SetPasswordChallenge',
@@ -43,7 +41,7 @@ class ChallengeResponse:
     """
 
     status: int
-    type: Literal["urn:invariant:errors:auth_challenge"]
+    type_: Literal["urn:invariant:errors:auth_challenge"]
     title: str
     detail: str
     challenge: Union[
@@ -57,63 +55,58 @@ class ChallengeResponse:
     ]
     instance: Union[None, Unset, str] = UNSET
     login_token: Union[None, Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        from ..models.setup_code_challenge import SetupCodeChallenge
-        from ..models.new_login_challenge import NewLoginChallenge
+    def to_dict(self) -> dict[str, Any]:
         from ..models.authn_challenge import AuthnChallenge
+        from ..models.new_login_challenge import NewLoginChallenge
         from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-        from ..models.validate_email_challenge import ValidateEmailChallenge
         from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
 
         status = self.status
-        type = self.type
-        title = self.title
-        detail = self.detail
-        challenge: Dict[str, Any]
 
+        type_ = self.type_
+
+        title = self.title
+
+        detail = self.detail
+
+        challenge: dict[str, Any]
         if isinstance(self.challenge, AuthnChallenge):
             challenge = self.challenge.to_dict()
-
         elif isinstance(self.challenge, NewLoginChallenge):
             challenge = self.challenge.to_dict()
-
         elif isinstance(self.challenge, ValidateEmailChallenge):
             challenge = self.challenge.to_dict()
-
         elif isinstance(self.challenge, PasswordResetPINChallenge):
             challenge = self.challenge.to_dict()
-
         elif isinstance(self.challenge, SetPasswordChallenge):
             challenge = self.challenge.to_dict()
-
         elif isinstance(self.challenge, SetupCodeChallenge):
             challenge = self.challenge.to_dict()
-
         else:
             challenge = self.challenge.to_dict()
 
         instance: Union[None, Unset, str]
         if isinstance(self.instance, Unset):
             instance = UNSET
-
         else:
             instance = self.instance
 
         login_token: Union[None, Unset, str]
         if isinstance(self.login_token, Unset):
             login_token = UNSET
-
         else:
             login_token = self.login_token
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "status": status,
-                "type": type,
+                "type": type_,
                 "title": title,
                 "detail": detail,
                 "challenge": challenge,
@@ -127,19 +120,23 @@ class ChallengeResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.setup_code_challenge import SetupCodeChallenge
-        from ..models.new_login_challenge import NewLoginChallenge
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.authn_challenge import AuthnChallenge
+        from ..models.new_login_challenge import NewLoginChallenge
         from ..models.password_reset_pin_challenge import PasswordResetPINChallenge
-        from ..models.validate_email_challenge import ValidateEmailChallenge
         from ..models.set_password_challenge import SetPasswordChallenge
+        from ..models.setup_code_challenge import SetupCodeChallenge
         from ..models.start_challenge import StartChallenge
+        from ..models.validate_email_challenge import ValidateEmailChallenge
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         status = d.pop("status")
 
-        type = d.pop("type")
+        type_ = cast(Literal["urn:invariant:errors:auth_challenge"], d.pop("type"))
+        if type_ != "urn:invariant:errors:auth_challenge":
+            raise ValueError(
+                f"type must match const 'urn:invariant:errors:auth_challenge', got '{type_}'"
+            )
 
         title = d.pop("title")
 
@@ -232,7 +229,7 @@ class ChallengeResponse:
 
         challenge_response = cls(
             status=status,
-            type=type,
+            type_=type_,
             title=title,
             detail=detail,
             challenge=challenge,
@@ -244,7 +241,7 @@ class ChallengeResponse:
         return challenge_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

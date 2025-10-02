@@ -1,17 +1,16 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
-
-from typing import Literal, Union
-from typing import cast, Union
-from ..types import UNSET, Unset
-
 
 T = TypeVar("T", bound="ConsumeClientLoginSessionResponse")
 
@@ -24,7 +23,7 @@ class ConsumeClientLoginSessionResponse:
         retry_after (int):
         access_token (Union[None, str]):
         org_name (Union[None, str]):
-        type (Union[Literal['urn:invariant:responses:consume_client_login_response'], Unset]):  Default:
+        type_ (Union[Literal['urn:invariant:responses:consume_client_login_response'], Unset]):  Default:
             'urn:invariant:responses:consume_client_login_response'.
     """
 
@@ -32,25 +31,25 @@ class ConsumeClientLoginSessionResponse:
     retry_after: int
     access_token: Union[None, str]
     org_name: Union[None, str]
-    type: Union[
+    type_: Union[
         Literal["urn:invariant:responses:consume_client_login_response"], Unset
     ] = "urn:invariant:responses:consume_client_login_response"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         status = self.status
-        retry_after = self.retry_after
-        access_token: Union[None, str]
 
+        retry_after = self.retry_after
+
+        access_token: Union[None, str]
         access_token = self.access_token
 
         org_name: Union[None, str]
-
         org_name = self.org_name
 
-        type = self.type
+        type_ = self.type_
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -60,14 +59,14 @@ class ConsumeClientLoginSessionResponse:
                 "org_name": org_name,
             }
         )
-        if type is not UNSET:
-            field_dict["type"] = type
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         status = d.pop("status")
 
         retry_after = d.pop("retry_after")
@@ -86,21 +85,33 @@ class ConsumeClientLoginSessionResponse:
 
         org_name = _parse_org_name(d.pop("org_name"))
 
-        type = d.pop("type", UNSET)
+        type_ = cast(
+            Union[
+                Literal["urn:invariant:responses:consume_client_login_response"], Unset
+            ],
+            d.pop("type", UNSET),
+        )
+        if (
+            type_ != "urn:invariant:responses:consume_client_login_response"
+            and not isinstance(type_, Unset)
+        ):
+            raise ValueError(
+                f"type must match const 'urn:invariant:responses:consume_client_login_response', got '{type_}'"
+            )
 
         consume_client_login_session_response = cls(
             status=status,
             retry_after=retry_after,
             access_token=access_token,
             org_name=org_name,
-            type=type,
+            type_=type_,
         )
 
         consume_client_login_session_response.additional_properties = d
         return consume_client_login_session_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

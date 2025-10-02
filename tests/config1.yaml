@@ -1,0 +1,19 @@
+sources:
+  - kind: librenms
+    name: librenms-inventory
+    hostname: http://192.168.1.153:8889/
+    device_group: Backup
+    api_key: "secret+aws://prod/invariant/fetcher?key=LIBRENMS"
+    ssh_key: "secret+aws://prod/ssh_key"
+    # ssh_key_path: /home/vscode/.ssh/arista_key
+    ssh_user: vscode
+  - kind: aws
+    name: aws_prod
+    regions:
+      - us-west-1
+      - us-west-2
+    accounts:
+      - '381492141036'
+      - '831926619701'
+      # - '310950261294'
+output_path: /workspaces/www/p/client/test_out

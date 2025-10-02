@@ -1,15 +1,11 @@
-from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
-
-from typing import List
-
+import datetime
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
+from uuid import UUID
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-
-from typing import Dict
 from dateutil.parser import isoparse
-import datetime
 
 if TYPE_CHECKING:
     from ..models.github_repository_data import GithubRepositoryData
@@ -22,29 +18,32 @@ T = TypeVar("T", bound="Repository")
 class Repository:
     """
     Attributes:
-        uuid (str):
-        organization_uuid (str):
+        uuid (UUID):
+        organization_uuid (UUID):
         data (GithubRepositoryData):
         is_active (bool):
         created_at (datetime.datetime):
     """
 
-    uuid: str
-    organization_uuid: str
+    uuid: UUID
+    organization_uuid: UUID
     data: "GithubRepositoryData"
     is_active: bool
     created_at: datetime.datetime
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        uuid = self.uuid
-        organization_uuid = self.organization_uuid
+    def to_dict(self) -> dict[str, Any]:
+        uuid = str(self.uuid)
+
+        organization_uuid = str(self.organization_uuid)
+
         data = self.data.to_dict()
 
         is_active = self.is_active
+
         created_at = self.created_at.isoformat()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -59,13 +58,13 @@ class Repository:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.github_repository_data import GithubRepositoryData
 
-        d = src_dict.copy()
-        uuid = d.pop("uuid")
+        d = dict(src_dict)
+        uuid = UUID(d.pop("uuid"))
 
-        organization_uuid = d.pop("organization_uuid")
+        organization_uuid = UUID(d.pop("organization_uuid"))
 
         data = GithubRepositoryData.from_dict(d.pop("data"))
 
@@ -85,7 +84,7 @@ class Repository:
         return repository
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

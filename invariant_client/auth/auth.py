@@ -5,6 +5,8 @@ from dataclasses import dataclass
 import enum
 import ssl
 from typing import Optional
+
+import httpx
 from invariant_client import pysdk
 
 from invariant_client.pysdk import AccessCredential, RemoteError
@@ -38,16 +40,19 @@ class BrowserLoginFlow:
     client_token: Optional[str]   # The client session token can consume the client login session once fulfilled by the user
     error: Optional[Exception]
     creds: Optional[AccessCredential]   # Successfully gained access_token creds go here
+    httpx_client: Optional[httpx.Client]
 
     def __init__(self,
             base_url: Optional[str] = None,
             verify_ssl: Optional[str | bool | ssl.SSLContext] = None,
+            httpx_client: Optional[httpx.Client] = None,
             **kwargs,
         ):
         self.client_base_url = base_url or pysdk.DOMAIN_NAME
         self.client_kwargs = {}
         self.client_kwargs.update(kwargs)
         self.client_kwargs['verify_ssl'] = verify_ssl
+        self.httpx_client = httpx_client
         self.state = BrowserLoginFlowState.START
         self.pin_url = None
         self.client_token = None
@@ -60,6 +65,8 @@ class BrowserLoginFlow:
         Returns an external login code (string). The user should use this code to complete the login flow
         in their browser."""
         client = LoginClient(self.client_base_url, **self.client_kwargs)
+        if self.httpx_client is not None:
+            client.set_httpx_client(self.httpx_client)
         response = init_client_login_api_v1_client_login_post(client=client)
         response = response.parsed
         if not response:
@@ -76,6 +83,11 @@ class BrowserLoginFlow:
             self.client_base_url,
             token=self.client_token,
             **self.client_kwargs)
+        if self.httpx_client is not None:
+            self.httpx_client.headers[client.auth_header_name] = (
+                f"{client.prefix} {client.token}" if client.prefix else client.token
+            )
+            client.set_httpx_client(self.httpx_client)
         response = consume_client_login_api_v1_client_login_consume_post(client=client)
         response = response.parsed
         if not response:
