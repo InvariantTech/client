@@ -8,7 +8,7 @@ from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
 if TYPE_CHECKING:
-    from ..models.metadata import Metadata
+    from ..models.org_metadata import OrgMetadata
 
 
 T = TypeVar("T", bound="Organization")
@@ -22,7 +22,7 @@ class Organization:
         uuid (UUID):
         name (str):
         description (str):
-        metadata (Metadata):
+        metadata (OrgMetadata):
         is_active (bool):
         created_at (datetime.datetime):
     """
@@ -30,7 +30,7 @@ class Organization:
     uuid: UUID
     name: str
     description: str
-    metadata: "Metadata"
+    metadata: "OrgMetadata"
     is_active: bool
     created_at: datetime.datetime
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -65,7 +65,7 @@ class Organization:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.metadata import Metadata
+        from ..models.org_metadata import OrgMetadata
 
         d = dict(src_dict)
         uuid = UUID(d.pop("uuid"))
@@ -74,7 +74,7 @@ class Organization:
 
         description = d.pop("description")
 
-        metadata = Metadata.from_dict(d.pop("metadata"))
+        metadata = OrgMetadata.from_dict(d.pop("metadata"))
 
         is_active = d.pop("is_active")
 
