@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "invariant-client"
-version = "2.2.0"
+version = "2.2.1"
 description = "Invariant: manage ACLs in an entirely new way"
 authors = ["Rob Ankeny <ankenyr@gmail.com>", "Jason Benterou <jason.benterou@invariant.tech>"]
 readme = "README.md"
