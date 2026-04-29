@@ -13,8 +13,8 @@ from invariant_client.eval_command.pick_rule import (
     SelectorFormatError,
     PolicyNotFoundError,
     RuleNotFoundError,
-    AmbiguousRuleNameError,
-    InvalidPolicyFileFormatError
+    InvalidPolicyFileFormatError,
+    AmbiguousRuleNameError
 )
 
 # --- Test Data ---
@@ -171,7 +171,7 @@ class TestPickRuleToYAML(unittest.TestCase):
     def test_select_by_policy_rule_name_valid(self):
         """Test selecting a rule by policy name and rule name."""
         file_path = self._create_temp_file(VALID_YAML_MULTI_POLICY)
-        result_yaml = pick_rule(file_path, "policy1:rule_name_1a")
+        result_yaml = pick_rule(file_path, "policy1[rule_name_1a]")
         self._assert_yaml_equal(result_yaml, EXPECTED_POLICY1_RULE0)
 
     def test_select_by_unique_rule_name(self):
@@ -269,7 +269,7 @@ class TestPickRuleToYAML(unittest.TestCase):
         file_path = self._create_temp_file(VALID_YAML_MULTI_POLICY)
         stderr_io = io.StringIO()
         with self.assertRaises(PolicyNotFoundError) as cm, redirect_stderr(stderr_io):
-            pick_rule(file_path, "nonexistent_policy:rule_name_1a")
+            pick_rule(file_path, "nonexistent_policy[rule_name_1a]")
         self.assertIn("Policy 'nonexistent_policy' not found", stderr_io.getvalue())
 
     def test_error_rule_index_out_of_bounds(self):
@@ -286,7 +286,7 @@ class TestPickRuleToYAML(unittest.TestCase):
         file_path = self._create_temp_file(VALID_YAML_MULTI_POLICY)
         stderr_io = io.StringIO()
         with self.assertRaises(RuleNotFoundError) as cm, redirect_stderr(stderr_io):
-            pick_rule(file_path, "policy1:nonexistent_rule")
+            pick_rule(file_path, "policy1[nonexistent_rule]")
         self.assertIn("Rule named 'nonexistent_rule' not found within policy 'policy1'", stderr_io.getvalue())
 
     def test_error_rule_name_not_found_unique(self):

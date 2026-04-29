@@ -7,6 +7,7 @@ from typing import Type
 
 from invariant_client.base_command.base_command import BaseCommand
 from invariant_client.login_command.login import LoginCommand
+from invariant_client.logout_command.logout import LogoutCommand
 from invariant_client.run_command.run import RunCommand
 from invariant_client.fetch_command.fetch import FetchCommand
 from invariant_client.sync_command.sync import SyncCommand
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 COMMANDS: dict[str, Type[BaseCommand]] = {
     'login': LoginCommand,
+    'logout': LogoutCommand,
     'eval': EvalCommand,
     'run': RunCommand,
     'sync': SyncCommand,

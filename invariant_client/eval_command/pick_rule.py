@@ -23,14 +23,17 @@ class PolicyNotFoundError(SelectorError):
 class RuleNotFoundError(SelectorError):
     """Raised when the specified rule (by index) is not found."""
 
+class AmbiguousRuleNameError(SelectorError):
+    """Raised when a rule name matches multiple rules."""
+
 class InvalidPolicyFileFormatError(RulePickError):
     """Raised when the policy file format is invalid."""
 
 
-# policy_name[index] or policy_index[index]
-SELECTOR_INDEX_REGEX = re.compile(r"^(?P<policy_name>[^\[]+)\[(?P<index>\d+)\]$")
-# just a number
-SELECTOR_GLOBAL_INDEX_REGEX = re.compile(r"^(?P<index>\d+)$")
+# policy_name[rule_name_or_index]
+SELECTOR_POLICY_RULE_REGEX = re.compile(r"^(?P<policy_name>[a-zA-Z0-9_\-]+)\[(?P<rule_selector>[a-zA-Z0-9_\-]+)\]$")
+# just a number or rule name
+SELECTOR_GLOBAL_REGEX = re.compile(r"^(?P<rule_selector>[a-zA-Z0-9_\-]+)$")
 
 
 def pick_rule(target_policy_file: str | os.PathLike, selector: str | None) -> str:
@@ -44,6 +47,9 @@ def pick_rule(target_policy_file: str | os.PathLike, selector: str | None) -> st
     not found.
 
     Supported Selector Formats:
+      - 'policy_name[rule_name]': Selects rule by name within a named policy.
+      - 'policy_index[rule_name]': Selects rule by name within a policy at a given index.
+      - 'rule_name': Selects rule by its name across all policies in the file (must be unique within the file).
       - 'policy_name[index]': Selects rule by index within a named policy.
       - 'policy_index[index]': Selects rule by index within a policy at a given index.
       - 'index': Selects rule by its global index across all policies in the file.
@@ -72,27 +78,27 @@ def pick_rule(target_policy_file: str | os.PathLike, selector: str | None) -> st
     selected_rule = None
 
     if selector is None:
-        selected_policy, selected_rule = _find_by_global_rule_index(
-            policies, 0, target_path, no_selector=True
+        selected_policy, selected_rule = _find_by_global_rule_selector(
+            policies, '0', target_path, no_selector=True
         )
     else:
         # --- Determine selector type and find rule/policy ---
-        index_match = SELECTOR_INDEX_REGEX.match(selector)
-        global_index_match = SELECTOR_GLOBAL_INDEX_REGEX.match(selector)
+        policy_rule_match = SELECTOR_POLICY_RULE_REGEX.match(selector)
+        global_match = SELECTOR_GLOBAL_REGEX.match(selector)
 
-        if index_match:
-            policy_selector = index_match.group('policy_name')
-            rule_index = int(index_match.group('index'))
-            selected_policy, selected_rule = _find_by_policy_and_rule_index(
-                policies, policy_selector, rule_index, target_path
+        if policy_rule_match:
+            policy_selector = policy_rule_match.group('policy_name')
+            rule_selector = policy_rule_match.group('rule_selector')
+            selected_policy, selected_rule = _find_by_policy_and_rule_selector(
+                policies, policy_selector, rule_selector, target_path
             )
-        elif global_index_match:
-            rule_index = int(global_index_match.group('index'))
-            selected_policy, selected_rule = _find_by_global_rule_index(
-                policies, rule_index, target_path
+        elif global_match:
+            rule_selector = global_match.group('rule_selector')
+            selected_policy, selected_rule = _find_by_global_rule_selector(
+                policies, rule_selector, target_path
             )
         else:
-            msg = f"Invalid selector format: '{selector}'. Supported formats: 'policy[index]' or 'index'."
+            msg = f"Invalid selector format: '{selector}'. Policy and rule names must match the pattern [a-zA-Z0-9_\-]+."
             print(f"Error: {msg}", file=sys.stderr)
             raise SelectorFormatError(msg)
 
@@ -148,8 +154,54 @@ def _validate_and_get_policies(loaded_data: dict, target_path: pathlib.Path) -> 
         raise InvalidPolicyFileFormatError(msg)
     return policies
 
-def _find_by_policy_and_rule_index(policies: list, policy_selector: str, rule_index: int, target_path: pathlib.Path) -> tuple[dict, dict]:
-    """Finds policy by name or index, then rule by index."""
+def _find_by_policy_and_rule_selector(policies: list, policy_selector: str, rule_selector: str, target_path: pathlib.Path) -> tuple[dict, dict]:
+    """Finds policy by name or index, then rule by name or index."""
+    found_policy = _find_policy(policies, policy_selector, target_path)
+
+    rules = found_policy.get('rules')
+    if not isinstance(rules, list):
+        policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
+        msg = f"Policy '{policy_identifier}' is missing or has an invalid 'rules' list in '{target_path}'"
+        print(f"Error: {msg}", file=sys.stderr)
+        raise InvalidPolicyFileFormatError(msg)
+
+    if rule_selector.isdigit():
+        rule_index = int(rule_selector)
+        if not (0 <= rule_index < len(rules)):
+            policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
+            msg = f"Rule index {rule_index} out of bounds for policy '{policy_identifier}' (has {len(rules)} rules) in '{target_path}'"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise RuleNotFoundError(msg)
+
+        selected_rule = rules[rule_index]
+        if not isinstance(selected_rule, dict):
+            policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
+            msg = f"Invalid rule format at index {rule_index} in policy '{policy_identifier}' (expected dictionary) in '{target_path}'"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise InvalidPolicyFileFormatError(msg)
+        return found_policy, selected_rule
+    else:
+        # Expected rule by name
+        matched_rules = []
+        for index, rule in enumerate(rules):
+            if isinstance(rule, dict) and rule.get('name') == rule_selector:
+                matched_rules.append((index, rule))
+
+        if not matched_rules:
+            policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
+            msg = f"Rule named '{rule_selector}' not found within policy '{policy_identifier}' in '{target_path}'"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise RuleNotFoundError(msg)
+        if len(matched_rules) > 1:
+            msg = f"Ambiguous rule selector: Rule name '{rule_selector}' found multiple times within policy '{found_policy.get('name')}'"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise AmbiguousRuleNameError(msg)
+
+        return found_policy, matched_rules[0][1]
+
+
+def _find_policy(policies: list, policy_selector: str, target_path: pathlib.Path) -> dict:
+    """Finds policy by name or index."""
     found_policy = None
     # First, try to find a policy by name
     for policy in policies:
@@ -172,59 +224,68 @@ def _find_by_policy_and_rule_index(policies: list, policy_selector: str, rule_in
         print(f"Error: {msg}", file=sys.stderr)
         raise PolicyNotFoundError(msg)
 
-    rules = found_policy.get('rules')
-    if not isinstance(rules, list):
-        policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
-        msg = f"Policy '{policy_identifier}' is missing or has an invalid 'rules' list in '{target_path}'"
-        print(f"Error: {msg}", file=sys.stderr)
-        raise InvalidPolicyFileFormatError(msg)
+    return found_policy
 
-    if not (0 <= rule_index < len(rules)):
-        policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
-        msg = f"Rule index {rule_index} out of bounds for policy '{policy_identifier}' (has {len(rules)} rules) in '{target_path}'"
-        print(f"Error: {msg}", file=sys.stderr)
-        raise RuleNotFoundError(msg)
 
-    selected_rule = rules[rule_index]
-    if not isinstance(selected_rule, dict):
-        policy_identifier = found_policy.get('name', f"at index {policies.index(found_policy)}")
-        msg = f"Invalid rule format at index {rule_index} in policy '{policy_identifier}' (expected dictionary) in '{target_path}'"
-        print(f"Error: {msg}", file=sys.stderr)
-        raise InvalidPolicyFileFormatError(msg)
-
-    return found_policy, selected_rule
-
-def _find_by_global_rule_index(
+def _find_by_global_rule_selector(
         policies: list,
-        rule_index: int,
+        rule_selector: str,
         target_path: pathlib.Path,
         no_selector: bool = False
     ) -> tuple[dict, dict]:
-    """Finds a rule by its global index across all policies."""
-    # Count all rules in policies (E.g. policies[0].rules)
-    rule_count = sum(len(policy.get('rules', [])) for policy in policies if isinstance(policy, dict) and isinstance(policy.get('rules'), list))
-    if no_selector and rule_count > 1:
-        msg = f"Missing --rule <selector>. Rule selector required as multiple rules ({rule_count}) exist in '{target_path}'."
-        raise ValueError(msg)
-    current_rule_count = 0
-    for policy in policies:
-        if not isinstance(policy, dict):
-            continue
-        rules = policy.get('rules')
-        if not isinstance(rules, list):
-            continue
+    """Finds a rule by its global index or name across all policies."""
+    if no_selector:
+        # Count all rules in policies (E.g. policies[0].rules)
+        rule_count = sum(len(policy.get('rules', [])) for policy in policies if isinstance(policy, dict) and isinstance(policy.get('rules'), list))
+        if rule_count > 1:
+            msg = f"Missing --rule <selector>. Rule selector required as multiple rules ({rule_count}) exist in '{target_path}'."
+            raise ValueError(msg)
+        rule_selector = '0'
 
-        if current_rule_count <= rule_index < current_rule_count + len(rules):
-            local_rule_index = rule_index - current_rule_count
-            selected_rule = rules[local_rule_index]
-            if not isinstance(selected_rule, dict):
-                msg = f"Invalid rule format at global index {rule_index} (expected dictionary) in '{target_path}'"
-                print(f"Error: {msg}", file=sys.stderr)
-                raise InvalidPolicyFileFormatError(msg)
-            return policy, selected_rule
+    if rule_selector.isdigit():
+        rule_index = int(rule_selector)
+        current_rule_count = 0
+        for policy in policies:
+            if not isinstance(policy, dict):
+                continue
+            rules = policy.get('rules')
+            if not isinstance(rules, list):
+                continue
 
-        current_rule_count += len(rules)
+            if current_rule_count <= rule_index < current_rule_count + len(rules):
+                local_rule_index = rule_index - current_rule_count
+                selected_rule = rules[local_rule_index]
+                if not isinstance(selected_rule, dict):
+                    msg = f"Invalid rule format at global index {rule_index} (expected dictionary) in '{target_path}'"
+                    print(f"Error: {msg}", file=sys.stderr)
+                    raise InvalidPolicyFileFormatError(msg)
+                return policy, selected_rule
 
-    msg = f"Global rule index {rule_index} out of bounds (total {current_rule_count} rules) in '{target_path}'"
-    print(f"Error: {msg}", file=sys.stderr)
-    raise RuleNotFoundError(msg)
+            current_rule_count += len(rules)
+
+        msg = f"Global rule index {rule_index} out of bounds (total {current_rule_count} rules) in '{target_path}'"
+        print(f"Error: {msg}", file=sys.stderr)
+        raise RuleNotFoundError(msg)
+    else:
+        # Rule by name
+        matched_rules = []
+        for policy in policies:
+            if not isinstance(policy, dict):
+                continue
+            rules = policy.get('rules')
+            if not isinstance(rules, list):
+                continue
+            for rule in rules:
+                if isinstance(rule, dict) and rule.get('name') == rule_selector:
+                    matched_rules.append((policy, rule))
+
+        if len(matched_rules) == 0:
+            msg = f"Rule named '{rule_selector}' not found in any policy"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise RuleNotFoundError(msg)
+        if len(matched_rules) > 1:
+            msg = f"Ambiguous rule selector: Rule name '{rule_selector}' found in multiple policies"
+            print(f"Error: {msg}", file=sys.stderr)
+            raise AmbiguousRuleNameError(msg)
+
+        return matched_rules[0][0], matched_rules[0][1]
