@@ -35,23 +35,37 @@ class ShowCommand(BaseCommand):
             help='The snapshot file to examine.'
         )
 
-        command_show.add_argument(
+        snapshot_group = command_show.add_mutually_exclusive_group()
+        snapshot_group.add_argument(
             '--snapshot',
             dest='snapshot_name',
             help='The snapshot to examine. If unset, environment variable INVARIANT_SNAPSHOT is used.'
+        )
+        snapshot_group.add_argument(
+            '--network',
+            dest='network',
+            help='Use the most recent snapshot for the given network.'
         )
 
     def set_config(self, args: 'argparse.Namespace', env: dict[str, str]) -> None:
         super().set_config(args, env)
         env_snapshot = env.get('INVARIANT_SNAPSHOT', None)
         self.snapshot_name = args.snapshot_name
-        if not self.snapshot_name:
+        self.network = getattr(args, 'network', None)
+        if not self.snapshot_name and not self.network:
+            # Fallback to env var only when neither flag is provided
             self.snapshot_name = env_snapshot
         self.file_name = args.file_name
 
     def execute(self):
         super().execute()
         snapshot_name = self.snapshot_name
+        if not snapshot_name and self.network:
+            # Resolve --network to the most recent snapshot
+            snapshots = self.sdk.list_snapshots(filter_net=self.network, limit=1)
+            if not snapshots:
+                raise ValueError(f"No snapshots found for network '{self.network}'.")
+            snapshot_name = str(snapshots[0].snapshot.uuid)
         if not snapshot_name:
             # NOTE: API Token users should explicitly set --snapshot or INVARIANT_SNAPSHOT
             last_snapshot = self.sdk.list_reports(filter_session=True, limit=1)

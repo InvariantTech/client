@@ -43,6 +43,7 @@ from invariant_client.bindings.invariant_instance_client.api.organization.list_n
 from invariant_client.bindings.invariant_instance_client.api.organization.update_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_post import sync_detailed as update_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_post
 from invariant_client.bindings.invariant_instance_client.api.organization.modify_network_organization_name_api_v_1_networks_network_uuid_post import sync_detailed as modify_network_organization_name_api_v_1_networks_network_uuid_post
 from invariant_client.bindings.invariant_instance_client.api.organization.delete_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_delete import sync_detailed as delete_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_delete
+from invariant_client.bindings.invariant_instance_client.api.organization.resubmit_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_resubmit_post import sync_detailed as resubmit_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_resubmit_post
 from invariant_client.bindings.invariant_instance_client.api.organization.try_rule_ll_organization_name_api_v_1_snapshots_snapshot_uuid_try_rule_post import sync_detailed as try_rule_ll_organization_name_api_v_1_snapshots_snapshot_uuid_try_rule_post
 from invariant_client.bindings.invariant_instance_client.api.organization.list_monitor_targets_organization_name_api_v_1_monitor_targets_get import sync_detailed as list_monitor_targets_organization_name_api_v_1_monitor_targets_get
 from invariant_client.bindings.invariant_instance_client.api.organization.create_monitor_targets_organization_name_api_v_1_monitor_targets_post import sync_detailed as create_monitor_targets_organization_name_api_v_1_monitor_targets_post
@@ -327,6 +328,25 @@ class Invariant:
         if isinstance(response, models.ChallengeResponse):
             raise AuthorizationException(f"{response.title}: {response.detail}")
         if isinstance(response, models.BaseErrorResponse) or isinstance(response, models.ValidationErrorResponse):
+            raise RemoteError(response)
+        return response
+
+    def resubmit_snapshot(
+            self,
+            snapshot_uuid: uuid.UUID) -> models.ResubmitSnapshotResponse:
+        """Resubmit a snapshot for re-evaluation using its existing model."""
+        response = resubmit_snapshot_organization_name_api_v_1_snapshots_snapshot_uuid_resubmit_post(
+            self.creds.organization_name,
+            snapshot_uuid=snapshot_uuid,
+            client=self.client)
+        response = response.parsed
+        if not response:
+            raise RemoteError(f"Unable to connect to {self.base_url}")
+        if isinstance(response, models.ChallengeResponse):
+            raise AuthorizationException(f"{response.title}: {response.detail}")
+        if isinstance(response, models.BaseErrorResponse):
+            raise RemoteError(f"{response.detail}")
+        if not isinstance(response, models.ResubmitSnapshotResponse):
             raise RemoteError(response)
         return response
 

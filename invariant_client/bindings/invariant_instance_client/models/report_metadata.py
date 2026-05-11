@@ -18,12 +18,16 @@ class ReportMetadata:
         role (Union[None, Unset, str]):
         source_urn (Union[None, Unset, str]):
         volume_model_uuid (Union[None, UUID, Unset]):
+        batfish_commit (Union[None, Unset, str]):
+        batfish_commit_date (Union[None, Unset, str]):
     """
 
     session_uuid: Union[None, UUID, Unset] = UNSET
     role: Union[None, Unset, str] = UNSET
     source_urn: Union[None, Unset, str] = UNSET
     volume_model_uuid: Union[None, UUID, Unset] = UNSET
+    batfish_commit: Union[None, Unset, str] = UNSET
+    batfish_commit_date: Union[None, Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -55,6 +59,18 @@ class ReportMetadata:
         else:
             volume_model_uuid = self.volume_model_uuid
 
+        batfish_commit: Union[None, Unset, str]
+        if isinstance(self.batfish_commit, Unset):
+            batfish_commit = UNSET
+        else:
+            batfish_commit = self.batfish_commit
+
+        batfish_commit_date: Union[None, Unset, str]
+        if isinstance(self.batfish_commit_date, Unset):
+            batfish_commit_date = UNSET
+        else:
+            batfish_commit_date = self.batfish_commit_date
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -66,6 +82,10 @@ class ReportMetadata:
             field_dict["source_urn"] = source_urn
         if volume_model_uuid is not UNSET:
             field_dict["volume_model_uuid"] = volume_model_uuid
+        if batfish_commit is not UNSET:
+            field_dict["batfish_commit"] = batfish_commit
+        if batfish_commit_date is not UNSET:
+            field_dict["batfish_commit_date"] = batfish_commit_date
 
         return field_dict
 
@@ -125,11 +145,33 @@ class ReportMetadata:
 
         volume_model_uuid = _parse_volume_model_uuid(d.pop("volume_model_uuid", UNSET))
 
+        def _parse_batfish_commit(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        batfish_commit = _parse_batfish_commit(d.pop("batfish_commit", UNSET))
+
+        def _parse_batfish_commit_date(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        batfish_commit_date = _parse_batfish_commit_date(
+            d.pop("batfish_commit_date", UNSET)
+        )
+
         report_metadata = cls(
             session_uuid=session_uuid,
             role=role,
             source_urn=source_urn,
             volume_model_uuid=volume_model_uuid,
+            batfish_commit=batfish_commit,
+            batfish_commit_date=batfish_commit_date,
         )
 
         report_metadata.additional_properties = d

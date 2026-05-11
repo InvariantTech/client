@@ -17,11 +17,15 @@ class SnapshotMetadata:
         volume_model (Union[None, UUID, Unset]):
         report_uuid (Union[None, UUID, Unset]):
         session_uuid (Union[None, UUID, Unset]):
+        resubmit_snapshot_uuid (Union[None, UUID, Unset]):
+        volume_model_snapshot_uuid (Union[None, UUID, Unset]):
     """
 
     volume_model: Union[None, UUID, Unset] = UNSET
     report_uuid: Union[None, UUID, Unset] = UNSET
     session_uuid: Union[None, UUID, Unset] = UNSET
+    resubmit_snapshot_uuid: Union[None, UUID, Unset] = UNSET
+    volume_model_snapshot_uuid: Union[None, UUID, Unset] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -49,6 +53,22 @@ class SnapshotMetadata:
         else:
             session_uuid = self.session_uuid
 
+        resubmit_snapshot_uuid: Union[None, Unset, str]
+        if isinstance(self.resubmit_snapshot_uuid, Unset):
+            resubmit_snapshot_uuid = UNSET
+        elif isinstance(self.resubmit_snapshot_uuid, UUID):
+            resubmit_snapshot_uuid = str(self.resubmit_snapshot_uuid)
+        else:
+            resubmit_snapshot_uuid = self.resubmit_snapshot_uuid
+
+        volume_model_snapshot_uuid: Union[None, Unset, str]
+        if isinstance(self.volume_model_snapshot_uuid, Unset):
+            volume_model_snapshot_uuid = UNSET
+        elif isinstance(self.volume_model_snapshot_uuid, UUID):
+            volume_model_snapshot_uuid = str(self.volume_model_snapshot_uuid)
+        else:
+            volume_model_snapshot_uuid = self.volume_model_snapshot_uuid
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -58,6 +78,10 @@ class SnapshotMetadata:
             field_dict["report_uuid"] = report_uuid
         if session_uuid is not UNSET:
             field_dict["session_uuid"] = session_uuid
+        if resubmit_snapshot_uuid is not UNSET:
+            field_dict["resubmit_snapshot_uuid"] = resubmit_snapshot_uuid
+        if volume_model_snapshot_uuid is not UNSET:
+            field_dict["volume_model_snapshot_uuid"] = volume_model_snapshot_uuid
 
         return field_dict
 
@@ -116,10 +140,50 @@ class SnapshotMetadata:
 
         session_uuid = _parse_session_uuid(d.pop("session_uuid", UNSET))
 
+        def _parse_resubmit_snapshot_uuid(data: object) -> Union[None, UUID, Unset]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                resubmit_snapshot_uuid_type_0 = UUID(data)
+
+                return resubmit_snapshot_uuid_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[None, UUID, Unset], data)
+
+        resubmit_snapshot_uuid = _parse_resubmit_snapshot_uuid(
+            d.pop("resubmit_snapshot_uuid", UNSET)
+        )
+
+        def _parse_volume_model_snapshot_uuid(data: object) -> Union[None, UUID, Unset]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                volume_model_snapshot_uuid_type_0 = UUID(data)
+
+                return volume_model_snapshot_uuid_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[None, UUID, Unset], data)
+
+        volume_model_snapshot_uuid = _parse_volume_model_snapshot_uuid(
+            d.pop("volume_model_snapshot_uuid", UNSET)
+        )
+
         snapshot_metadata = cls(
             volume_model=volume_model,
             report_uuid=report_uuid,
             session_uuid=session_uuid,
+            resubmit_snapshot_uuid=resubmit_snapshot_uuid,
+            volume_model_snapshot_uuid=volume_model_snapshot_uuid,
         )
 
         snapshot_metadata.additional_properties = d

@@ -25,6 +25,7 @@ class SnapshotReportData:
         status (Union['FileIndex', UUID]):
         errors (Union['FileIndex', UUID]):
         solutions (Union['FileIndex', None, UUID, Unset]):
+        batfish_logs (Union['FileIndex', None, UUID, Unset]):
         compare_to (Union['ComparisonReportdata', None, Unset]):
     """
 
@@ -33,6 +34,7 @@ class SnapshotReportData:
     status: Union["FileIndex", UUID]
     errors: Union["FileIndex", UUID]
     solutions: Union["FileIndex", None, UUID, Unset] = UNSET
+    batfish_logs: Union["FileIndex", None, UUID, Unset] = UNSET
     compare_to: Union["ComparisonReportdata", None, Unset] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -70,6 +72,16 @@ class SnapshotReportData:
         else:
             solutions = self.solutions
 
+        batfish_logs: Union[None, Unset, dict[str, Any], str]
+        if isinstance(self.batfish_logs, Unset):
+            batfish_logs = UNSET
+        elif isinstance(self.batfish_logs, UUID):
+            batfish_logs = str(self.batfish_logs)
+        elif isinstance(self.batfish_logs, FileIndex):
+            batfish_logs = self.batfish_logs.to_dict()
+        else:
+            batfish_logs = self.batfish_logs
+
         compare_to: Union[None, Unset, dict[str, Any]]
         if isinstance(self.compare_to, Unset):
             compare_to = UNSET
@@ -90,6 +102,8 @@ class SnapshotReportData:
         )
         if solutions is not UNSET:
             field_dict["solutions"] = solutions
+        if batfish_logs is not UNSET:
+            field_dict["batfish_logs"] = batfish_logs
         if compare_to is not UNSET:
             field_dict["compare_to"] = compare_to
 
@@ -180,6 +194,31 @@ class SnapshotReportData:
 
         solutions = _parse_solutions(d.pop("solutions", UNSET))
 
+        def _parse_batfish_logs(data: object) -> Union["FileIndex", None, UUID, Unset]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                batfish_logs_type_0 = UUID(data)
+
+                return batfish_logs_type_0
+            except:  # noqa: E722
+                pass
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                batfish_logs_type_1 = FileIndex.from_dict(data)
+
+                return batfish_logs_type_1
+            except:  # noqa: E722
+                pass
+            return cast(Union["FileIndex", None, UUID, Unset], data)
+
+        batfish_logs = _parse_batfish_logs(d.pop("batfish_logs", UNSET))
+
         def _parse_compare_to(
             data: object,
         ) -> Union["ComparisonReportdata", None, Unset]:
@@ -205,6 +244,7 @@ class SnapshotReportData:
             status=status,
             errors=errors,
             solutions=solutions,
+            batfish_logs=batfish_logs,
             compare_to=compare_to,
         )
 

@@ -2,6 +2,7 @@
 
 from .access_session import AccessSession
 from .access_session_context_type_0 import AccessSessionContextType0
+from .ad_hoc_spec_input import AdHocSpecInput
 from .api_token import APIToken
 from .api_token_metadata import APITokenMetadata
 from .api_token_response import APITokenResponse
@@ -67,6 +68,7 @@ from .flags_response import FlagsResponse
 from .flags_response_environment import FlagsResponseEnvironment
 from .flags_response_flags import FlagsResponseFlags
 from .generic_state import GenericState
+from .get_interfaces_request import GetInterfacesRequest
 from .get_report_summary_response import GetReportSummaryResponse
 from .get_report_summary_response_status import GetReportSummaryResponseStatus
 from .get_report_summary_response_summary import GetReportSummaryResponseSummary
@@ -109,6 +111,8 @@ from .list_report_tasks_response import ListReportTasksResponse
 from .list_reports_response import ListReportsResponse
 from .list_snapshots_response import ListSnapshotsResponse
 from .list_usage_response import ListUsageResponse
+from .location_name_input import LocationNameInput
+from .location_selector_part import LocationSelectorPart
 from .login_config_metadata_public import LoginConfigMetadataPublic
 from .login_config_public import LoginConfigPublic
 from .modify_allow_inbound_invitations_request import (
@@ -148,6 +152,7 @@ from .public import Public
 from .refresh_response import RefreshResponse
 from .report import Report
 from .report_extras import ReportExtras
+from .report_extras_map_error_type_0 import ReportExtrasMapErrorType0
 from .report_metadata import ReportMetadata
 from .report_task import ReportTask
 from .report_text_summary_request import ReportTextSummaryRequest
@@ -158,6 +163,7 @@ from .resource_set_member import ResourceSetMember
 from .resource_set_metadata import ResourceSetMetadata
 from .resource_set_with_extras import ResourceSetWithExtras
 from .resource_type import ResourceType
+from .resubmit_snapshot_response import ResubmitSnapshotResponse
 from .rule_outcome import RuleOutcome
 from .rule_summary_group_uploaded import RuleSummaryGroupUploaded
 from .rule_summary_group_webrule import RuleSummaryGroupWebrule
@@ -226,6 +232,7 @@ from .validation_error_response_part import ValidationErrorResponsePart
 __all__ = (
     "AccessSession",
     "AccessSessionContextType0",
+    "AdHocSpecInput",
     "APIToken",
     "APITokenMetadata",
     "APITokenResponse",
@@ -277,6 +284,7 @@ __all__ = (
     "FlagsResponseEnvironment",
     "FlagsResponseFlags",
     "GenericState",
+    "GetInterfacesRequest",
     "GetReportSummaryResponse",
     "GetReportSummaryResponseStatus",
     "GetReportSummaryResponseSummary",
@@ -307,6 +315,8 @@ __all__ = (
     "ListReportTasksResponse",
     "ListSnapshotsResponse",
     "ListUsageResponse",
+    "LocationNameInput",
+    "LocationSelectorPart",
     "LoginConfigMetadataPublic",
     "LoginConfigPublic",
     "ModifyAllowInboundInvitationsRequest",
@@ -342,6 +352,7 @@ __all__ = (
     "RefreshResponse",
     "Report",
     "ReportExtras",
+    "ReportExtrasMapErrorType0",
     "ReportMetadata",
     "ReportTask",
     "ReportTextSummaryRequest",
@@ -352,6 +363,7 @@ __all__ = (
     "ResourceSetMetadata",
     "ResourceSetWithExtras",
     "ResourceType",
+    "ResubmitSnapshotResponse",
     "RuleOutcome",
     "RuleSummaryGroupUploaded",
     "RuleSummaryGroupWebrule",

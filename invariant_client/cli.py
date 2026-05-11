@@ -19,6 +19,7 @@ from invariant_client.network_command.network import NetworkCommand
 from invariant_client.rules_command.rules import RulesCommand
 from invariant_client.definition_command.definitions import DefinitionsCommand
 from invariant_client.location_command.locations import LocationsCommand
+from invariant_client.resubmit_command.resubmit import ResubmitCommand
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ COMMANDS: dict[str, Type[BaseCommand]] = {
     'run': RunCommand,
     'sync': SyncCommand,
     'fetch': FetchCommand,
+    'resubmit': ResubmitCommand,
     'show': ShowCommand,
     'snapshots': SnapshotsCommand,
     'networks': NetworkCommand,
